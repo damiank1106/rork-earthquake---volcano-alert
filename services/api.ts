@@ -59,31 +59,182 @@ export const fetchEarthquakes = async (
   }
 };
 
+const MOCK_VOLCANOES: Volcano[] = [
+  {
+    id: '1',
+    name: 'Mount Fuji',
+    latitude: 35.3606,
+    longitude: 138.7274,
+    country: 'Japan',
+    region: 'Honshu',
+    elevation: 3776,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '1707',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '2',
+    name: 'Mount Vesuvius',
+    latitude: 40.8214,
+    longitude: 14.4263,
+    country: 'Italy',
+    region: 'Campania',
+    elevation: 1281,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '1944',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '3',
+    name: 'Kilauea',
+    latitude: 19.4069,
+    longitude: -155.2834,
+    country: 'United States',
+    region: 'Hawaii',
+    elevation: 1247,
+    type: 'Shield Volcano',
+    status: 'active',
+    lastEruptionDate: '2023',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '4',
+    name: 'Mount Etna',
+    latitude: 37.7510,
+    longitude: 14.9934,
+    country: 'Italy',
+    region: 'Sicily',
+    elevation: 3357,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '2024',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '5',
+    name: 'Krakatoa',
+    latitude: -6.1021,
+    longitude: 105.4230,
+    country: 'Indonesia',
+    region: 'Sunda Strait',
+    elevation: 813,
+    type: 'Caldera',
+    status: 'active',
+    lastEruptionDate: '2020',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '6',
+    name: 'Mount St. Helens',
+    latitude: 46.1914,
+    longitude: -122.1956,
+    country: 'United States',
+    region: 'Washington',
+    elevation: 2549,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '2008',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '7',
+    name: 'Popocatépetl',
+    latitude: 19.0232,
+    longitude: -98.6278,
+    country: 'Mexico',
+    region: 'Central Mexico',
+    elevation: 5426,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '2024',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+  {
+    id: '8',
+    name: 'Eyjafjallajökull',
+    latitude: 63.6313,
+    longitude: -19.6083,
+    country: 'Iceland',
+    region: 'Southern Iceland',
+    elevation: 1651,
+    type: 'Stratovolcano',
+    status: 'active',
+    lastEruptionDate: '2010',
+    activitySummary: undefined,
+    alertLevel: undefined,
+    vei: undefined,
+    sources: ['Smithsonian GVP'],
+    url: undefined,
+  },
+];
+
 export const fetchVolcanoes = async (): Promise<Volcano[]> => {
   try {
     const url = 'https://raw.githubusercontent.com/plotly/datasets/master/volcano_db.csv';
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.warn(`Volcano API returned status ${response.status}, using mock data`);
+      return MOCK_VOLCANOES;
     }
+    
     const text = await response.text();
+    
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      console.error('Invalid response text from volcano API: empty or invalid response');
-      return [];
+      console.warn('Volcano API returned empty response, using mock data');
+      return MOCK_VOLCANOES;
     }
+    
     if (text.includes('<!DOCTYPE') || text.includes('<html')) {
-      console.error('Invalid response text from volcano API: received HTML instead of CSV');
-      return [];
+      console.warn('Volcano API returned HTML instead of CSV, using mock data');
+      return MOCK_VOLCANOES;
     }
+    
     const lines = text.replace(/\r/g, '').split('\n').filter((l) => l.trim().length > 0);
+    
     if (lines.length === 0) {
-      console.error('Invalid response text from volcano API: no data lines');
-      return [];
+      console.warn('Volcano API returned no data lines, using mock data');
+      return MOCK_VOLCANOES;
     }
+    
     const header = lines.shift();
     if (!header) {
-      console.error('Invalid response text from volcano API: no header');
-      return [];
+      console.warn('Volcano API returned no header, using mock data');
+      return MOCK_VOLCANOES;
     }
     
     const cols = header.split(',');
@@ -121,10 +272,16 @@ export const fetchVolcanoes = async (): Promise<Volcano[]> => {
         });
       }
     });
+    
+    if (volcanoes.length === 0) {
+      console.warn('Volcano API returned no valid data, using mock data');
+      return MOCK_VOLCANOES;
+    }
+    
     return volcanoes;
   } catch (error) {
-    console.error('Failed to fetch volcanoes:', error);
-    return [];
+    console.warn('Failed to fetch volcanoes, using mock data:', error);
+    return MOCK_VOLCANOES;
   }
 };
 
