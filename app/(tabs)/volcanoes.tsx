@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform } from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
@@ -15,6 +15,22 @@ export default function VolcanoesScreen() {
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
 
   const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
+  const [hasShownAlert, setHasShownAlert] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!hasShownAlert && volcanoes.length > 0) {
+      setHasShownAlert(true);
+      if (Platform.OS === 'web') {
+        alert('To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.');
+      } else {
+        Alert.alert(
+          'Volcano Map View',
+          'To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.',
+          [{ text: 'OK' }]
+        );
+      }
+    }
+  }, [volcanoes, hasShownAlert]);
 
   const sections = useMemo(() => {
     const grouped = volcanoes.reduce((acc: { [key: string]: Volcano[] }, v) => {

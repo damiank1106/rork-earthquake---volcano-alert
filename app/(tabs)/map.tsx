@@ -6,8 +6,8 @@ import { BlurView, BlurTint } from 'expo-blur';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
-import { Earthquake, PlateBoundary, Volcano, NuclearPlant } from '@/types';
-import { formatTime, formatDepth, fetchPlateBoundaries, fetchVolcanoes, fetchNuclearPlants } from '@/services/api';
+import { Earthquake, PlateBoundary, Volcano } from '@/types';
+import { formatTime, formatDepth, fetchPlateBoundaries, fetchVolcanoes } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -28,7 +28,6 @@ export default function MapScreen() {
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
-  const [showNuclear, setShowNuclear] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
@@ -36,7 +35,6 @@ export default function MapScreen() {
 
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
-  const nuclearQuery = useQuery({ queryKey: ['nuclear-plants'], queryFn: fetchNuclearPlants, enabled: showNuclear });
 
   const highlightedVolcano = useMemo(() => {
     if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
@@ -101,10 +99,10 @@ export default function MapScreen() {
         userLocation={userLocation}
         plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
         volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
-        nuclearPlants={(nuclearQuery.data as NuclearPlant[] | undefined) ?? []}
+        nuclearPlants={[]}
         showPlateBoundaries={showPlates}
         showVolcanoes={showVolcanoes}
-        showNuclearPlants={showNuclear}
+        showNuclearPlants={false}
         heatmapEnabled={preferences.heatmapEnabled}
         clusteringEnabled={preferences.clusteringEnabled}
       />
@@ -185,12 +183,6 @@ export default function MapScreen() {
           <Text style={styles.toggleLabel}>Volcanoes</Text>
           <TouchableOpacity testID="toggle-volcanoes" style={[styles.toggle, showVolcanoes && styles.toggleOn]} onPress={() => setShowVolcanoes((v) => !v)}>
             <Text style={[styles.toggleText, showVolcanoes && styles.toggleTextOn]}>{showVolcanoes ? 'On' : 'Off'}</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.toggleRow}>
-          <Text style={styles.toggleLabel}>Nuclear plants</Text>
-          <TouchableOpacity testID="toggle-nuclear" style={[styles.toggle, showNuclear && styles.toggleOn]} onPress={() => setShowNuclear((v) => !v)}>
-            <Text style={[styles.toggleText, showNuclear && styles.toggleTextOn]}>{showNuclear ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

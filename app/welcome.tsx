@@ -1,50 +1,64 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
+
+const { width, height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
-  const logoScale = useRef(new Animated.Value(0.8)).current;
+  const logoScale = useRef(new Animated.Value(0.5)).current;
+  const logoRotate = useRef(new Animated.Value(0)).current;
   const wave1Anim = useRef(new Animated.Value(0)).current;
   const wave2Anim = useRef(new Animated.Value(0)).current;
   const wave3Anim = useRef(new Animated.Value(0)).current;
+  const wave4Anim = useRef(new Animated.Value(0)).current;
+  const wave5Anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 1200,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 1000,
+        duration: 1200,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.spring(logoScale, {
         toValue: 1,
-        tension: 30,
+        tension: 20,
         friction: 7,
         useNativeDriver: true,
       }),
     ]).start();
 
     Animated.loop(
+      Animated.timing(logoRotate, {
+        toValue: 1,
+        duration: 20000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+
+    Animated.loop(
       Animated.sequence([
         Animated.timing(wave1Anim, {
           toValue: 1,
-          duration: 4000,
+          duration: 8000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(wave1Anim, {
           toValue: 0,
-          duration: 4000,
+          duration: 8000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
@@ -55,13 +69,13 @@ export default function WelcomeScreen() {
       Animated.sequence([
         Animated.timing(wave2Anim, {
           toValue: 1,
-          duration: 5000,
+          duration: 10000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(wave2Anim, {
           toValue: 0,
-          duration: 5000,
+          duration: 10000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
@@ -72,33 +86,107 @@ export default function WelcomeScreen() {
       Animated.sequence([
         Animated.timing(wave3Anim, {
           toValue: 1,
-          duration: 6000,
+          duration: 12000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(wave3Anim, {
           toValue: 0,
-          duration: 6000,
+          duration: 12000,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ])
     ).start();
-  }, [fadeAnim, slideAnim, logoScale, wave1Anim, wave2Anim, wave3Anim]);
 
-  const wave1Translate = wave1Anim.interpolate({
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(wave4Anim, {
+          toValue: 1,
+          duration: 14000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(wave4Anim, {
+          toValue: 0,
+          duration: 14000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(wave5Anim, {
+          toValue: 1,
+          duration: 16000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(wave5Anim, {
+          toValue: 0,
+          duration: 16000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [fadeAnim, slideAnim, logoScale, logoRotate, wave1Anim, wave2Anim, wave3Anim, wave4Anim, wave5Anim]);
+
+  const wave1TranslateY = wave1Anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 20],
+    outputRange: [0, 40],
   });
 
-  const wave2Translate = wave2Anim.interpolate({
+  const wave1TranslateX = wave1Anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -15],
+    outputRange: [0, 30],
   });
 
-  const wave3Translate = wave3Anim.interpolate({
+  const wave2TranslateY = wave2Anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 25],
+    outputRange: [0, -35],
+  });
+
+  const wave2TranslateX = wave2Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -25],
+  });
+
+  const wave3TranslateY = wave3Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 50],
+  });
+
+  const wave3TranslateX = wave3Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 40],
+  });
+
+  const wave4TranslateY = wave4Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -45],
+  });
+
+  const wave4TranslateX = wave4Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 35],
+  });
+
+  const wave5TranslateY = wave5Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 55],
+  });
+
+  const wave5TranslateX = wave5Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -30],
+  });
+
+  const logoRotation = logoRotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
   });
 
   const handleContinue = () => {
@@ -108,9 +196,11 @@ export default function WelcomeScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.backgroundGradient}>
-        <Animated.View style={[styles.wave, styles.wave1, { transform: [{ translateY: wave1Translate }] }]} />
-        <Animated.View style={[styles.wave, styles.wave2, { transform: [{ translateY: wave2Translate }] }]} />
-        <Animated.View style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3Translate }] }]} />
+        <Animated.View style={[styles.wave, styles.wave1, { transform: [{ translateY: wave1TranslateY }, { translateX: wave1TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave2, { transform: [{ translateY: wave2TranslateY }, { translateX: wave2TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3TranslateY }, { translateX: wave3TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave4, { transform: [{ translateY: wave4TranslateY }, { translateX: wave4TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave5, { transform: [{ translateY: wave5TranslateY }, { translateX: wave5TranslateX }] }]} />
       </View>
 
       <Animated.View
@@ -126,7 +216,7 @@ export default function WelcomeScreen() {
           style={[
             styles.logoContainer,
             {
-              transform: [{ scale: logoScale }],
+              transform: [{ scale: logoScale }, { rotate: logoRotation }],
             },
           ]}
         >
@@ -135,16 +225,17 @@ export default function WelcomeScreen() {
           </View>
         </Animated.View>
 
-        <View style={styles.card}>
+        <View style={styles.textContainer}>
           <Text style={styles.title}>Seismic Monitor</Text>
           <Text style={styles.subtitle}>Real-Time Global Monitoring</Text>
           <Text style={styles.description}>
             Track earthquakes, volcanic activity, and tsunami alerts worldwide.
           </Text>
-          <TouchableOpacity style={styles.button} onPress={handleContinue} testID="btn-continue">
-            <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleContinue} testID="btn-continue">
+          <Text style={styles.buttonText}>Get Started</Text>
+        </TouchableOpacity>
       </Animated.View>
     </View>
   );
@@ -153,35 +244,53 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#E0F2FE',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backgroundGradient: {
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
+    backgroundColor: '#E0F2FE',
   },
   wave: {
     position: 'absolute',
-    width: '150%',
-    height: 150,
     borderRadius: 9999,
-    opacity: 0.06,
   },
   wave1: {
-    backgroundColor: '#60A5FA',
-    top: -50,
-    left: -30,
+    width: width * 1.8,
+    height: width * 1.8,
+    backgroundColor: 'rgba(186, 230, 253, 0.4)',
+    top: -width * 0.9,
+    left: -width * 0.4,
   },
   wave2: {
-    backgroundColor: '#93C5FD',
-    top: 120,
-    right: -60,
+    width: width * 1.6,
+    height: width * 1.6,
+    backgroundColor: 'rgba(125, 211, 252, 0.3)',
+    top: height * 0.15,
+    right: -width * 0.5,
   },
   wave3: {
-    backgroundColor: '#BFDBFE',
-    bottom: -40,
-    left: -50,
+    width: width * 2,
+    height: width * 2,
+    backgroundColor: 'rgba(224, 242, 254, 0.5)',
+    bottom: -width * 0.8,
+    left: -width * 0.6,
+  },
+  wave4: {
+    width: width * 1.4,
+    height: width * 1.4,
+    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    top: height * 0.4,
+    left: -width * 0.3,
+  },
+  wave5: {
+    width: width * 1.7,
+    height: width * 1.7,
+    backgroundColor: 'rgba(14, 165, 233, 0.15)',
+    bottom: height * 0.2,
+    right: -width * 0.4,
   },
   content: {
     width: '85%',
@@ -189,75 +298,67 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    marginBottom: SPACING.xxl,
+    marginBottom: SPACING.xxl * 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logoCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowColor: '#0EA5E9',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 12,
   },
   logoEmoji: {
-    fontSize: 48,
+    fontSize: 70,
   },
-  card: {
+  textContainer: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    borderRadius: 24,
-    padding: SPACING.xl,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
+    marginBottom: SPACING.xxl,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#1E293B',
+    color: '#0C4A6E',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   subtitle: {
-    fontSize: FONT_SIZE.md,
-    color: '#64748B',
+    fontSize: FONT_SIZE.lg,
+    color: '#0369A1',
     textAlign: 'center',
     marginBottom: SPACING.md,
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
   },
   description: {
-    fontSize: FONT_SIZE.sm,
-    color: '#475569',
+    fontSize: FONT_SIZE.md,
+    color: '#075985',
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: SPACING.xl,
+    lineHeight: 22,
   },
   button: {
-    backgroundColor: '#3B82F6',
-    paddingVertical: 14,
-    paddingHorizontal: SPACING.xl,
-    borderRadius: 12,
+    backgroundColor: '#0EA5E9',
+    paddingVertical: 16,
+    paddingHorizontal: SPACING.xxl,
+    borderRadius: 14,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowColor: '#0EA5E9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
   },
 });
