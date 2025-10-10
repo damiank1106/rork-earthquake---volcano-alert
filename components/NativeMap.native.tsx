@@ -1,20 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, Platform } from 'react-native';
+import { View, StyleSheet, Text, Animated } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { getMagnitudeColor, FONT_WEIGHT } from '@/constants/theme';
 import { Earthquake } from '@/types';
-
-let MapView: any, Marker: any;
-
-if (Platform.OS !== 'web') {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const maps = require('expo-maps');
-    MapView = maps.MapView;
-    Marker = maps.Marker;
-  } catch (error) {
-    console.warn('expo-maps not available:', error);
-  }
-}
 
 interface NativeMapProps {
   earthquakes: Earthquake[];
@@ -54,10 +42,6 @@ export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, 
       });
     }
   }, [selectedMarker]);
-
-  if (Platform.OS === 'web' || !MapView) {
-    return <View style={styles.map} />;
-  }
 
   const initialRegion = userLocation
     ? {
