@@ -61,29 +61,29 @@ export const fetchEarthquakes = async (
 
 export const fetchVolcanoes = async (): Promise<Volcano[]> => {
   try {
-    const url = 'https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/volcanoes.json';
+    const url = 'https://raw.githubusercontent.com/datasets/volcano-global/master/data/volcano-global.json';
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    if (!data || !Array.isArray(data.features)) return [];
-    return data.features.map((f: any, idx: number) => ({
-      id: f.id?.toString() ?? String(idx),
-      name: f.properties?.name ?? 'Unknown volcano',
-      latitude: f.geometry?.coordinates?.[1] ?? 0,
-      longitude: f.geometry?.coordinates?.[0] ?? 0,
-      country: f.properties?.country ?? 'Unknown',
-      region: f.properties?.region ?? 'Unknown',
-      elevation: Number(f.properties?.elevation ?? 0),
-      type: f.properties?.type ?? 'Volcano',
-      status: f.properties?.status ?? 'active',
-      lastEruptionDate: f.properties?.last_eruption ?? undefined,
+    if (!Array.isArray(data)) return [];
+    return data.map((v: any, idx: number) => ({
+      id: v.Number?.toString() ?? String(idx),
+      name: v['Volcano Name'] ?? 'Unknown volcano',
+      latitude: Number(v.Latitude ?? 0),
+      longitude: Number(v.Longitude ?? 0),
+      country: v.Country ?? 'Unknown',
+      region: v.Region ?? 'Unknown',
+      elevation: Number(v.Elevation ?? 0),
+      type: v['Primary Volcano Type'] ?? 'Volcano',
+      status: v['Activity Evidence'] ?? 'active',
+      lastEruptionDate: v['Last Known Eruption'] ?? undefined,
       activitySummary: undefined,
       alertLevel: undefined,
       vei: undefined,
-      sources: ['Smithsonian GVP (community mirror)'],
-      url: f.properties?.link ?? undefined,
+      sources: ['Smithsonian GVP'],
+      url: undefined,
     })) as Volcano[];
   } catch (error) {
     console.error('Failed to fetch volcanoes:', error);
