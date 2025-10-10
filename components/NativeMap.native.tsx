@@ -68,20 +68,22 @@ export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, 
         <Polyline
           key={`pb-${b.id}`}
           coordinates={Array.isArray(b.coordinates) ? b.coordinates.map((c: any) => ({ latitude: c[1], longitude: c[0] })) : []}
-          strokeColor="#3B82F6"
+          strokeColor="#DC2626"
           strokeWidth={2}
         />
       ))}
 
       {showVolcanoes && volcanoes.map((v) => (
         <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }}>
-          <View style={[styles.dot, { backgroundColor: '#DC2626' }]} />
+          <View style={[styles.volcanoDot, { backgroundColor: '#DC2626' }]} />
         </Marker>
       ))}
 
       {showNuclearPlants && nuclearPlants.map((n) => (
         <Marker key={`np-${n.id}`} coordinate={{ latitude: n.latitude, longitude: n.longitude }}>
-          <View style={[styles.dot, { backgroundColor: '#10B981' }]} />
+          <View style={styles.nuclearIcon}>
+            <Text style={styles.nuclearText}>☢️</Text>
+          </View>
         </Marker>
       ))}
 
@@ -127,7 +129,9 @@ const styles = StyleSheet.create({
   pulse: { position: 'absolute' },
   marker: { justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
   markerText: { color: '#FFFFFF', fontWeight: FONT_WEIGHT.bold },
-  dot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1, borderColor: '#fff' },
+  volcanoDot: { width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: '#fff' },
+  nuclearIcon: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#10B981', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#fff' },
+  nuclearText: { fontSize: 12 },
   cluster: { minWidth: 28, paddingHorizontal: 8, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#fff' },
   clusterText: { color: '#fff', fontWeight: FONT_WEIGHT.bold },
 });

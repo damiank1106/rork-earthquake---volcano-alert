@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView, BlurTint } from 'expo-blur';
-import { Mountain, Globe } from 'lucide-react-native';
+import { Mountain, MapPin, ExternalLink } from 'lucide-react-native';
 import { fetchVolcanoes } from '@/services/api';
 import { Volcano } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
+import { router } from 'expo-router';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
 
@@ -16,10 +17,25 @@ export default function VolcanoesScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255,255,255,0.8)' } } : { intensity: 80, tint: 'light' as BlurTint };
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
 
+  const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
+
+  const sections = useMemo(() => {
+    const grouped = volcanoes.reduce((acc: { [key: string]: Volcano[] }, v) => {
+      const country = v.country;
+      if (!acc[country]) acc[country] = [];
+      acc[country].push(v);
+      return acc;
+    }, {});
+    return Object.keys(grouped).sort().map(country => ({
+      title: country,
+      data: grouped[country].sort((a, b) => a.name.localeCompare(b.name)),
+    }));
+  }, [volcanoes]);
+
   if (volcanoesQuery.isLoading && volcanoes.length === 0) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}> 
-        <ActivityIndicator size="large" color={COLORS.primary[600]} />
+        <Text>Loading...</Text>
       </View>
     );
   }
@@ -31,36 +47,67 @@ export default function VolcanoesScreen() {
         <Text style={styles.subtitle}>{volcanoes.length} records</Text>
       </GlassView>
 
-      <FlatList
-        data={volcanoes}
-        keyExtractor={(i) => i.id}
-        renderItem={({ item }) => <VolcanoItem v={item} />}
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <VolcanoItem v={item} onPress={() => setSelectedVolcano(item)} />}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.sectionHeader}>{title}</Text>
+        )}
         contentContainerStyle={styles.list}
         ListEmptyComponent={<Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>No volcano data available</Text>}
       />
+
+      <Modal visible={!!selectedVolcano} animationType="fade" transparent>
+        <View style={styles.modalOverlay}>
+          <GlassView {...glassProps} style={styles.modalContent}>
+            {selectedVolcano && (
+              <>
+                <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
+                <Text style={styles.modalDetail}>Country: {selectedVolcano.country}</Text>
+                <Text style={styles.modalDetail}>Region: {selectedVolcano.region}</Text>
+                <Text style={styles.modalDetail}>Elevation: {selectedVolcano.elevation} m</Text>
+                <Text style={styles.modalDetail}>Type: {selectedVolcano.type}</Text>
+                <Text style={styles.modalDetail}>Status: {selectedVolcano.status}</Text>
+                <Text style={styles.modalDetail}>Last Eruption: {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
+                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}>Activity: {selectedVolcano.activitySummary}</Text>}
+                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}>Alert Level: {selectedVolcano.alertLevel}</Text>}
+                {selectedVolcano.vei && <Text style={styles.modalDetail}>VEI: {selectedVolcano.vei}</Text>}
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity style={styles.modalButton} onPress={() => router.push(`/map?volcanoId=${selectedVolcano.id}`)}>
+                    <MapPin size={16} color="#fff" />
+                    <Text style={styles.modalButtonText}>Show on Map</Text>
+                  </TouchableOpacity>
+                  {selectedVolcano.url && (
+                    <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => {}}>
+                      <ExternalLink size={16} color={COLORS.primary[600]} />
+                      <Text style={styles.modalButtonTextSecondary}>Official Site</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <TouchableOpacity style={styles.closeModal} onPress={() => setSelectedVolcano(null)}>
+                  <Text style={styles.closeModalText}>Close</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </GlassView>
+        </View>
+      </Modal>
     </View>
   );
 }
 
-function VolcanoItem({ v }: { v: Volcano }) {
+function VolcanoItem({ v, onPress }: { v: Volcano; onPress: () => void }) {
   return (
-    <TouchableOpacity style={styles.card} testID={`volcano-card-${v.id}`} onPress={() => {}}>
+    <TouchableOpacity style={styles.card} testID={`volcano-card-${v.id}`} onPress={onPress}>
       <View style={styles.cardHeader}>
         <Text style={styles.cardTitle} numberOfLines={1}>{v.name}</Text>
-        <Text style={styles.cardMeta}>{v.country}</Text>
+        <Text style={styles.cardMeta}>{v.region}</Text>
       </View>
-      <Text style={styles.cardSubtitle}>{v.region} • {v.type} • {v.elevation ? `${v.elevation} m` : '—'}</Text>
-      <Image
-        source={{ uri: `https://source.unsplash.com/featured/400x200/?volcano,${encodeURIComponent(v.name)}` }}
-        style={styles.image}
-      />
+      <Text style={styles.cardSubtitle}>{v.type} • {v.elevation} m • Status: {v.status}</Text>
       <View style={styles.row}>
         <Mountain size={16} color={COLORS.primary[600]} />
-        <Text style={styles.rowText}>Status: {v.status}</Text>
-      </View>
-      <View style={styles.row}>
-        <Globe size={16} color={COLORS.primary[600]} />
-        <Text style={styles.rowText}>{v.latitude.toFixed(3)}, {v.longitude.toFixed(3)}</Text>
+        <Text style={styles.rowText}>Last eruption: {v.lastEruptionDate || 'Unknown'}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -71,7 +118,8 @@ const styles = StyleSheet.create({
   header: { margin: SPACING.md, padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, ...SHADOW.md },
   title: { fontSize: FONT_SIZE.xxxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
   subtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
-  list: { padding: SPACING.md, paddingTop: 0, paddingBottom: SPACING.xl },
+  list: { padding: SPACING.md, paddingTop: 0, paddingBottom: SPACING.xxl },
+  sectionHeader: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600], marginTop: SPACING.md, marginBottom: SPACING.sm },
   card: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
   cardTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginRight: SPACING.md },
@@ -79,5 +127,15 @@ const styles = StyleSheet.create({
   cardSubtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   rowText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
-  image: { width: '100%', height: 160, borderRadius: BORDER_RADIUS.md, marginTop: SPACING.sm },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+  modalContent: { margin: SPACING.md, padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, maxWidth: 400, width: '100%', ...SHADOW.lg },
+  modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
+  modalDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: 4 },
+  modalButtons: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.md },
+  modalButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.primary[500], paddingVertical: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: BORDER_RADIUS.md },
+  modalButtonText: { color: '#fff', fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
+  modalButtonSecondary: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.surface.light, paddingVertical: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: BORDER_RADIUS.md },
+  modalButtonTextSecondary: { color: COLORS.primary[600], fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
+  closeModal: { alignSelf: 'center', marginTop: SPACING.md, padding: SPACING.sm },
+  closeModalText: { color: COLORS.primary[600], fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
 });

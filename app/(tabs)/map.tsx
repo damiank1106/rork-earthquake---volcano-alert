@@ -10,6 +10,7 @@ import { Earthquake, PlateBoundary, Volcano, NuclearPlant } from '@/types';
 import { formatTime, formatDepth, fetchPlateBoundaries, fetchVolcanoes, fetchNuclearPlants } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import NativeMap from '@/components/NativeMap';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
@@ -28,9 +29,17 @@ export default function MapScreen() {
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [showNuclear, setShowNuclear] = useState<boolean>(false);
 
+  const params = useLocalSearchParams();
+  const highlightedVolcanoId = params.volcanoId as string | undefined;
+
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: showVolcanoes });
   const nuclearQuery = useQuery({ queryKey: ['nuclear-plants'], queryFn: fetchNuclearPlants, enabled: showNuclear });
+
+  const highlightedVolcano = useMemo(() => {
+    if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
+    return volcanoesQuery.data.find(v => v.id === highlightedVolcanoId) || null;
+  }, [highlightedVolcanoId, volcanoesQuery.data]);
 
   const filteredEarthquakes = useMemo(() => {
     if (magCategory === null) return earthquakes;
@@ -110,6 +119,14 @@ export default function MapScreen() {
         <Text style={styles.panelTitle}>Filters</Text>
         <Text style={styles.panelLabel}>Magnitude category</Text>
         <View style={styles.chipsRow}>
+          <TouchableOpacity
+            key="off"
+            testID="chip-mag-off"
+            onPress={() => setMagCategory(null)}
+            style={[styles.chip, magCategory === null && styles.chipActive]}
+          >
+            <Text style={[styles.chipText, magCategory === null && styles.chipTextActive]}>Off</Text>
+          </TouchableOpacity>
           {Array.from({ length: 11 }).map((_, i) => (
             <TouchableOpacity
               key={i}
@@ -186,6 +203,18 @@ export default function MapScreen() {
         </GlassView>
       )}
 
+      {highlightedVolcano && (
+        <GlassView {...glassProps} style={styles.volcanoCard}>
+          <Text style={styles.volcanoTitle}>{highlightedVolcano.name}</Text>
+          <Text style={styles.volcanoDetail}>Country: {highlightedVolcano.country}</Text>
+          <Text style={styles.volcanoDetail}>Elevation: {highlightedVolcano.elevation} m</Text>
+          <Text style={styles.volcanoDetail}>Last Eruption: {highlightedVolcano.lastEruptionDate || 'Unknown'}</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={() => {}}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </TouchableOpacity>
+        </GlassView>
+      )}
+
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
@@ -231,6 +260,9 @@ const styles = StyleSheet.create({
   tsunamiText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.red },
   warningRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   aftershockText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.orange },
+  volcanoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 11 },
+  volcanoTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
+  volcanoDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 4 },
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', alignItems: 'center', justifyContent: 'center', zIndex: 20 },
   loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light },
 });
