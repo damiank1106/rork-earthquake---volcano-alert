@@ -116,9 +116,15 @@ export const fetchVolcanoes = async (): Promise<Volcano[]> => {
 export const fetchTsunamiAlerts = async (): Promise<TsunamiAlert[]> => {
   try {
     const url = 'https://api.weather.gov/alerts/active?event=Tsunami';
-    const response = await fetch(url, { headers: { Accept: 'application/geo+json' } });
+    const response = await fetch(url, { headers: { Accept: 'application/geo+json', 'User-Agent': 'EarthquakeApp/1.0' } });
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`Tsunami API error: ${response.status} ${response.statusText}`);
+      return [];
+    }
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('json')) {
+      console.error('Tsunami API returned non-JSON response');
+      return [];
     }
     const data = await response.json();
     const features = Array.isArray(data.features) ? data.features : [];
