@@ -61,30 +61,32 @@ export const fetchEarthquakes = async (
 
 export const fetchVolcanoes = async (): Promise<Volcano[]> => {
   try {
-    const url = 'https://raw.githubusercontent.com/datasets/volcano-global/master/data/volcano-global.json';
+    const url = 'https://raw.githubusercontent.com/opendatasoft/datasets/master/volcanoes/volcanoes.json';
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
     if (!Array.isArray(data)) return [];
-    return data.map((v: any, idx: number) => ({
-      id: v.Number?.toString() ?? String(idx),
-      name: v['Volcano Name'] ?? 'Unknown volcano',
-      latitude: Number(v.Latitude ?? 0),
-      longitude: Number(v.Longitude ?? 0),
-      country: v.Country ?? 'Unknown',
-      region: v.Region ?? 'Unknown',
-      elevation: Number(v.Elevation ?? 0),
-      type: v['Primary Volcano Type'] ?? 'Volcano',
-      status: v['Activity Evidence'] ?? 'active',
-      lastEruptionDate: v['Last Known Eruption'] ?? undefined,
-      activitySummary: undefined,
-      alertLevel: undefined,
-      vei: undefined,
-      sources: ['Smithsonian GVP'],
-      url: undefined,
-    })) as Volcano[];
+    return data
+      .filter((v: any) => v.coordinates && Array.isArray(v.coordinates) && v.coordinates.length >= 2)
+      .map((v: any, idx: number) => ({
+        id: v.number?.toString() ?? String(idx),
+        name: v.name ?? 'Unknown volcano',
+        latitude: Number(v.coordinates[1] ?? 0),
+        longitude: Number(v.coordinates[0] ?? 0),
+        country: v.country ?? 'Unknown',
+        region: v.region ?? 'Unknown',
+        elevation: Number(v.elevation ?? 0),
+        type: v.type ?? 'Volcano',
+        status: v.status ?? 'active',
+        lastEruptionDate: v.last_eruption_year ?? undefined,
+        activitySummary: undefined,
+        alertLevel: undefined,
+        vei: undefined,
+        sources: ['Smithsonian GVP'],
+        url: undefined,
+      })) as Volcano[];
   } catch (error) {
     console.error('Failed to fetch volcanoes:', error);
     return [];
