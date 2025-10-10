@@ -61,13 +61,13 @@ export const fetchEarthquakes = async (
 
 export const fetchVolcanoes = async (): Promise<Volcano[]> => {
   try {
-    const url = 'https://raw.githubusercontent.com/datasets/volcano-global/master/data/volcano.csv';
+    const url = 'https://raw.githubusercontent.com/plotly/datasets/master/volcano_db.csv';
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const text = await response.text();
-    const lines = text.split('\n').filter((l) => l.trim().length > 0);
+    const lines = text.replace(/\r/g, '').split('\n').filter((l) => l.trim().length > 0);
     const header = lines.shift();
     if (!header) return [];
     
