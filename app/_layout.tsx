@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { initDatabase } from '@/services/database';
@@ -67,17 +67,15 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<LoadingFallback />}>
-        <PreferencesProvider>
-          <LocationProvider>
-            <EarthquakesProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <RootLayoutNav />
-              </GestureHandlerRootView>
-            </EarthquakesProvider>
-          </LocationProvider>
-        </PreferencesProvider>
-      </Suspense>
+      <PreferencesProvider>
+        <LocationProvider>
+          <EarthquakesProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <RootLayoutNav />
+            </GestureHandlerRootView>
+          </EarthquakesProvider>
+        </LocationProvider>
+      </PreferencesProvider>
     </QueryClientProvider>
   );
 }

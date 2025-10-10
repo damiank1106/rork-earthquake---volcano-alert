@@ -38,7 +38,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   useEffect(() => {
     requestLocationPermission();
     loadSavedPlaces();
-  }, [requestLocationPermission]);
+  }, []);
 
   const loadSavedPlaces = async () => {
     try {
