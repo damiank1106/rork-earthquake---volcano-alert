@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
 import MapView, { Marker, Polyline, Circle } from 'react-native-maps';
 import { getMagnitudeColor, FONT_WEIGHT } from '@/constants/theme';
@@ -19,8 +19,14 @@ interface NativeMapProps {
   clusteringEnabled?: boolean;
 }
 
-export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true }: NativeMapProps) {
+const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true }, ref) {
   const mapRef = useRef<any>(null);
+
+  useImperativeHandle(ref, () => ({
+    animateToRegion: (region: any, duration?: number) => {
+      mapRef.current?.animateToRegion(region, duration);
+    },
+  }));
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -121,7 +127,9 @@ export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, 
       })}
     </MapView>
   );
-}
+});
+
+export default NativeMap;
 
 const styles = StyleSheet.create({
   map: { flex: 1 },

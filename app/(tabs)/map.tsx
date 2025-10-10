@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RefreshCw, AlertTriangle, SlidersHorizontal } from 'lucide-react-native';
@@ -10,7 +10,7 @@ import { Earthquake, PlateBoundary, Volcano, NuclearPlant } from '@/types';
 import { formatTime, formatDepth, fetchPlateBoundaries, fetchVolcanoes, fetchNuclearPlants } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useQuery } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import NativeMap from '@/components/NativeMap';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
@@ -25,15 +25,17 @@ export default function MapScreen() {
 
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [magCategory, setMagCategory] = useState<number | null>(null);
+  const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [showNuclear, setShowNuclear] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
+  const mapRef = useRef<any>(null);
 
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
-  const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: showVolcanoes });
+  const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
   const nuclearQuery = useQuery({ queryKey: ['nuclear-plants'], queryFn: fetchNuclearPlants, enabled: showNuclear });
 
   const highlightedVolcano = useMemo(() => {
@@ -41,12 +43,26 @@ export default function MapScreen() {
     return volcanoesQuery.data.find(v => v.id === highlightedVolcanoId) || null;
   }, [highlightedVolcanoId, volcanoesQuery.data]);
 
+  useEffect(() => {
+    if (highlightedVolcano && mapRef.current) {
+      setTimeout(() => {
+        mapRef.current?.animateToRegion({
+          latitude: highlightedVolcano.latitude,
+          longitude: highlightedVolcano.longitude,
+          latitudeDelta: 2,
+          longitudeDelta: 2,
+        }, 1000);
+      }, 300);
+    }
+  }, [highlightedVolcano]);
+
   const filteredEarthquakes = useMemo(() => {
+    if (magFilterOff) return [];
     if (magCategory === null) return earthquakes;
     const min = magCategory;
     const max = magCategory + 1;
     return earthquakes.filter((e) => e.magnitude >= min && e.magnitude < max);
-  }, [earthquakes, magCategory]);
+  }, [earthquakes, magCategory, magFilterOff]);
 
   const panelAnim = useRef(new Animated.Value(0)).current;
   const togglePanel = () => {
@@ -75,6 +91,7 @@ export default function MapScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <NativeMap
+        ref={mapRef}
         earthquakes={filteredEarthquakes}
         selectedMarker={selectedMarker}
         onMarkerPress={handleMarkerPress}
@@ -122,19 +139,25 @@ export default function MapScreen() {
           <TouchableOpacity
             key="off"
             testID="chip-mag-off"
-            onPress={() => setMagCategory(null)}
-            style={[styles.chip, magCategory === null && styles.chipActive]}
+            onPress={() => {
+              setMagFilterOff(!magFilterOff);
+              if (!magFilterOff) setMagCategory(null);
+            }}
+            style={[styles.chip, magFilterOff && styles.chipActive]}
           >
-            <Text style={[styles.chipText, magCategory === null && styles.chipTextActive]}>Off</Text>
+            <Text style={[styles.chipText, magFilterOff && styles.chipTextActive]}>Off</Text>
           </TouchableOpacity>
           {Array.from({ length: 11 }).map((_, i) => (
             <TouchableOpacity
               key={i}
               testID={`chip-mag-${i}`}
-              onPress={() => setMagCategory(i === magCategory ? null : i)}
-              style={[styles.chip, magCategory === i && styles.chipActive]}
+              onPress={() => {
+                setMagFilterOff(false);
+                setMagCategory(i === magCategory ? null : i);
+              }}
+              style={[styles.chip, magCategory === i && !magFilterOff && styles.chipActive]}
             >
-              <Text style={[styles.chipText, magCategory === i && styles.chipTextActive]}>{i}</Text>
+              <Text style={[styles.chipText, magCategory === i && !magFilterOff && styles.chipTextActive]}>{i}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -205,13 +228,15 @@ export default function MapScreen() {
 
       {highlightedVolcano && (
         <GlassView {...glassProps} style={styles.volcanoCard}>
-          <Text style={styles.volcanoTitle}>{highlightedVolcano.name}</Text>
+          <View style={styles.volcanoHeader}>
+            <Text style={styles.volcanoTitle}>{highlightedVolcano.name}</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={() => router.push('/map')} testID="btn-close-volcano">
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.volcanoDetail}>Country: {highlightedVolcano.country}</Text>
           <Text style={styles.volcanoDetail}>Elevation: {highlightedVolcano.elevation} m</Text>
           <Text style={styles.volcanoDetail}>Last Eruption: {highlightedVolcano.lastEruptionDate || 'Unknown'}</Text>
-          <TouchableOpacity style={styles.closeButton} onPress={() => {}}>
-            <Text style={styles.closeButtonText}>✕</Text>
-          </TouchableOpacity>
         </GlassView>
       )}
 
@@ -261,7 +286,8 @@ const styles = StyleSheet.create({
   warningRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   aftershockText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.orange },
   volcanoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 11 },
-  volcanoTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
+  volcanoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.xs },
+  volcanoTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
   volcanoDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 4 },
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', alignItems: 'center', justifyContent: 'center', zIndex: 20 },
   loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light },

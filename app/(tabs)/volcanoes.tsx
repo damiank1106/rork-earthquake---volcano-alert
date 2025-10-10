@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
-import { Mountain, MapPin, ExternalLink } from 'lucide-react-native';
+import { Mountain, MapPin } from 'lucide-react-native';
 import { fetchVolcanoes } from '@/services/api';
 import { Volcano } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
@@ -65,31 +65,26 @@ export default function VolcanoesScreen() {
       <Modal visible={!!selectedVolcano} animationType="fade" transparent>
         <View style={styles.modalOverlay}>
           {Platform.OS === 'web' ? (
-            <View style={[styles.modalContent, { backgroundColor: 'rgba(255,255,255,0.8)' }]}>
+            <View style={[styles.modalContent, { backgroundColor: 'rgba(255,255,255,0.95)' }]}>
             {selectedVolcano && (
               <>
                 <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
-                <Text style={styles.modalDetail}>Country: {selectedVolcano.country}</Text>
-                <Text style={styles.modalDetail}>Region: {selectedVolcano.region}</Text>
-                <Text style={styles.modalDetail}>Elevation: {selectedVolcano.elevation} m</Text>
-                <Text style={styles.modalDetail}>Type: {selectedVolcano.type}</Text>
-                <Text style={styles.modalDetail}>Status: {selectedVolcano.status}</Text>
-                <Text style={styles.modalDetail}>Last Eruption: {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
-                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}>Activity: {selectedVolcano.activitySummary}</Text>}
-                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}>Alert Level: {selectedVolcano.alertLevel}</Text>}
-                {selectedVolcano.vei && <Text style={styles.modalDetail}>VEI: {selectedVolcano.vei}</Text>}
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity style={styles.modalButton} onPress={() => router.push(`/map?volcanoId=${selectedVolcano.id}`)}>
-                    <MapPin size={16} color="#fff" />
-                    <Text style={styles.modalButtonText}>Show on Map</Text>
-                  </TouchableOpacity>
-                  {selectedVolcano.url && (
-                    <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => {}}>
-                      <ExternalLink size={16} color={COLORS.primary[600]} />
-                      <Text style={styles.modalButtonTextSecondary}>Official Site</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Country:</Text> {selectedVolcano.country}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Region:</Text> {selectedVolcano.region}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Elevation:</Text> {selectedVolcano.elevation} m</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Type:</Text> {selectedVolcano.type}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Status:</Text> {selectedVolcano.status}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Last Eruption:</Text> {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
+                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Activity:</Text> {selectedVolcano.activitySummary}</Text>}
+                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Alert Level:</Text> {selectedVolcano.alertLevel}</Text>}
+                {selectedVolcano.vei && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>VEI:</Text> {selectedVolcano.vei}</Text>}
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                  setSelectedVolcano(null);
+                  router.push(`/map?volcanoId=${selectedVolcano.id}`);
+                }}>
+                  <MapPin size={16} color="#fff" />
+                  <Text style={styles.modalButtonText}>Show on Map</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.closeModal} onPress={() => setSelectedVolcano(null)}>
                   <Text style={styles.closeModalText}>Close</Text>
                 </TouchableOpacity>
@@ -101,27 +96,22 @@ export default function VolcanoesScreen() {
             {selectedVolcano && (
               <>
                 <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
-                <Text style={styles.modalDetail}>Country: {selectedVolcano.country}</Text>
-                <Text style={styles.modalDetail}>Region: {selectedVolcano.region}</Text>
-                <Text style={styles.modalDetail}>Elevation: {selectedVolcano.elevation} m</Text>
-                <Text style={styles.modalDetail}>Type: {selectedVolcano.type}</Text>
-                <Text style={styles.modalDetail}>Status: {selectedVolcano.status}</Text>
-                <Text style={styles.modalDetail}>Last Eruption: {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
-                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}>Activity: {selectedVolcano.activitySummary}</Text>}
-                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}>Alert Level: {selectedVolcano.alertLevel}</Text>}
-                {selectedVolcano.vei && <Text style={styles.modalDetail}>VEI: {selectedVolcano.vei}</Text>}
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity style={styles.modalButton} onPress={() => router.push(`/map?volcanoId=${selectedVolcano.id}`)}>
-                    <MapPin size={16} color="#fff" />
-                    <Text style={styles.modalButtonText}>Show on Map</Text>
-                  </TouchableOpacity>
-                  {selectedVolcano.url && (
-                    <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => {}}>
-                      <ExternalLink size={16} color={COLORS.primary[600]} />
-                      <Text style={styles.modalButtonTextSecondary}>Official Site</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Country:</Text> {selectedVolcano.country}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Region:</Text> {selectedVolcano.region}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Elevation:</Text> {selectedVolcano.elevation} m</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Type:</Text> {selectedVolcano.type}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Status:</Text> {selectedVolcano.status}</Text>
+                <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Last Eruption:</Text> {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
+                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Activity:</Text> {selectedVolcano.activitySummary}</Text>}
+                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Alert Level:</Text> {selectedVolcano.alertLevel}</Text>}
+                {selectedVolcano.vei && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>VEI:</Text> {selectedVolcano.vei}</Text>}
+                <TouchableOpacity style={styles.modalButton} onPress={() => {
+                  setSelectedVolcano(null);
+                  router.push(`/map?volcanoId=${selectedVolcano.id}`);
+                }}>
+                  <MapPin size={16} color="#fff" />
+                  <Text style={styles.modalButtonText}>Show on Map</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.closeModal} onPress={() => setSelectedVolcano(null)}>
                   <Text style={styles.closeModalText}>Close</Text>
                 </TouchableOpacity>
@@ -166,14 +156,12 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   rowText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { margin: SPACING.md, padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, maxWidth: 400, width: '100%', ...SHADOW.lg },
-  modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
-  modalDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: 4 },
-  modalButtons: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.md },
-  modalButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.primary[500], paddingVertical: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: BORDER_RADIUS.md },
-  modalButtonText: { color: '#fff', fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
-  modalButtonSecondary: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.surface.light, paddingVertical: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: BORDER_RADIUS.md },
-  modalButtonTextSecondary: { color: COLORS.primary[600], fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
-  closeModal: { alignSelf: 'center', marginTop: SPACING.md, padding: SPACING.sm },
-  closeModalText: { color: COLORS.primary[600], fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold },
+  modalContent: { margin: SPACING.md, padding: SPACING.lg, borderRadius: BORDER_RADIUS.lg, maxWidth: 400, width: '90%', ...SHADOW.lg },
+  modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#000000', marginBottom: SPACING.md },
+  modalLabel: { fontWeight: FONT_WEIGHT.bold, color: '#000000' },
+  modalDetail: { fontSize: FONT_SIZE.md, color: '#000000', marginBottom: SPACING.xs },
+  modalButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.primary[500], paddingVertical: SPACING.sm, paddingHorizontal: SPACING.md, borderRadius: BORDER_RADIUS.md, marginTop: SPACING.md },
+  modalButtonText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
+  closeModal: { alignSelf: 'center', marginTop: SPACING.sm, padding: SPACING.sm },
+  closeModalText: { color: COLORS.primary[600], fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
 });
