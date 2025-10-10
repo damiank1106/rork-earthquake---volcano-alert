@@ -26,21 +26,25 @@ export const [EarthquakesProvider, useEarthquakes] = createContextHook(() => {
       }
     },
     refetchInterval: preferences.pollingFrequency,
-    staleTime: 60000,
   });
 
   const earthquakes = useMemo(() => {
     return earthquakesQuery.data || [];
   }, [earthquakesQuery.data]);
 
+  const filteredEarthquakes = useMemo(() => {
+    if (!preferences.earthquakesEnabled) return [];
+    return earthquakes;
+  }, [earthquakes, preferences.earthquakesEnabled]);
+
   const significantEarthquakes = useMemo(() => {
-    return earthquakes.filter((eq) => eq.sig >= 600 || eq.magnitude >= 5.5);
-  }, [earthquakes]);
+    return filteredEarthquakes.filter((eq) => eq.sig >= 600 || eq.magnitude >= 5.5);
+  }, [filteredEarthquakes]);
 
   const recentEarthquakes = useMemo(() => {
     const oneHourAgo = Date.now() - 3600000;
-    return earthquakes.filter((eq) => eq.time >= oneHourAgo);
-  }, [earthquakes]);
+    return filteredEarthquakes.filter((eq) => eq.time >= oneHourAgo);
+  }, [filteredEarthquakes]);
 
   const { refetch: queryRefetch } = earthquakesQuery;
 
@@ -54,7 +58,7 @@ export const [EarthquakesProvider, useEarthquakes] = createContextHook(() => {
 
   return useMemo(
     () => ({
-      earthquakes,
+      earthquakes: filteredEarthquakes,
       significantEarthquakes,
       recentEarthquakes,
       selectedEarthquake,
@@ -66,7 +70,7 @@ export const [EarthquakesProvider, useEarthquakes] = createContextHook(() => {
       lastUpdated,
     }),
     [
-      earthquakes,
+      filteredEarthquakes,
       significantEarthquakes,
       recentEarthquakes,
       selectedEarthquake,

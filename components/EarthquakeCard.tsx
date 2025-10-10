@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { BlurView, BlurTint } from 'expo-blur';
-import { MapPin, Clock, Layers } from 'lucide-react-native';
+import { MapPin, Clock, Layers, AlertTriangle } from 'lucide-react-native';
 import { Earthquake } from '@/types';
-import { getMagnitudeColor, COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
+import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { formatTime, formatDepth, calculateDistance } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
@@ -29,6 +29,8 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
         earthquake.longitude
       )
     : null;
+
+  const hasAftershockRisk = earthquake.magnitude > 5.5;
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
@@ -75,9 +77,20 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
           )}
         </View>
 
-        {earthquake.tsunami && (
-          <View style={styles.tsunamiWarning}>
-            <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
+        {(earthquake.tsunami || hasAftershockRisk) && (
+          <View style={styles.warnings}>
+            {earthquake.tsunami && (
+              <View style={styles.warningItem}>
+                <AlertTriangle size={16} color={COLORS.alert.red} />
+                <Text style={styles.tsunamiText}>Tsunami Warning</Text>
+              </View>
+            )}
+            {hasAftershockRisk && (
+              <View style={styles.warningItem}>
+                <AlertTriangle size={16} color={COLORS.alert.orange} />
+                <Text style={styles.aftershockText}>Aftershock Risk</Text>
+              </View>
+            )}
           </View>
         )}
       </TouchableOpacity>
@@ -88,8 +101,8 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
-    borderRadius: BORDER_RADIUS.lg,
+    marginVertical: SPACING.xs,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   cardTouchable: {
@@ -98,15 +111,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
   },
   magnitudeBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: BORDER_RADIUS.md,
-    justifyContent: 'center',
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     alignItems: 'center',
-    marginRight: SPACING.md,
+    justifyContent: 'center',
   },
   magnitudeText: {
     fontSize: FONT_SIZE.xl,
@@ -132,9 +144,8 @@ const styles = StyleSheet.create({
     color: COLORS.text.secondary.light,
   },
   details: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
+    marginTop: SPACING.sm,
+    gap: SPACING.xs,
   },
   detailItem: {
     flexDirection: 'row',
@@ -145,17 +156,23 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     color: COLORS.text.secondary.light,
   },
-  tsunamiWarning: {
-    marginTop: SPACING.sm,
-    padding: SPACING.sm,
-    backgroundColor: COLORS.alert.red + '20',
-    borderRadius: BORDER_RADIUS.sm,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.alert.red,
-  },
   tsunamiText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semibold,
     color: COLORS.alert.red,
+  },
+  warnings: {
+    marginTop: SPACING.sm,
+    gap: SPACING.xs,
+  },
+  warningItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  aftershockText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.alert.orange,
   },
 });

@@ -1,59 +1,25 @@
-import { Earthquake, EarthquakeAPIResponse } from '@/types';
+import { Earthquake } from '@/types';
 
 const USGS_BASE_URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary';
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function fetchWithRetry<T>(
-  url: string,
-  options: RequestInit = {},
-  maxRetries = 3
-): Promise<T> {
-  let lastError: Error | null = null;
-
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      console.log(`Fetching: ${url} (attempt ${i + 1}/${maxRetries})`);
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          'Accept': 'application/json',
-          ...options.headers,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data as T;
-    } catch (error) {
-      lastError = error as Error;
-      console.error(`Fetch attempt ${i + 1} failed:`, error);
-
-      if (i < maxRetries - 1) {
-        const backoffMs = Math.min(1000 * Math.pow(2, i), 10000);
-        console.log(`Retrying in ${backoffMs}ms...`);
-        await sleep(backoffMs);
-      }
-    }
-  }
-
-  throw lastError || new Error('Failed to fetch data');
-}
+type TimeRange = 'hour' | 'day' | 'week' | 'month';
+type MagnitudeRange = 'significant' | 'all' | '4.5' | '2.5' | '1.0';
 
 export const fetchEarthquakes = async (
-  timeWindow: 'hour' | 'day' | 'week' | 'month' = 'day',
-  minMagnitude: 'all' | 'significant' | '4.5' | '2.5' | '1.0' = 'all'
+  timeRange: TimeRange,
+  magnitudeRange: MagnitudeRange
 ): Promise<Earthquake[]> => {
+  const url = `${USGS_BASE_URL}/${magnitudeRange}_${timeRange}.geojson`;
+
   try {
-    const endpoint = `${USGS_BASE_URL}/${minMagnitude}_${timeWindow}.geojson`;
-    const response = await fetchWithRetry<EarthquakeAPIResponse>(endpoint);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    console.log(`Fetched ${response.features.length} earthquakes from USGS`);
+    const data = await response.json();
 
-    return response.features.map((feature) => ({
+    return data.features.map((feature: any) => ({
       id: feature.id,
       time: feature.properties.time,
       latitude: feature.geometry.coordinates[1],
@@ -81,9 +47,9 @@ export const fetchEarthquakes = async (
       dmin: feature.properties.dmin,
       rms: feature.properties.rms,
       gap: feature.properties.gap,
-      magError: undefined,
-      depthError: undefined,
-      horizontalError: undefined,
+      magError: feature.properties.magError,
+      depthError: feature.properties.depthError,
+      horizontalError: feature.properties.horizontalError,
       locationSource: feature.properties.net,
       magSource: feature.properties.net,
     }));
@@ -91,6 +57,49 @@ export const fetchEarthquakes = async (
     console.error('Failed to fetch earthquakes:', error);
     throw error;
   }
+};
+
+export const fetchVolcanoes = async (): Promise<any[]> => {
+  console.log('Volcano fetching not implemented yet');
+  return [];
+};
+
+export const formatTime = (timestamp: number, format: '12h' | '24h'): string => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) {
+    return 'Just now';
+  } else if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  } else if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  } else if (diffDays < 7) {
+    return `${diffDays}d ago`;
+  }
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  if (format === '12h') {
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${date.toLocaleDateString()} ${displayHours}:${minutes} ${period}`;
+  }
+
+  return `${date.toLocaleDateString()} ${hours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+export const formatDepth = (depth: number, units: 'metric' | 'imperial'): string => {
+  if (units === 'imperial') {
+    const miles = depth * 0.621371;
+    return `${miles.toFixed(1)} mi`;
+  }
+  return `${depth.toFixed(1)} km`;
 };
 
 export const calculateDistance = (
@@ -110,71 +119,4 @@ export const calculateDistance = (
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-};
-
-export const formatDistance = (km: number, units: 'metric' | 'imperial'): string => {
-  if (units === 'imperial') {
-    const miles = km * 0.621371;
-    return `${miles.toFixed(1)} mi`;
-  }
-  return `${km.toFixed(1)} km`;
-};
-
-export const formatDepth = (km: number, units: 'metric' | 'imperial'): string => {
-  if (units === 'imperial') {
-    const miles = km * 0.621371;
-    return `${miles.toFixed(1)} mi`;
-  }
-  return `${km.toFixed(1)} km`;
-};
-
-export const formatTime = (
-  timestamp: number,
-  format: '12h' | '24h' = '12h'
-): string => {
-  const date = new Date(timestamp);
-  const now = Date.now();
-  const diff = now - timestamp;
-
-  if (diff < 60000) {
-    return 'Just now';
-  } else if (diff < 3600000) {
-    const minutes = Math.floor(diff / 60000);
-    return `${minutes}m ago`;
-  } else if (diff < 86400000) {
-    const hours = Math.floor(diff / 3600000);
-    return `${hours}h ago`;
-  } else if (diff < 604800000) {
-    const days = Math.floor(diff / 86400000);
-    return `${days}d ago`;
-  }
-
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: format === '12h',
-  };
-
-  return date.toLocaleString('en-US', options);
-};
-
-export const formatFullTime = (
-  timestamp: number,
-  format: '12h' | '24h' = '12h'
-): string => {
-  const date = new Date(timestamp);
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: format === '12h',
-    timeZoneName: 'short',
-  };
-
-  return date.toLocaleString('en-US', options);
 };
