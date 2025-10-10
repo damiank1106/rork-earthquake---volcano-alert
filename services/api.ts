@@ -1,9 +1,9 @@
-import { Earthquake } from '@/types';
+import { Earthquake, Volcano, TsunamiAlert, PlateBoundary, NuclearPlant } from '@/types';
 
 const USGS_BASE_URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary';
 
-type TimeRange = 'hour' | 'day' | 'week' | 'month';
-type MagnitudeRange = 'significant' | 'all' | '4.5' | '2.5' | '1.0';
+export type TimeRange = 'hour' | 'day' | 'week' | 'month';
+export type MagnitudeRange = 'significant' | 'all' | '4.5' | '2.5' | '1.0';
 
 export const fetchEarthquakes = async (
   timeRange: TimeRange,
@@ -59,9 +59,124 @@ export const fetchEarthquakes = async (
   }
 };
 
-export const fetchVolcanoes = async (): Promise<any[]> => {
-  console.log('Volcano fetching not implemented yet');
-  return [];
+export const fetchVolcanoes = async (): Promise<Volcano[]> => {
+  try {
+    const url = 'https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/volcanoes.json';
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!data || !Array.isArray(data.features)) return [];
+    return data.features.map((f: any, idx: number) => ({
+      id: f.id?.toString() ?? String(idx),
+      name: f.properties?.name ?? 'Unknown volcano',
+      latitude: f.geometry?.coordinates?.[1] ?? 0,
+      longitude: f.geometry?.coordinates?.[0] ?? 0,
+      country: f.properties?.country ?? 'Unknown',
+      region: f.properties?.region ?? 'Unknown',
+      elevation: Number(f.properties?.elevation ?? 0),
+      type: f.properties?.type ?? 'Volcano',
+      status: f.properties?.status ?? 'active',
+      lastEruptionDate: f.properties?.last_eruption ?? undefined,
+      activitySummary: undefined,
+      alertLevel: undefined,
+      vei: undefined,
+      sources: ['Smithsonian GVP (community mirror)'],
+      url: f.properties?.link ?? undefined,
+    })) as Volcano[];
+  } catch (error) {
+    console.error('Failed to fetch volcanoes:', error);
+    return [];
+  }
+};
+
+export const fetchTsunamiAlerts = async (): Promise<TsunamiAlert[]> => {
+  try {
+    const url = 'https://api.weather.gov/alerts/active?event=Tsunami';
+    const response = await fetch(url, { headers: { Accept: 'application/geo+json' } });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const features = Array.isArray(data.features) ? data.features : [];
+    return features.map((f: any, idx: number) => {
+      const props = f.properties ?? {};
+      const geom = f.geometry ?? null;
+      return {
+        id: f.id?.toString() ?? String(idx),
+        title: props.headline ?? props.event ?? 'Tsunami Alert',
+        areaDescription: props.areaDesc ?? '',
+        description: props.description ?? props.instruction ?? '',
+        sent: props.sent ?? props.effective ?? props.onset ?? null,
+        ends: props.ends ?? null,
+        severity: props.severity ?? 'Unknown',
+        certainty: props.certainty ?? 'Unknown',
+        urgency: props.urgency ?? 'Unknown',
+        event: props.event ?? 'Tsunami',
+        geometry: geom,
+      } as TsunamiAlert;
+    });
+  } catch (error) {
+    console.error('Failed to fetch tsunami alerts:', error);
+    return [];
+  }
+};
+
+export const fetchPlateBoundaries = async (): Promise<PlateBoundary[]> => {
+  try {
+    const url = 'https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const features = data.features ?? [];
+    return features.map((f: any, i: number) => ({
+      id: f.id?.toString() ?? String(i),
+      coordinates: f.geometry?.coordinates ?? [],
+      name: f.properties?.Name ?? 'Boundary',
+      type: f.properties?.Type ?? 'Boundary',
+    })) as PlateBoundary[];
+  } catch (e) {
+    console.error('Failed to fetch plate boundaries', e);
+    return [];
+  }
+};
+
+export const fetchNuclearPlants = async (): Promise<NuclearPlant[]> => {
+  try {
+    const url = 'https://raw.githubusercontent.com/plotly/datasets/master/nuclear_power_plants.csv';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const lines = text.split('\n').filter((l) => l.trim().length > 0);
+    const header = lines.shift();
+    if (!header) return [];
+    const cols = header.split(',');
+    const latIdx = cols.findIndex((c) => /lat/i.test(c));
+    const lonIdx = cols.findIndex((c) => /lon/i.test(c));
+    const nameIdx = cols.findIndex((c) => /name/i.test(c));
+    const countryIdx = cols.findIndex((c) => /country/i.test(c));
+
+    const plants: NuclearPlant[] = [];
+    lines.forEach((line, idx) => {
+      const parts = line.split(',');
+      const lat = Number(parts[latIdx] ?? 0);
+      const lon = Number(parts[lonIdx] ?? 0);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        plants.push({
+          id: String(idx),
+          name: (parts[nameIdx] ?? 'Nuclear Plant').trim(),
+          country: (parts[countryIdx] ?? 'Unknown').trim(),
+          latitude: lat,
+          longitude: lon,
+        });
+      }
+    });
+    return plants;
+  } catch (e) {
+    console.error('Failed to fetch nuclear plants', e);
+    return [];
+  }
 };
 
 export const formatTime = (timestamp: number, format: '12h' | '24h'): string => {

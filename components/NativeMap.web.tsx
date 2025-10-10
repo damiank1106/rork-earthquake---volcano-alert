@@ -1,20 +1,26 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Earthquake } from '@/types';
+import { Earthquake, PlateBoundary, Volcano, NuclearPlant } from '@/types';
 
 interface NativeMapProps {
   earthquakes: Earthquake[];
   selectedMarker: Earthquake | null;
   onMarkerPress: (earthquake: Earthquake) => void;
   userLocation: { latitude: number; longitude: number } | null;
+  plateBoundaries?: PlateBoundary[];
+  volcanoes?: Volcano[];
+  nuclearPlants?: NuclearPlant[];
+  showPlateBoundaries?: boolean;
+  showVolcanoes?: boolean;
+  showNuclearPlants?: boolean;
+  heatmapEnabled?: boolean;
+  clusteringEnabled?: boolean;
 }
 
-export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation }: NativeMapProps) {
-  return <View style={styles.map} />;
+export default function NativeMap({}: NativeMapProps) {
+  return <View style={styles.map} testID="web-map-placeholder" />;
 }
 
 const styles = StyleSheet.create({
-  map: {
-    flex: 1,
-  },
+  map: { flex: 1 },
 });

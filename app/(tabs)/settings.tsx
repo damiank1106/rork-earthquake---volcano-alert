@@ -110,7 +110,7 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <SettingToggle
             title="Volcanoes"
-            subtitle="Show volcano data (coming soon)"
+            subtitle="Show volcano data"
             value={preferences.volcanoesEnabled}
             onValueChange={(value) => updatePreferences({ volcanoesEnabled: value })}
           />
@@ -129,7 +129,7 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <SettingToggle
             title="Heatmap"
-            subtitle="Show intensity heatmap (coming soon)"
+            subtitle="Show intensity heatmap"
             value={preferences.heatmapEnabled}
             onValueChange={(value) => updatePreferences({ heatmapEnabled: value })}
           />
@@ -158,13 +158,13 @@ export default function SettingsScreen() {
       <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.card}>
-          <SettingRow title="Data Sources" subtitle="USGS, Smithsonian GVP" showChevron={false} />
+          <SettingRow title="Data Sources" subtitle="USGS, NOAA/NWS Alerts, Smithsonian GVP, Tectonic Plates (PB2002), Nuclear Plants (Plotly dataset)" showChevron={false} />
           <View style={styles.divider} />
           <SettingRow title="Version" subtitle="1.0.0" showChevron={false} />
           <View style={styles.divider} />
-          <SettingRow title="Privacy Policy" onPress={() => {}} />
+          <SettingRow title="Privacy Policy" subtitle="We collect no personal data. Location permission is used only to center the map. See full policy on our website." showChevron={false} />
           <View style={styles.divider} />
-          <SettingRow title="Terms of Use" onPress={() => {}} />
+          <SettingRow title="Terms of Use" subtitle="Information only. No warranty. Always follow official guidance. Data provided by listed sources." showChevron={false} />
         </View>
       </GlassView>
 

@@ -211,3 +211,32 @@ export interface EducationContent {
   magnitudeScale: MagnitudeInfo[];
   safetyGuides: SafetyGuide[];
 }
+
+export interface TsunamiAlert {
+  id: string;
+  title: string;
+  areaDescription: string;
+  description: string;
+  sent: string | null;
+  ends: string | null;
+  severity: string;
+  certainty: string;
+  urgency: string;
+  event: string;
+  geometry: any;
+}
+
+export interface PlateBoundary {
+  id: string;
+  name: string;
+  type: string;
+  coordinates: any[];
+}
+
+export interface NuclearPlant {
+  id: string;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}

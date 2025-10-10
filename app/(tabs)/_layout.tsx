@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Map, List, BookOpen, Settings } from 'lucide-react-native';
+import { Map, List, BookOpen, Settings, Waves, Flame } from 'lucide-react-native';
 import React from 'react';
 import { COLORS } from '@/constants/theme';
 
@@ -28,6 +28,20 @@ export default function TabLayout() {
         options={{
           title: 'Events',
           tabBarIcon: ({ color, size }) => <List color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="tsunami"
+        options={{
+          title: 'Tsunami',
+          tabBarIcon: ({ color, size }) => <Waves color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="volcanoes"
+        options={{
+          title: 'Volcanoes',
+          tabBarIcon: ({ color, size }) => <Flame color={color} size={size} />,
         }}
       />
       <Tabs.Screen
