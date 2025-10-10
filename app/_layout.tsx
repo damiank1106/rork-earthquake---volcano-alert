@@ -14,8 +14,10 @@ const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   return (
-    <Stack screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerBackTitle: "Back", animation: 'fade' }}>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
     </Stack>
   );
 }

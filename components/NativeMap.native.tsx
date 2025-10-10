@@ -32,6 +32,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   }));
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const volcanoPulseAnim = useRef(new Animated.Value(1)).current;
+  const volcanoPulseOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
@@ -40,14 +41,24 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
       ])
     ).start();
+  }, [pulseAnim]);
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(volcanoPulseAnim, { toValue: 1.5, duration: 1200, useNativeDriver: true }),
-        Animated.timing(volcanoPulseAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
-      ])
-    ).start();
-  }, [pulseAnim, volcanoPulseAnim]);
+  useEffect(() => {
+    if (highlightedVolcanoId) {
+      Animated.loop(
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(volcanoPulseAnim, { toValue: 1.8, duration: 1000, useNativeDriver: true }),
+            Animated.timing(volcanoPulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+          ]),
+          Animated.sequence([
+            Animated.timing(volcanoPulseOpacity, { toValue: 0.3, duration: 1000, useNativeDriver: true }),
+            Animated.timing(volcanoPulseOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
+          ]),
+        ])
+      ).start();
+    }
+  }, [highlightedVolcanoId, volcanoPulseAnim, volcanoPulseOpacity]);
 
   useEffect(() => {
     if (selectedMarker && mapRef.current) {
@@ -101,11 +112,12 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
                     styles.volcanoPulse,
                     {
                       transform: [{ scale: volcanoPulseAnim }],
+                      opacity: volcanoPulseOpacity,
                     },
                   ]}
                 />
               )}
-              <View style={[styles.volcanoDot, { backgroundColor: '#DC2626' }]} />
+              <View style={[styles.volcanoDot, { backgroundColor: isHighlighted ? '#DC2626' : '#EF4444' }]} />
             </View>
           </Marker>
         );
@@ -164,8 +176,8 @@ const styles = StyleSheet.create({
   marker: { justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
   markerText: { color: '#FFFFFF', fontWeight: FONT_WEIGHT.bold },
   volcanoContainer: { alignItems: 'center', justifyContent: 'center' },
-  volcanoPulse: { position: 'absolute', width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.4)', borderWidth: 2, borderColor: 'rgba(220, 38, 38, 0.6)' },
-  volcanoDot: { width: 20, height: 20, borderRadius: 10, borderWidth: 3, borderColor: '#fff' },
+  volcanoPulse: { position: 'absolute', width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(220, 38, 38, 0.5)', borderWidth: 3, borderColor: 'rgba(220, 38, 38, 0.8)' },
+  volcanoDot: { width: 24, height: 24, borderRadius: 12, borderWidth: 3, borderColor: '#fff' },
   nuclearIcon: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#10B981', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#fff' },
   nuclearText: { fontSize: 12 },
   cluster: { minWidth: 28, paddingHorizontal: 8, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#fff' },

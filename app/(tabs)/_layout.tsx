@@ -10,6 +10,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: COLORS.primary[500],
         tabBarInactiveTintColor: COLORS.text.secondary.light,
         headerShown: false,
+        animation: 'fade',
         tabBarStyle: {
           backgroundColor: COLORS.surface.light + 'F0',
           borderTopColor: COLORS.border.light,
