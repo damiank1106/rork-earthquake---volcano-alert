@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView, BlurTint } from 'expo-blur';
-import { ChevronRight, Info } from 'lucide-react-native';
+import { ChevronRight, Info, RotateCw } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
+import { router } from 'expo-router';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
 
@@ -273,6 +274,23 @@ export default function SettingsScreen() {
         </GlassView>
 
         <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>App</Text>
+          <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => router.push('/welcome')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>Reload Welcome Page</Text>
+                <Text style={styles.settingSubtitle}>View the welcome screen again</Text>
+              </View>
+              <RotateCw size={20} color={COLORS.text.secondary.light} />
+            </TouchableOpacity>
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
           <View style={styles.card}>
             <SettingRow title="Data Sources" subtitle="Automatically updated from USGS, NOAA/NWS, PHIVOLCS, Smithsonian GVP, PB2002, and other trusted sources" showChevron={false} />
@@ -295,14 +313,14 @@ export default function SettingsScreen() {
       </ScrollView>
 
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View style={[styles.modalContainer, { paddingTop: insets.top }]}>
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>{modalContent.title}</Text>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={styles.closeText}>Close</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView style={styles.modalScroll}>
+          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
             <Text style={styles.modalText}>{modalContent.content}</Text>
           </ScrollView>
         </View>
@@ -331,6 +349,7 @@ const styles = StyleSheet.create({
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border.light },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
   closeText: { fontSize: FONT_SIZE.md, color: COLORS.primary[600] },
-  modalScroll: { flex: 1, padding: SPACING.md },
-  modalText: { fontSize: FONT_SIZE.sm, color: COLORS.text.primary.light, lineHeight: 20 },
+  modalScroll: { flex: 1 },
+  modalScrollContent: { padding: SPACING.md, paddingBottom: SPACING.xxl },
+  modalText: { fontSize: FONT_SIZE.sm, color: COLORS.text.primary.light, lineHeight: 22 },
 });

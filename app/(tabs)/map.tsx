@@ -24,7 +24,7 @@ export default function MapScreen() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
-  const [magCategory, setMagCategory] = useState<number | null>(null);
+  const [magCategory, setMagCategory] = useState<number | null | 'all'>(null);
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
@@ -59,12 +59,10 @@ export default function MapScreen() {
   const filteredEarthquakes = useMemo(() => {
     if (magFilterOff) return [];
     if (magCategory === null) return earthquakes;
+    if (magCategory === 'all') return earthquakes;
     const min = magCategory;
     const max = magCategory + 1;
     return earthquakes.filter((e) => {
-      if (magCategory === 0) {
-        return e.magnitude >= 0 && e.magnitude < 1;
-      }
       return e.magnitude >= min && e.magnitude < max;
     });
   }, [earthquakes, magCategory, magFilterOff]);
@@ -152,6 +150,17 @@ export default function MapScreen() {
           >
             <Text style={[styles.chipText, magFilterOff && styles.chipTextActive]}>Off</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            key="all"
+            testID="chip-mag-all"
+            onPress={() => {
+              setMagFilterOff(false);
+              setMagCategory(magCategory === 'all' ? null : 'all');
+            }}
+            style={[styles.chip, magCategory === 'all' && !magFilterOff && styles.chipActive]}
+          >
+            <Text style={[styles.chipText, magCategory === 'all' && !magFilterOff && styles.chipTextActive]}>All</Text>
+          </TouchableOpacity>
           {Array.from({ length: 11 }).map((_, i) => (
             <TouchableOpacity
               key={i}
@@ -214,7 +223,9 @@ export default function MapScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.infoDetails}>
+            <Text style={styles.infoDetailText}>Magnitude: {selectedMarker.magnitude.toFixed(2)} {selectedMarker.magnitudeType}</Text>
             <Text style={styles.infoDetailText}>Depth: {formatDepth(selectedMarker.depth, preferences.units)}</Text>
+            <Text style={styles.infoDetailText}>Location: {selectedMarker.latitude.toFixed(4)}°, {selectedMarker.longitude.toFixed(4)}°</Text>
             {selectedMarker.tsunami && (
               <View style={styles.warningRow}>
                 <AlertTriangle size={16} color={COLORS.alert.red} />
@@ -240,8 +251,11 @@ export default function MapScreen() {
             </TouchableOpacity>
           </View>
           <Text style={styles.volcanoDetail}>Country: {highlightedVolcano.country}</Text>
+          <Text style={styles.volcanoDetail}>Region: {highlightedVolcano.region}</Text>
           <Text style={styles.volcanoDetail}>Elevation: {highlightedVolcano.elevation} m</Text>
+          <Text style={styles.volcanoDetail}>Type: {highlightedVolcano.type}</Text>
           <Text style={styles.volcanoDetail}>Last Eruption: {highlightedVolcano.lastEruptionDate || 'Unknown'}</Text>
+          <Text style={styles.volcanoDetail}>Location: {highlightedVolcano.latitude.toFixed(4)}°, {highlightedVolcano.longitude.toFixed(4)}°</Text>
         </GlassView>
       )}
 

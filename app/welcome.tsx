@@ -3,67 +3,56 @@ import { View, StyleSheet, Text, Animated, Easing, Platform, TouchableOpacity } 
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
+import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const logoRotate = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const logoScale = useRef(new Animated.Value(0.5)).current;
+  const waveAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnim, {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.spring(logoScale, {
         toValue: 1,
-        tension: 50,
-        friction: 7,
+        tension: 40,
+        friction: 8,
         useNativeDriver: true,
       }),
     ]).start();
 
     Animated.loop(
-      Animated.timing(logoRotate, {
+      Animated.timing(waveAnim, {
         toValue: 1,
-        duration: 20000,
-        easing: Easing.linear,
+        duration: 3000,
+        easing: Easing.inOut(Easing.ease),
         useNativeDriver: true,
       })
     ).start();
+  }, [fadeAnim, slideAnim, logoScale, waveAnim]);
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [fadeAnim, scaleAnim, logoRotate, pulseAnim]);
-
-  const rotation = logoRotate.interpolate({
+  const waveTranslate = waveAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+    outputRange: [0, 10],
   });
 
   const glassProps = Platform.OS === 'web'
-    ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.7)' } }
-    : { intensity: 60, tint: 'light' as const };
+    ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.95)' } }
+    : { intensity: 90, tint: 'light' as const };
 
   const handleContinue = () => {
     router.replace('/map');
@@ -72,9 +61,9 @@ export default function WelcomeScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.backgroundGradient}>
-        <View style={[styles.circle, styles.circle1]} />
-        <View style={[styles.circle, styles.circle2]} />
-        <View style={[styles.circle, styles.circle3]} />
+        <View style={[styles.wave, styles.wave1]} />
+        <View style={[styles.wave, styles.wave2]} />
+        <View style={[styles.wave, styles.wave3]} />
       </View>
 
       <Animated.View
@@ -82,7 +71,7 @@ export default function WelcomeScreen() {
           styles.content,
           {
             opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
+            transform: [{ translateY: slideAnim }],
           },
         ]}
       >
@@ -90,43 +79,50 @@ export default function WelcomeScreen() {
           style={[
             styles.logoContainer,
             {
-              transform: [{ rotate: rotation }, { scale: pulseAnim }],
+              transform: [{ scale: logoScale }, { translateY: waveTranslate }],
             },
           ]}
         >
-          <View style={styles.logoOuter}>
-            <View style={styles.logoMiddle}>
-              <View style={styles.logoInner}>
-                <Text style={styles.logoText}>🌍</Text>
-              </View>
-            </View>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoEmoji}>🌍</Text>
           </View>
+          <View style={styles.logoRing} />
         </Animated.View>
 
         <GlassView {...glassProps} style={styles.card}>
           <Text style={styles.title}>Seismic Monitor</Text>
-          <Text style={styles.subtitle}>Real-Time Earthquake & Volcanic Activity Tracker</Text>
+          <Text style={styles.subtitle}>Real-Time Global Monitoring</Text>
           <View style={styles.divider} />
           <Text style={styles.description}>
-            Monitor earthquakes, volcanoes, and tsunami alerts worldwide. Stay informed with real-time data from USGS, NOAA, and other trusted sources.
+            Track earthquakes, volcanic activity, and tsunami alerts worldwide with real-time data from trusted sources.
           </Text>
           <View style={styles.features}>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🗺️</Text>
-              <Text style={styles.featureText}>Interactive Maps</Text>
+            <View style={styles.featureCard}>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>🗺️</Text>
+              </View>
+              <Text style={styles.featureTitle}>Live Maps</Text>
+              <Text style={styles.featureDesc}>Interactive visualization</Text>
             </View>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🌋</Text>
-              <Text style={styles.featureText}>Volcano Tracking</Text>
+            <View style={styles.featureCard}>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>🌋</Text>
+              </View>
+              <Text style={styles.featureTitle}>Volcanoes</Text>
+              <Text style={styles.featureDesc}>Activity tracking</Text>
             </View>
-            <View style={styles.feature}>
-              <Text style={styles.featureIcon}>🌊</Text>
-              <Text style={styles.featureText}>Tsunami Alerts</Text>
+            <View style={styles.featureCard}>
+              <View style={styles.featureIconContainer}>
+                <Text style={styles.featureIcon}>🌊</Text>
+              </View>
+              <Text style={styles.featureTitle}>Alerts</Text>
+              <Text style={styles.featureDesc}>Tsunami warnings</Text>
             </View>
           </View>
           <TouchableOpacity style={styles.button} onPress={handleContinue} testID="btn-continue">
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
+          <Text style={styles.footer}>Powered by USGS, NOAA & PHIVOLCS</Text>
         </GlassView>
       </Animated.View>
     </View>
@@ -136,7 +132,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#F0F9FF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -144,134 +140,168 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
   },
-  circle: {
+  wave: {
     position: 'absolute',
+    width: '200%',
+    height: 200,
     borderRadius: 9999,
-    opacity: 0.15,
+    opacity: 0.08,
   },
-  circle1: {
-    width: 400,
-    height: 400,
+  wave1: {
     backgroundColor: '#3B82F6',
     top: -100,
-    left: -100,
+    left: -50,
   },
-  circle2: {
-    width: 300,
-    height: 300,
-    backgroundColor: '#8B5CF6',
-    bottom: -50,
-    right: -50,
+  wave2: {
+    backgroundColor: '#0EA5E9',
+    top: 100,
+    right: -100,
   },
-  circle3: {
-    width: 250,
-    height: 250,
-    backgroundColor: '#EC4899',
-    top: '40%',
-    right: '10%',
+  wave3: {
+    backgroundColor: '#06B6D4',
+    bottom: -80,
+    left: -80,
   },
   content: {
     width: '90%',
-    maxWidth: 500,
+    maxWidth: 480,
     alignItems: 'center',
   },
   logoContainer: {
     marginBottom: SPACING.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  logoOuter: {
+  logoCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  logoRing: {
+    position: 'absolute',
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 3,
-    borderColor: 'rgba(59, 130, 246, 0.4)',
+    borderColor: '#3B82F6',
+    opacity: 0.3,
   },
-  logoMiddle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(59, 130, 246, 0.5)',
-  },
-  logoInner: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#3B82F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    fontSize: 40,
+  logoEmoji: {
+    fontSize: 56,
   },
   card: {
     width: '100%',
-    borderRadius: 24,
+    borderRadius: 28,
     padding: SPACING.xl,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
   },
   title: {
-    fontSize: FONT_SIZE.xxxl,
+    fontSize: 32,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.light,
+    color: '#1E293B',
     textAlign: 'center',
-    marginBottom: SPACING.xs,
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.light,
+    color: '#64748B',
     textAlign: 'center',
     marginBottom: SPACING.md,
+    fontWeight: '500' as const,
   },
   divider: {
-    height: 1,
-    backgroundColor: COLORS.border.light,
+    height: 2,
+    backgroundColor: '#E2E8F0',
     marginVertical: SPACING.md,
+    borderRadius: 1,
   },
   description: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#475569',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: SPACING.lg,
   },
   features: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     width: '100%',
     marginBottom: SPACING.lg,
+    gap: SPACING.sm,
   },
-  feature: {
-    alignItems: 'center',
+  featureCard: {
     flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 16,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  featureIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   featureIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.xs,
+    fontSize: 24,
   },
-  featureText: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.text.secondary.light,
+  featureTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: '#1E293B',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  featureDesc: {
+    fontSize: 11,
+    color: '#64748B',
     textAlign: 'center',
   },
   button: {
     backgroundColor: '#3B82F6',
-    paddingVertical: SPACING.md,
+    paddingVertical: 16,
     paddingHorizontal: SPACING.xl,
-    borderRadius: 12,
+    borderRadius: 14,
     width: '100%',
     alignItems: 'center',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
+  },
+  footer: {
+    fontSize: 11,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: SPACING.md,
   },
 });
