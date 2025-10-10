@@ -67,6 +67,10 @@ export const fetchVolcanoes = async (): Promise<Volcano[]> => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const text = await response.text();
+    if (!text || typeof text !== 'string') {
+      console.error('Invalid response text from volcano API');
+      return [];
+    }
     const lines = text.replace(/\r/g, '').split('\n').filter((l) => l.trim().length > 0);
     const header = lines.shift();
     if (!header) return [];
