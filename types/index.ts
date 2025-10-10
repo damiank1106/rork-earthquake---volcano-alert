@@ -17,86 +17,20 @@ export interface Earthquake {
   cdi?: number;
   alert?: 'green' | 'yellow' | 'orange' | 'red';
   sig: number;
-}
-
-export interface UserPreferences {
-  units: 'metric' | 'imperial';
-  timeFormat: '12h' | '24h';
-  pollingFrequency: number;
-  earthquakesEnabled: boolean;
-  volcanoesEnabled: boolean;
-  heatmapEnabled: boolean;
-  clusteringEnabled: boolean;
-  theme: 'light' | 'dark' | 'auto';
-  notificationsEnabled: boolean;
-  quietHoursEnabled: boolean;
-  quietHoursStart?: string;
-  quietHoursEnd?: string;
-  lastUpdated?: number;
-}
-
-export interface SavedPlace {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  radius: number;
-  minMagnitude: number;
-  alertsEnabled: boolean;
-  createdAt: number;
-}
-
-export interface SortOption {
-  field: 'time' | 'magnitude' | 'distance' | 'depth';
-  direction: 'asc' | 'desc';
-}
-
-export interface TsunamiEvent {
-  id: string;
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
-  validity: string;
-  tsunamiEventValidity: string;
-  tsunamiCauseCode: number;
-  earthquakeMagnitude: number;
-  deposits: number;
-  country: string;
-  locationName: string;
-  latitude: number;
-  longitude: number;
-  maximumWaterHeight: number;
-  numberOfRunups: number;
-  tsunamiMagnitude: number;
-  tsunamiIntensity: number;
-  deaths: number;
-  deathDescription: number;
-  missing: number;
-  missingDescription: number;
-  injuries: number;
-  injuriesDescription: number;
-  damageMillionsDollars: number;
-  damageDescription: number;
-  housesDestroyed: number;
-  housesDestroyedDescription: number;
-  housesDamaged: number;
-  housesDamagedDescription: number;
-  totalDeaths: number;
-  totalDeathDescription: number;
-  totalMissing: number;
-  totalMissingDescription: number;
-  totalInjuries: number;
-  totalInjuriesDescription: number;
-  totalDamageMillionsDollars: number;
-  totalDamageDescription: number;
-  totalHousesDestroyed: number;
-  totalHousesDestroyedDescription: number;
-  totalHousesDamaged: number;
-  totalHousesDamagedDescription: number;
-  comments: string;
+  net: string;
+  code: string;
+  ids: string;
+  sources: string;
+  types: string;
+  nst?: number;
+  dmin?: number;
+  rms?: number;
+  gap?: number;
+  magError?: number;
+  depthError?: number;
+  horizontalError?: number;
+  locationSource: string;
+  magSource: string;
 }
 
 export interface Volcano {
@@ -115,29 +49,165 @@ export interface Volcano {
   vei?: number;
   sources: string[];
   url?: string;
-  imageUrl?: string;
-  latestNews?: string;
 }
 
-export interface NuclearPlant {
+export interface SavedPlace {
   id: string;
   name: string;
   latitude: number;
   longitude: number;
-  country: string;
-  status: string;
-  capacity: number;
-  type: string;
+  radius: number;
+  minMagnitude: number;
+  alertsEnabled: boolean;
+  createdAt: number;
 }
 
-export interface PlateBoundary {
-  type: 'transform' | 'divergent' | 'convergent';
-  coordinates: [number, number][];
+export interface AlertThreshold {
+  id: string;
+  type: 'global' | 'location';
+  minMagnitude: number;
+  radius?: number;
+  locationId?: string;
+  enabled: boolean;
+  earthquakesEnabled: boolean;
+  volcanoesEnabled: boolean;
+}
+
+export interface UserPreferences {
+  units: 'metric' | 'imperial';
+  timeFormat: '12h' | '24h';
+  pollingFrequency: number;
+  earthquakesEnabled: boolean;
+  volcanoesEnabled: boolean;
+  heatmapEnabled: boolean;
+  clusteringEnabled: boolean;
+  theme: 'light' | 'dark' | 'auto';
+  notificationsEnabled: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursStart?: string;
+  quietHoursEnd?: string;
+  lastUpdated?: number;
+}
+
+export interface EarthquakeFilter {
+  minMagnitude: number;
+  maxMagnitude: number;
+  minDepth: number;
+  maxDepth: number;
+  timeWindow: 'hour' | 'day' | 'week' | 'month';
+  region?: string;
+  maxDistance?: number;
+  significantOnly: boolean;
+}
+
+export interface SortOption {
+  field: 'time' | 'magnitude' | 'distance' | 'depth';
+  direction: 'asc' | 'desc';
 }
 
 export interface MapLayer {
   id: string;
   name: string;
   enabled: boolean;
-  type: 'earthquakes' | 'volcanoes' | 'heatmap' | 'plates' | 'nuclear';
+  type: 'earthquakes' | 'volcanoes' | 'heatmap' | 'plates';
+}
+
+export interface NotificationPayload {
+  eventId: string;
+  eventType: 'earthquake' | 'volcano';
+  title: string;
+  body: string;
+  data: {
+    magnitude?: number;
+    place?: string;
+    distance?: number;
+    latitude: number;
+    longitude: number;
+  };
+}
+
+export interface CachedData<T> {
+  data: T;
+  timestamp: number;
+  etag?: string;
+}
+
+export interface APIResponse<T> {
+  data: T;
+  etag?: string;
+  lastModified?: string;
+}
+
+export interface EarthquakeAPIResponse {
+  type: string;
+  metadata: {
+    generated: number;
+    url: string;
+    title: string;
+    status: number;
+    api: string;
+    count: number;
+  };
+  features: {
+    type: string;
+    properties: {
+      mag: number;
+      place: string;
+      time: number;
+      updated: number;
+      tz?: number;
+      url: string;
+      detail: string;
+      felt?: number;
+      cdi?: number;
+      mmi?: number;
+      alert?: 'green' | 'yellow' | 'orange' | 'red';
+      status: string;
+      tsunami: number;
+      sig: number;
+      net: string;
+      code: string;
+      ids: string;
+      sources: string;
+      types: string;
+      nst?: number;
+      dmin?: number;
+      rms?: number;
+      gap?: number;
+      magType: string;
+      type: string;
+      title: string;
+    };
+    geometry: {
+      type: string;
+      coordinates: [number, number, number];
+    };
+    id: string;
+  }[];
+  bbox: [number, number, number, number, number, number];
+}
+
+export interface MagnitudeInfo {
+  value: number;
+  label: string;
+  description: string;
+  effects: string;
+  frequency: string;
+  color: string;
+  examples: string[];
+}
+
+export interface SafetyGuide {
+  id: string;
+  title: string;
+  category: 'before' | 'during' | 'after';
+  eventType: 'earthquake' | 'volcano' | 'both';
+  icon: string;
+  steps: string[];
+  sources: string[];
+}
+
+export interface EducationContent {
+  magnitudeScale: MagnitudeInfo[];
+  safetyGuides: SafetyGuide[];
 }

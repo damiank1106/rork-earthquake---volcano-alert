@@ -1,110 +1,119 @@
-import React, { useState, useRef, useMemo } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RefreshCw, AlertTriangle } from 'lucide-react-native';
+import { BlurView, BlurTint } from 'expo-blur';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { useLocation } from '@/contexts/LocationContext';
-import { useMapLayers } from '@/contexts/MapLayersContext';
-import { MapOverlayPanel } from '@/components/MapOverlayPanel';
-import NativeMap from '@/components/NativeMap';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
-import { useQuery } from '@tanstack/react-query';
-import { fetchVolcanoes, fetchNuclearPlants, fetchPlateBoundaries } from '@/services/api';
+import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { Earthquake } from '@/types';
+import { formatTime, formatDepth } from '@/services/api';
+import { usePreferences } from '@/contexts/PreferencesContext';
+import NativeMap from '@/components/NativeMap';
+
+const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
-  const { earthquakes, isLoading } = useEarthquakes();
+  const { earthquakes, isLoading, refetch, lastUpdated } = useEarthquakes();
   const { userLocation } = useLocation();
-  const { layers, magnitudeFilter } = useMapLayers();
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
-  const [isPanelVisible, setIsPanelVisible] = useState<boolean>(false);
-  const slideAnim = useRef(new Animated.Value(280)).current;
+  const { preferences } = usePreferences();
+  const [selectedMarker, setSelectedMarker] = useState<Earthquake | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  const volcanoesQuery = useQuery({
-    queryKey: ['volcanoes'],
-    queryFn: fetchVolcanoes,
-    enabled: layers.find(l => l.id === 'volcanoes')?.enabled,
-  });
-
-  const nuclearQuery = useQuery({
-    queryKey: ['nuclear'],
-    queryFn: fetchNuclearPlants,
-    enabled: layers.find(l => l.id === 'nuclear')?.enabled,
-  });
-
-  const platesQuery = useQuery({
-    queryKey: ['plates'],
-    queryFn: fetchPlateBoundaries,
-    enabled: layers.find(l => l.id === 'plates')?.enabled,
-  });
-
-  const togglePanel = () => {
-    const toValue = isPanelVisible ? 280 : 0;
-    Animated.timing(slideAnim, {
-      toValue,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-    setIsPanelVisible(!isPanelVisible);
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
   };
 
-  const filteredEarthquakes = useMemo(() => {
-    if (magnitudeFilter !== null) {
-      const minMag = magnitudeFilter;
-      const maxMag = magnitudeFilter + 1;
-      return earthquakes.filter((eq: Earthquake) => eq.magnitude >= minMag && eq.magnitude < maxMag);
-    }
-    return earthquakes;
-  }, [magnitudeFilter, earthquakes]);
-
-  const handleMarkerPress = (id: string) => {
-    setSelectedMarker(id);
+  const handleMarkerPress = (earthquake: Earthquake) => {
+    setSelectedMarker(earthquake);
   };
 
-  const selectedEarthquake = filteredEarthquakes.find((eq: Earthquake) => eq.id === selectedMarker);
+  const hasAftershockRisk = (earthquake: Earthquake): boolean => {
+    return earthquake.magnitude > 5.5;
+  };
+
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <NativeMap
-        earthquakes={filteredEarthquakes}
+        earthquakes={earthquakes}
         selectedMarker={selectedMarker}
         onMarkerPress={handleMarkerPress}
         userLocation={userLocation}
-        volcanoes={volcanoesQuery.data || []}
-        nuclearPlants={nuclearQuery.data || []}
-        plateBoundaries={platesQuery.data || []}
-        layers={layers}
       />
 
-      <View style={[styles.header, { top: insets.top + SPACING.md }]}>
-        <Text style={styles.headerTitle}>Seismic Monitor</Text>
-        <Text style={styles.headerSubtitle}>{filteredEarthquakes.length} earthquakes</Text>
-      </View>
-
-      <TouchableOpacity style={[styles.panelToggle, { top: insets.top + 80 }]} onPress={togglePanel}>
-        <Text style={styles.panelToggleText}>Layers</Text>
-      </TouchableOpacity>
-
-      <MapOverlayPanel
-        isVisible={isPanelVisible}
-        onToggle={togglePanel}
-        slideAnim={slideAnim}
-      />
-
-      {selectedEarthquake && (
-        <View style={styles.infoCard}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setSelectedMarker(null)}>
-            <Text style={styles.closeText}>✕</Text>
-          </TouchableOpacity>
-          <Text style={styles.infoMagnitude}>M {selectedEarthquake.magnitude.toFixed(1)}</Text>
-          <Text style={styles.infoPlace}>{selectedEarthquake.place}</Text>
-          <Text style={styles.infoDepth}>Depth: {selectedEarthquake.depth.toFixed(1)} km</Text>
+      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>Seismic Monitor</Text>
+          <Text style={styles.subtitle}>
+            {earthquakes.length} events • Updated {formatTime(lastUpdated, preferences.timeFormat)}
+          </Text>
         </View>
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={handleRefresh}
+          disabled={isRefreshing}
+        >
+          {isRefreshing ? (
+            <ActivityIndicator size="small" color={COLORS.primary[600]} />
+          ) : (
+            <RefreshCw size={20} color={COLORS.primary[600]} />
+          )}
+        </TouchableOpacity>
+      </GlassView>
+
+      {selectedMarker && (
+        <GlassView {...glassProps} style={styles.infoCard}>
+          <View style={styles.infoHeader}>
+            <View
+              style={[
+                styles.infoBadge,
+                { backgroundColor: getMagnitudeColor(selectedMarker.magnitude) },
+              ]}
+            >
+              <Text style={styles.infoBadgeText}>{selectedMarker.magnitude.toFixed(1)}</Text>
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoPlace} numberOfLines={2}>
+                {selectedMarker.place}
+              </Text>
+              <Text style={styles.infoTime}>
+                {formatTime(selectedMarker.time, preferences.timeFormat)}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSelectedMarker(null)}
+            >
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.infoDetails}>
+            <Text style={styles.infoDetailText}>Depth: {formatDepth(selectedMarker.depth, preferences.units)}</Text>
+            {selectedMarker.tsunami && (
+              <View style={styles.warningRow}>
+                <AlertTriangle size={16} color={COLORS.alert.red} />
+                <Text style={styles.tsunamiText}>Tsunami Warning</Text>
+              </View>
+            )}
+            {hasAftershockRisk(selectedMarker) && (
+              <View style={styles.warningRow}>
+                <AlertTriangle size={16} color={COLORS.alert.orange} />
+                <Text style={styles.aftershockText}>Aftershock Risk</Text>
+              </View>
+            )}
+          </View>
+        </GlassView>
       )}
 
       {isLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.loadingText}>Loading earthquakes...</Text>
         </View>
       )}
     </View>
@@ -119,72 +128,101 @@ const styles = StyleSheet.create({
   header: {
     position: 'absolute',
     left: SPACING.md,
-    backgroundColor: COLORS.surface.light + 'F0',
+    right: SPACING.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    borderRadius: 8,
+    borderRadius: 16,
+    overflow: 'hidden',
     zIndex: 10,
   },
-  headerTitle: {
+  headerContent: {
+    flex: 1,
+  },
+  title: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text.primary.light,
   },
-  headerSubtitle: {
+  subtitle: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.text.secondary.light,
+    marginTop: 2,
   },
-  panelToggle: {
-    position: 'absolute',
-    right: SPACING.md,
-    backgroundColor: COLORS.surface.light + 'F0',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: 8,
-    zIndex: 10,
-  },
-  panelToggleText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.text.primary.light,
-    fontWeight: FONT_WEIGHT.medium,
+  refreshButton: {
+    padding: SPACING.sm,
   },
   infoCard: {
     position: 'absolute',
-    bottom: SPACING.md,
+    bottom: SPACING.xl,
     left: SPACING.md,
     right: SPACING.md,
-    backgroundColor: COLORS.surface.light,
+    borderRadius: 16,
+    overflow: 'hidden',
     padding: SPACING.md,
-    borderRadius: 12,
     zIndex: 10,
   },
-  closeButton: {
-    position: 'absolute',
-    top: SPACING.sm,
-    right: SPACING.sm,
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+  },
+  infoBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  closeText: {
-    fontSize: FONT_SIZE.lg,
-    color: COLORS.text.secondary.light,
-  },
-  infoMagnitude: {
-    fontSize: FONT_SIZE.xxl,
+  infoBadgeText: {
+    fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary[600],
-    marginBottom: SPACING.xs,
+    color: '#FFFFFF',
+  },
+  infoContent: {
+    flex: 1,
   },
   infoPlace: {
     fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semibold,
     color: COLORS.text.primary.light,
-    marginBottom: SPACING.xs,
   },
-  infoDepth: {
+  infoTime: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.text.secondary.light,
+    marginTop: 2,
+  },
+  closeButton: {
+    padding: SPACING.xs,
+  },
+  closeButtonText: {
+    fontSize: FONT_SIZE.xl,
+    color: COLORS.text.secondary.light,
+  },
+  infoDetails: {
+    marginTop: SPACING.sm,
+    gap: SPACING.xs,
+  },
+  infoDetailText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.light,
+  },
+  tsunamiText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.alert.red,
+  },
+  warningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  aftershockText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.alert.orange,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -192,8 +230,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    zIndex: 20,
+  },
+  loadingText: {
+    marginTop: SPACING.md,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text.secondary.light,
   },
 });

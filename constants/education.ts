@@ -1,143 +1,361 @@
-// ... existing code ...
-export const PRIVACY_POLICY = `
-**Privacy Policy for Seismic Monitor**
+import { MagnitudeInfo, SafetyGuide } from '@/types';
 
-*Last updated: October 2025*
+export const MAGNITUDE_SCALE: MagnitudeInfo[] = [
+  {
+    value: 1,
+    label: 'Micro',
+    description: 'Not felt except by very few under especially favorable conditions',
+    effects: 'No damage. Detected only by seismographs.',
+    frequency: 'Several million per year',
+    color: '#10B981',
+    examples: ['Continuous microseismic activity', 'Mining blasts'],
+  },
+  {
+    value: 2,
+    label: 'Minor',
+    description: 'Felt only by a few persons at rest, especially on upper floors',
+    effects: 'No damage. Hanging objects may swing slightly.',
+    frequency: 'Over one million per year',
+    color: '#34D399',
+    examples: ['Small local tremors', 'Quarry blasts'],
+  },
+  {
+    value: 3,
+    label: 'Minor',
+    description: 'Felt quite noticeably by persons indoors',
+    effects: 'No significant damage. Vibration similar to passing truck.',
+    frequency: 'Over 100,000 per year',
+    color: '#6EE7B7',
+    examples: ['2011 Oklahoma (3.0)', '2019 New Jersey (3.1)'],
+  },
+  {
+    value: 4,
+    label: 'Light',
+    description: 'Felt indoors by many, outdoors by few during the day',
+    effects: 'Dishes, windows rattle. Walls make cracking sound. No structural damage.',
+    frequency: 'About 15,000 per year',
+    color: '#FCD34D',
+    examples: ['2020 North Carolina (4.0)', '2018 Tennessee (4.4)'],
+  },
+  {
+    value: 5,
+    label: 'Moderate',
+    description: 'Felt by nearly everyone; many awakened',
+    effects: 'Some dishes, windows broken. Unstable objects overturned. Slight damage to poorly constructed buildings.',
+    frequency: 'About 1,500 per year',
+    color: '#FBBF24',
+    examples: ['2011 Virginia (5.8)', '2020 North Carolina (5.1)'],
+  },
+  {
+    value: 6,
+    label: 'Strong',
+    description: 'Felt by all; many frightened and run outdoors',
+    effects: 'Considerable damage to poorly built structures. Slight to moderate damage in well-built buildings. Chimneys, factory stacks, monuments may fall.',
+    frequency: 'About 150 per year',
+    color: '#F59E0B',
+    examples: ['2014 Napa, California (6.0)', '1994 Northridge (6.7)'],
+  },
+  {
+    value: 7,
+    label: 'Major',
+    description: 'Difficult to stand. Noticed by drivers of cars',
+    effects: 'Considerable damage to well-designed buildings. Ground cracks conspicuously. Underground pipes broken.',
+    frequency: 'About 20 per year',
+    color: '#F97316',
+    examples: ['2010 Haiti (7.0)', '1989 Loma Prieta (7.1)'],
+  },
+  {
+    value: 8,
+    label: 'Great',
+    description: 'Panic is general. Steering of cars greatly affected',
+    effects: 'Severe damage to most buildings. Ground badly cracked. Large landslides. Tsunami possible.',
+    frequency: 'About 1 per year',
+    color: '#EF4444',
+    examples: ['2015 Nepal (7.8)', '1906 San Francisco (7.9)'],
+  },
+  {
+    value: 9,
+    label: 'Great',
+    description: 'Total panic. Objects thrown into the air',
+    effects: 'Most buildings destroyed. Ground disturbances widespread. Large-scale liquefaction. Major tsunami.',
+    frequency: 'About 1 per 20 years',
+    color: '#DC2626',
+    examples: ['2011 Tōhoku, Japan (9.1)', '2004 Indian Ocean (9.1)'],
+  },
+  {
+    value: 10,
+    label: 'Epic',
+    description: 'Never recorded in modern history',
+    effects: 'Total destruction. Waves seen on ground surface. Objects thrown into air. Massive changes to landscape.',
+    frequency: 'Extremely rare',
+    color: '#991B1B',
+    examples: ['1960 Valdivia, Chile (9.5) - largest recorded'],
+  },
+];
 
-**Information We Collect**
+export const SAFETY_GUIDES: SafetyGuide[] = [
+  {
+    id: 'eq-before-1',
+    title: 'Prepare Your Home',
+    category: 'before',
+    eventType: 'earthquake',
+    icon: 'home',
+    steps: [
+      'Secure heavy furniture, appliances, and tall objects to walls',
+      'Store heavy items on lower shelves',
+      'Install flexible pipe fittings to avoid gas or water leaks',
+      'Know how to turn off gas, water, and electricity',
+      'Repair defective electrical wiring and leaky gas connections',
+      'Bolt down water heaters and gas appliances',
+    ],
+    sources: ['FEMA Ready.gov', 'USGS Earthquake Hazards Program'],
+  },
+  {
+    id: 'eq-before-2',
+    title: 'Build an Emergency Kit',
+    category: 'before',
+    eventType: 'earthquake',
+    icon: 'package',
+    steps: [
+      'Water: 1 gallon per person per day for at least 3 days',
+      'Non-perishable food for at least 3 days',
+      'Battery-powered or hand-crank radio and NOAA Weather Radio',
+      'Flashlight and extra batteries',
+      'First aid kit and essential medications',
+      'Whistle to signal for help',
+      'Dust masks, plastic sheeting, and duct tape',
+      'Wrench or pliers to turn off utilities',
+      'Local maps and emergency contact information',
+    ],
+    sources: ['American Red Cross', 'FEMA'],
+  },
+  {
+    id: 'eq-before-3',
+    title: 'Make a Family Plan',
+    category: 'before',
+    eventType: 'earthquake',
+    icon: 'users',
+    steps: [
+      'Identify safe spots in each room (under sturdy tables, against interior walls)',
+      'Practice Drop, Cover, and Hold On drills',
+      'Establish a family meeting place outside your home',
+      'Choose an out-of-state contact person',
+      'Learn first aid and CPR',
+      'Keep important documents in a waterproof container',
+      'Plan for pets and service animals',
+    ],
+    sources: ['FEMA Ready.gov', 'Earthquake Country Alliance'],
+  },
+  {
+    id: 'eq-during-1',
+    title: 'If You Are Indoors',
+    category: 'during',
+    eventType: 'earthquake',
+    icon: 'shield-alert',
+    steps: [
+      'DROP to your hands and knees immediately',
+      'COVER your head and neck under a sturdy table or desk',
+      'HOLD ON to your shelter and be prepared to move with it',
+      'Stay away from windows, mirrors, and heavy objects that could fall',
+      'Do NOT run outside or to doorways',
+      'If in bed, stay there and cover your head with a pillow',
+      'Stay inside until shaking stops and it is safe to exit',
+    ],
+    sources: ['USGS', 'ShakeOut.org', 'American Red Cross'],
+  },
+  {
+    id: 'eq-during-2',
+    title: 'If You Are Outdoors',
+    category: 'during',
+    eventType: 'earthquake',
+    icon: 'trees',
+    steps: [
+      'Move away from buildings, streetlights, and utility wires',
+      'Drop to the ground and stay there until shaking stops',
+      'If in a vehicle, pull over to a clear location and stop',
+      'Avoid stopping near buildings, trees, overpasses, or utility wires',
+      'Stay inside the vehicle with seatbelt fastened',
+      'Proceed cautiously once shaking stops, avoiding bridges and ramps',
+    ],
+    sources: ['USGS', 'FEMA'],
+  },
+  {
+    id: 'eq-during-3',
+    title: 'Special Situations',
+    category: 'during',
+    eventType: 'earthquake',
+    icon: 'alert-triangle',
+    steps: [
+      'In a stadium or theater: Stay in your seat and protect your head',
+      'Near the shore: Drop, Cover, Hold On, then move inland to higher ground',
+      'In a high-rise: Drop, Cover, Hold On. Do not use elevators',
+      'In a wheelchair: Lock wheels and cover head and neck',
+      'In a store: Move away from shelves with heavy items',
+    ],
+    sources: ['Earthquake Country Alliance', 'USGS'],
+  },
+  {
+    id: 'eq-after-1',
+    title: 'Immediate Actions',
+    category: 'after',
+    eventType: 'earthquake',
+    icon: 'check-circle',
+    steps: [
+      'Check yourself and others for injuries. Provide first aid',
+      'Check for fires, fire hazards, and other household hazards',
+      'If you smell gas or hear hissing, open windows and leave immediately',
+      'Turn off utilities if damaged',
+      'Listen to a battery-powered radio for emergency information',
+      'Stay out of damaged buildings',
+      'Be careful of broken glass and debris',
+      'Expect aftershocks - Drop, Cover, Hold On during each one',
+    ],
+    sources: ['USGS', 'FEMA', 'American Red Cross'],
+  },
+  {
+    id: 'eq-after-2',
+    title: 'Inspect Your Home',
+    category: 'after',
+    eventType: 'earthquake',
+    icon: 'search',
+    steps: [
+      'Check for structural damage before re-entering',
+      'Look for cracks in the foundation, walls, and chimney',
+      'Check for gas leaks, damaged electrical wiring, and water line damage',
+      'Clean up spilled medicines, bleach, gasoline, and other flammable liquids',
+      'Take photos of damage for insurance claims',
+      'If home is unsafe, do not enter until cleared by authorities',
+    ],
+    sources: ['FEMA', 'American Red Cross'],
+  },
+  {
+    id: 'eq-after-3',
+    title: 'Recovery and Communication',
+    category: 'after',
+    eventType: 'earthquake',
+    icon: 'phone',
+    steps: [
+      'Use text messages or social media to communicate (phone lines may be overloaded)',
+      'Stay off the roads unless absolutely necessary',
+      'Keep streets clear for emergency vehicles',
+      'Register with disaster relief services',
+      'Document property damage with photos',
+      'Contact your insurance company',
+      'Be patient - recovery takes time',
+    ],
+    sources: ['FEMA', 'American Red Cross'],
+  },
+  {
+    id: 'volcano-before-1',
+    title: 'Know Your Risk',
+    category: 'before',
+    eventType: 'volcano',
+    icon: 'mountain',
+    steps: [
+      'Learn about your community\'s warning systems and evacuation plans',
+      'Know if you live in a lahar (mudflow) hazard zone',
+      'Identify evacuation routes and shelter locations',
+      'Prepare an emergency kit with N95 masks or respirators',
+      'Keep goggles and protective clothing available',
+      'Have a plan for livestock and pets',
+    ],
+    sources: ['USGS Volcano Hazards Program', 'FEMA'],
+  },
+  {
+    id: 'volcano-during-1',
+    title: 'During Ashfall',
+    category: 'during',
+    eventType: 'volcano',
+    icon: 'cloud',
+    steps: [
+      'Stay indoors and close all windows and doors',
+      'Wear N95 masks or use damp cloth over nose and mouth',
+      'Wear goggles to protect eyes from ash',
+      'Keep skin covered with long sleeves and pants',
+      'Avoid driving unless absolutely necessary',
+      'If you must drive, use headlights and drive slowly',
+      'Bring pets and livestock into shelters',
+      'Do not run air conditioning or fans that bring outside air inside',
+    ],
+    sources: ['USGS', 'CDC', 'WHO'],
+  },
+  {
+    id: 'volcano-during-2',
+    title: 'During Evacuation',
+    category: 'during',
+    eventType: 'volcano',
+    icon: 'move',
+    steps: [
+      'Follow evacuation orders immediately',
+      'Take your emergency kit and important documents',
+      'Wear long-sleeved shirts and long pants',
+      'Use goggles and a mask or damp cloth over your face',
+      'Stay out of designated restricted zones',
+      'Avoid river valleys and low-lying areas (lahar risk)',
+      'Listen to emergency broadcasts for updates',
+    ],
+    sources: ['USGS', 'FEMA'],
+  },
+  {
+    id: 'volcano-after-1',
+    title: 'After Eruption',
+    category: 'after',
+    eventType: 'volcano',
+    icon: 'shield-check',
+    steps: [
+      'Wait for official clearance before returning home',
+      'Continue wearing protective gear when outside',
+      'Clear roofs of ash (it is very heavy and can cause collapse)',
+      'Avoid getting ash in water supplies, machinery, and electronics',
+      'Wash ash off with water, not compressed air',
+      'Watch for mudflows and flooding',
+      'Stay away from areas downwind of the volcano',
+      'Seek medical attention for breathing difficulties',
+    ],
+    sources: ['USGS', 'CDC', 'FEMA'],
+  },
+  {
+    id: 'volcano-after-2',
+    title: 'Health Precautions',
+    category: 'after',
+    eventType: 'volcano',
+    icon: 'heart-pulse',
+    steps: [
+      'Limit outdoor activities if ash is falling',
+      'People with respiratory conditions should stay indoors',
+      'Drink only bottled or covered stored water',
+      'Wash vegetables and fruits thoroughly',
+      'Keep ash out of your home as much as possible',
+      'If you have asthma or respiratory issues, follow your treatment plan',
+      'Seek medical care if you have difficulty breathing or eye irritation',
+    ],
+    sources: ['CDC', 'WHO', 'USGS'],
+  },
+];
 
-Seismic Monitor collects minimal information to provide its services:
+export const TSUNAMI_WARNING_INFO = {
+  title: 'Tsunami Warning',
+  description: 'This earthquake may have generated a tsunami. If you are near the coast:',
+  steps: [
+    'Move inland to higher ground immediately',
+    'Stay at least 100 feet above sea level or 2 miles inland',
+    'Do NOT wait for official warnings',
+    'Stay away from the beach and coastal areas',
+    'Listen to emergency broadcasts',
+    'Do not return until authorities say it is safe',
+  ],
+  sources: ['NOAA Tsunami Warning Center', 'USGS'],
+};
 
-1. **Location Data**
-   - Purpose: Calculate distance to earthquake epicenters, volcanoes, and nuclear plants
-   - Storage: Stored locally on your device only
-   - Sharing: Never shared with third parties
-   - Control: Can be disabled in device settings
-
-2. **Saved Places**
-   - Purpose: Monitor earthquakes near locations you care about
-   - Storage: Stored locally in app database
-   - Sharing: Never shared or synced to cloud
-   - Control: Can be deleted anytime in app
-
-3. **User Preferences**
-   - Purpose: Customize app experience (units, time format, map layers, etc.)
-   - Storage: Stored locally on your device
-   - Sharing: Never shared with third parties
-
-**Information We Don't Collect**
-
-- No personal identification information
-- No usage analytics or tracking
-- No advertising identifiers
-- No crash reports (unless you opt-in via device settings)
-- No account creation or authentication
-
-**Third-Party Services**
-
-We use the following third-party services:
-
-1. **USGS Earthquake API**
-   - Purpose: Fetch real-time earthquake data
-   - Data sent: None (public API, no authentication)
-   - Privacy policy: https://www.usgs.gov/privacy
-
-2. **NOAA Tsunami API**
-   - Purpose: Fetch historical tsunami data
-   - Data sent: None (public API)
-   - Privacy policy: https://www.noaa.gov/privacy
-
-3. **Smithsonian GVP**
-   - Purpose: Fetch volcano data
-   - Data sent: None (public API)
-   - Privacy policy: https://www.si.edu/privacy
-
-4. **IAEA Nuclear Data**
-   - Purpose: Fetch nuclear plant locations
-   - Data sent: None (public data)
-   - Privacy policy: https://www.iaea.org/privacy
-
-**Data Security**
-
-All data is stored locally on your device using industry-standard encryption provided by iOS/Android. We do not transmit your personal data to our servers.
-
-**Children's Privacy**
-
-Our app does not knowingly collect information from children under 13. The app is designed for general audiences.
-
-**Changes to Privacy Policy**
-
-We may update this policy. Changes will be posted in the app and on our website.
-
-**Contact Us**
-
-For privacy questions: privacy@yourcompany.com
-`;
-
-export const TERMS_OF_USE = `
-**Terms of Use for Seismic Monitor**
-
-*Last updated: October 2025*
-
-**Acceptance of Terms**
-
-By downloading and using Seismic Monitor, you agree to these Terms of Use.
-
-**Description of Service**
-
-Seismic Monitor provides informational earthquake, tsunami, volcano, and nuclear facility data from public sources (USGS, NOAA, Smithsonian GVP, IAEA). The app is for educational and informational purposes only.
-
-**Important Disclaimers**
-
-1. **Not an Early Warning System**
-   - This app is NOT an official earthquake, tsunami, or volcano early warning system
-   - Do not rely on this app for emergency alerts
-   - Always follow official emergency alerts from local authorities
-
-2. **Data Accuracy**
-   - Data is provided by USGS, NOAA, and other sources "as is"
-   - We do not guarantee accuracy, completeness, or timeliness
-   - Earthquake, tsunami, and volcano data may be delayed or contain errors
-   - Magnitude and location estimates may be revised
-
-3. **No Liability**
-   - We are not liable for any damages resulting from app use
-   - This includes but is not limited to: property damage, injury, or loss of life
-   - Use of safety information is at your own risk
-
-**Proper Use**
-
-You agree to:
-- Use the app for lawful purposes only
-- Not attempt to reverse engineer or hack the app
-- Not use the app to spread misinformation
-- Follow all applicable laws and regulations
-
-**Data Sources**
-
-Earthquake data: United States Geological Survey (USGS)
-Tsunami data: National Oceanic and Atmospheric Administration (NOAA)
-Volcano data: Smithsonian Institution Global Volcanism Program
-Nuclear data: International Atomic Energy Agency (IAEA)
-Safety information: FEMA, American Red Cross, CDC, WHO
-
-**Intellectual Property**
-
-The app design, code, and original content are owned by [Your Company]. Data from USGS, NOAA, and other sources remains property of respective owners.
-
-**Changes to Terms**
-
-We reserve the right to modify these terms. Continued use after changes constitutes acceptance.
-
-**Termination**
-
-We may terminate or suspend access to the app at any time without notice.
-
-**Governing Law**
-
-These terms are governed by the laws of [Your Jurisdiction].
-
-**Contact**
-
-For questions: support@yourcompany.com
-`;
+export const MMI_SCALE = [
+  { level: 1, label: 'Not felt', description: 'Not felt except by very few' },
+  { level: 2, label: 'Weak', description: 'Felt by few, especially on upper floors' },
+  { level: 3, label: 'Weak', description: 'Felt noticeably indoors' },
+  { level: 4, label: 'Light', description: 'Felt by many indoors, few outdoors' },
+  { level: 5, label: 'Moderate', description: 'Felt by nearly everyone' },
+  { level: 6, label: 'Strong', description: 'Felt by all, many frightened' },
+  { level: 7, label: 'Very Strong', description: 'Difficult to stand' },
+  { level: 8, label: 'Severe', description: 'Steering of cars affected' },
+  { level: 9, label: 'Violent', description: 'General panic' },
+  { level: 10, label: 'Extreme', description: 'Most buildings destroyed' },
+];

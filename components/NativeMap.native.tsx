@@ -1,91 +1,116 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Earthquake, Volcano, NuclearPlant, PlateBoundary, MapLayer } from '@/types';
-import { COLORS } from '@/constants/theme';
+import React, { useRef, useEffect } from 'react';
+import { View, StyleSheet, Text, Animated } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { getMagnitudeColor, FONT_WEIGHT } from '@/constants/theme';
+import { Earthquake } from '@/types';
 
 interface NativeMapProps {
   earthquakes: Earthquake[];
-  selectedMarker: string | null;
-  onMarkerPress: (id: string) => void;
+  selectedMarker: Earthquake | null;
+  onMarkerPress: (earthquake: Earthquake) => void;
   userLocation: { latitude: number; longitude: number } | null;
-  volcanoes: Volcano[];
-  nuclearPlants: NuclearPlant[];
-  plateBoundaries: PlateBoundary[];
-  layers: MapLayer[];
 }
 
-const getMagnitudeColor = (magnitude: number): string => {
-  if (magnitude < 2) return COLORS.magnitude.micro;
-  if (magnitude < 3) return COLORS.magnitude.minor;
-  if (magnitude < 4) return COLORS.magnitude.light;
-  if (magnitude < 5) return COLORS.magnitude.moderate;
-  if (magnitude < 6) return COLORS.magnitude.strong;
-  if (magnitude < 7) return COLORS.magnitude.major;
-  if (magnitude < 8) return COLORS.magnitude.great;
-  return COLORS.magnitude.epic;
-};
+export default function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation }: NativeMapProps) {
+  const mapRef = useRef<any>(null);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
-export default function NativeMap({
-  earthquakes,
-  selectedMarker,
-  onMarkerPress,
-  userLocation,
-  volcanoes,
-  nuclearPlants,
-  layers,
-}: NativeMapProps) {
-  const initialRegion = {
-    latitude: userLocation?.latitude || 0,
-    longitude: userLocation?.longitude || 0,
-    latitudeDelta: 50,
-    longitudeDelta: 50,
-  };
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.3,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [pulseAnim]);
+
+  useEffect(() => {
+    if (selectedMarker && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: selectedMarker.latitude,
+        longitude: selectedMarker.longitude,
+        latitudeDelta: 5,
+        longitudeDelta: 5,
+      });
+    }
+  }, [selectedMarker]);
+
+  const initialRegion = userLocation
+    ? {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 50,
+        longitudeDelta: 50,
+      }
+    : {
+        latitude: 20,
+        longitude: 0,
+        latitudeDelta: 100,
+        longitudeDelta: 100,
+      };
 
   return (
     <MapView
+      ref={mapRef}
       style={styles.map}
-      provider={PROVIDER_GOOGLE}
       initialRegion={initialRegion}
       showsUserLocation={true}
-      showsMyLocationButton={true}
+      showsMyLocationButton={false}
     >
-      {earthquakes.map((earthquake) => (
-        <Marker
-          key={earthquake.id}
-          coordinate={{
-            latitude: earthquake.latitude,
-            longitude: earthquake.longitude,
-          }}
-          onPress={() => onMarkerPress(earthquake.id)}
-          pinColor={getMagnitudeColor(earthquake.magnitude)}
-          opacity={selectedMarker === earthquake.id ? 1 : 0.7}
-        />
-      ))}
+      {earthquakes.map((eq) => {
+        const color = getMagnitudeColor(eq.magnitude);
+        const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
 
-      {layers.find(l => l.id === 'volcanoes')?.enabled && volcanoes.map((volcano) => (
-        <Marker
-          key={volcano.id}
-          coordinate={{
-            latitude: volcano.latitude,
-            longitude: volcano.longitude,
-          }}
-          pinColor="#FF6B00"
-          title={volcano.name}
-        />
-      ))}
-
-      {layers.find(l => l.id === 'nuclear')?.enabled && nuclearPlants.map((plant) => (
-        <Marker
-          key={plant.id}
-          coordinate={{
-            latitude: plant.latitude,
-            longitude: plant.longitude,
-          }}
-          pinColor="#FFD700"
-          title={plant.name}
-        />
-      ))}
+        return (
+          <Marker
+            key={eq.id}
+            coordinate={{
+              latitude: eq.latitude,
+              longitude: eq.longitude,
+            }}
+            onPress={() => onMarkerPress(eq)}
+            tracksViewChanges={false}
+          >
+            <View style={styles.markerContainer}>
+              <Animated.View
+                style={[
+                  styles.pulse,
+                  {
+                    width: size * 2,
+                    height: size * 2,
+                    borderRadius: size,
+                    backgroundColor: color + '30',
+                    transform: [{ scale: selectedMarker?.id === eq.id ? pulseAnim : 1 }],
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.marker,
+                  {
+                    width: size,
+                    height: size,
+                    borderRadius: size / 2,
+                    backgroundColor: color,
+                  },
+                ]}
+              >
+                <Text style={[styles.markerText, { fontSize: size / 3 }]}>
+                  {eq.magnitude.toFixed(1)}
+                </Text>
+              </View>
+            </View>
+          </Marker>
+        );
+      })}
     </MapView>
   );
 }
@@ -93,5 +118,22 @@ export default function NativeMap({
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+  markerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pulse: {
+    position: 'absolute',
+  },
+  marker: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  markerText: {
+    color: '#FFFFFF',
+    fontWeight: FONT_WEIGHT.bold,
   },
 });

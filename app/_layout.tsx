@@ -1,54 +1,109 @@
-import { Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useState, Suspense } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { initDatabase } from '@/services/database';
 import { PreferencesProvider } from '@/contexts/PreferencesContext';
 import { LocationProvider } from '@/contexts/LocationContext';
 import { EarthquakesProvider } from '@/contexts/EarthquakesContext';
-import { MapLayersProvider } from '@/contexts/MapLayersContext';
-import { VolcanoesProvider } from '@/contexts/VolcanoesContext';
-import { useEffect } from 'react';
-import { initDatabase } from '@/services/database';
+import { COLORS } from '@/constants/theme';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 3,
-      staleTime: 60000,
-    },
-  },
-});
+SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  useEffect(() => {
-    initDatabase().catch((error) => {
-      console.error('Failed to initialize database:', error);
-    });
-  }, []);
-
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="index" />
+    <Stack screenOptions={{ headerBackTitle: "Back" }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }
 
+function LoadingFallback() {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={COLORS.primary[600]} />
+      <Text style={styles.loadingText}>Loading...</Text>
+    </View>
+  );
+}
+
 export default function RootLayout() {
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
+
+  const initializeApp = async () => {
+    try {
+      console.log('Initializing database...');
+      await initDatabase();
+      console.log('Database initialized successfully');
+      setIsReady(true);
+      await SplashScreen.hideAsync();
+    } catch (err) {
+      console.error('Failed to initialize app:', err);
+      setError('Failed to initialize app. Please restart.');
+      await SplashScreen.hideAsync();
+    }
+  };
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!isReady) {
+    return <LoadingFallback />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <PreferencesProvider>
-        <LocationProvider>
-          <MapLayersProvider>
+      <Suspense fallback={<LoadingFallback />}>
+        <PreferencesProvider>
+          <LocationProvider>
             <EarthquakesProvider>
-              <VolcanoesProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <RootLayoutNav />
-                </GestureHandlerRootView>
-              </VolcanoesProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
             </EarthquakesProvider>
-          </MapLayersProvider>
-        </LocationProvider>
-      </PreferencesProvider>
+          </LocationProvider>
+        </PreferencesProvider>
+      </Suspense>
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background.light,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: COLORS.text.primary.light,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background.light,
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: COLORS.alert.red,
+    textAlign: 'center',
+  },
+});
