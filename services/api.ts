@@ -342,15 +342,93 @@ export const fetchPlateBoundaries = async (): Promise<PlateBoundary[]> => {
   }
 };
 
+const MOCK_NUCLEAR_PLANTS: NuclearPlant[] = [
+  {
+    id: '1',
+    name: 'Fukushima Daiichi',
+    country: 'Japan',
+    latitude: 37.4217,
+    longitude: 141.0327,
+  },
+  {
+    id: '2',
+    name: 'Chernobyl',
+    country: 'Ukraine',
+    latitude: 51.3890,
+    longitude: 30.0990,
+  },
+  {
+    id: '3',
+    name: 'Three Mile Island',
+    country: 'United States',
+    latitude: 40.1536,
+    longitude: -76.7250,
+  },
+  {
+    id: '4',
+    name: 'Diablo Canyon',
+    country: 'United States',
+    latitude: 35.2111,
+    longitude: -120.8522,
+  },
+  {
+    id: '5',
+    name: 'Palo Verde',
+    country: 'United States',
+    latitude: 33.3883,
+    longitude: -112.8650,
+  },
+  {
+    id: '6',
+    name: 'Bruce Nuclear',
+    country: 'Canada',
+    latitude: 44.3333,
+    longitude: -81.6000,
+  },
+  {
+    id: '7',
+    name: 'Gravelines',
+    country: 'France',
+    latitude: 51.0133,
+    longitude: 2.1333,
+  },
+  {
+    id: '8',
+    name: 'Zaporizhzhia',
+    country: 'Ukraine',
+    latitude: 47.5147,
+    longitude: 34.5858,
+  },
+];
+
 export const fetchNuclearPlants = async (): Promise<NuclearPlant[]> => {
   try {
     const url = 'https://raw.githubusercontent.com/plotly/datasets/master/nuclear_power_plants.csv';
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) {
+      console.warn(`Nuclear plants API returned status ${res.status}, using mock data`);
+      return MOCK_NUCLEAR_PLANTS;
+    }
+    
     const text = await res.text();
+    
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      console.warn('Nuclear plants API returned empty response, using mock data');
+      return MOCK_NUCLEAR_PLANTS;
+    }
+    
     const lines = text.split('\n').filter((l) => l.trim().length > 0);
     const header = lines.shift();
-    if (!header) return [];
+    if (!header) {
+      console.warn('Nuclear plants API returned no header, using mock data');
+      return MOCK_NUCLEAR_PLANTS;
+    }
+    
     const cols = header.split(',');
     const latIdx = cols.findIndex((c) => /lat/i.test(c));
     const lonIdx = cols.findIndex((c) => /lon/i.test(c));
@@ -362,7 +440,7 @@ export const fetchNuclearPlants = async (): Promise<NuclearPlant[]> => {
       const parts = line.split(',');
       const lat = Number(parts[latIdx] ?? 0);
       const lon = Number(parts[lonIdx] ?? 0);
-      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      if (Number.isFinite(lat) && Number.isFinite(lon) && lat !== 0 && lon !== 0) {
         plants.push({
           id: String(idx),
           name: (parts[nameIdx] ?? 'Nuclear Plant').trim(),
@@ -372,10 +450,16 @@ export const fetchNuclearPlants = async (): Promise<NuclearPlant[]> => {
         });
       }
     });
+    
+    if (plants.length === 0) {
+      console.warn('Nuclear plants API returned no valid data, using mock data');
+      return MOCK_NUCLEAR_PLANTS;
+    }
+    
     return plants;
   } catch (e) {
-    console.error('Failed to fetch nuclear plants', e);
-    return [];
+    console.warn('Failed to fetch nuclear plants, using mock data:', e);
+    return MOCK_NUCLEAR_PLANTS;
   }
 };
 
