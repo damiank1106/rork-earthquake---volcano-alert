@@ -61,7 +61,12 @@ export default function MapScreen() {
     if (magCategory === null) return earthquakes;
     const min = magCategory;
     const max = magCategory + 1;
-    return earthquakes.filter((e) => e.magnitude >= min && e.magnitude < max);
+    return earthquakes.filter((e) => {
+      if (magCategory === 0) {
+        return e.magnitude >= 0 && e.magnitude < 1;
+      }
+      return e.magnitude >= min && e.magnitude < max;
+    });
   }, [earthquakes, magCategory, magFilterOff]);
 
   const panelAnim = useRef(new Animated.Value(0)).current;

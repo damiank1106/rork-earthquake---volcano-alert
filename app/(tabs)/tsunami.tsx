@@ -54,8 +54,8 @@ export default function TsunamiScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}> 
       <GlassView {...glassProps} style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>NOAA Tsunami Alerts</Text>
-          <Text style={styles.subtitle}>{alerts.length} active alerts</Text>
+          <Text style={styles.title}>Tsunami Alerts</Text>
+          <Text style={styles.subtitle}>{alerts.length} alerts from multiple sources</Text>
         </View>
         <TouchableOpacity
           style={styles.refreshButton}
@@ -86,6 +86,9 @@ export default function TsunamiScreen() {
               {selectedAlert && (
                 <>
                   <Text style={styles.modalTitle}>{selectedAlert.title}</Text>
+                  {selectedAlert.source && (
+                    <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Source:</Text> {selectedAlert.source}</Text>
+                  )}
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Area:</Text> {selectedAlert.areaDescription}</Text>
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Severity:</Text> {selectedAlert.severity}</Text>
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Urgency:</Text> {selectedAlert.urgency}</Text>
@@ -107,6 +110,9 @@ export default function TsunamiScreen() {
               {selectedAlert && (
                 <>
                   <Text style={styles.modalTitle}>{selectedAlert.title}</Text>
+                  {selectedAlert.source && (
+                    <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Source:</Text> {selectedAlert.source}</Text>
+                  )}
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Area:</Text> {selectedAlert.areaDescription}</Text>
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Severity:</Text> {selectedAlert.severity}</Text>
                   <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Urgency:</Text> {selectedAlert.urgency}</Text>

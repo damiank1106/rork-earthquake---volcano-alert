@@ -224,6 +224,7 @@ export interface TsunamiAlert {
   urgency: string;
   event: string;
   geometry: any;
+  source?: string;
 }
 
 export interface PlateBoundary {

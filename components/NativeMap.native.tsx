@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Animated } from 'react-native';
 import MapView, { Marker, Polyline, Circle } from 'react-native-maps';
 import { getMagnitudeColor, FONT_WEIGHT } from '@/constants/theme';
 import { Earthquake, PlateBoundary, Volcano, NuclearPlant } from '@/types';
+import { useLocalSearchParams } from 'expo-router';
 
 interface NativeMapProps {
   earthquakes: Earthquake[];
@@ -21,6 +22,8 @@ interface NativeMapProps {
 
 const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true }, ref) {
   const mapRef = useRef<any>(null);
+  const params = useLocalSearchParams();
+  const highlightedVolcanoId = params.volcanoId as string | undefined;
 
   useImperativeHandle(ref, () => ({
     animateToRegion: (region: any, duration?: number) => {
@@ -28,6 +31,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
     },
   }));
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const volcanoPulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
@@ -36,7 +40,14 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
       ])
     ).start();
-  }, [pulseAnim]);
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(volcanoPulseAnim, { toValue: 1.5, duration: 1200, useNativeDriver: true }),
+        Animated.timing(volcanoPulseAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [pulseAnim, volcanoPulseAnim]);
 
   useEffect(() => {
     if (selectedMarker && mapRef.current) {
@@ -79,11 +90,26 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         />
       ))}
 
-      {showVolcanoes && volcanoes.map((v) => (
-        <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }}>
-          <View style={[styles.volcanoDot, { backgroundColor: '#DC2626' }]} />
-        </Marker>
-      ))}
+      {showVolcanoes && volcanoes.map((v) => {
+        const isHighlighted = highlightedVolcanoId === v.id;
+        return (
+          <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }}>
+            <View style={styles.volcanoContainer}>
+              {isHighlighted && (
+                <Animated.View
+                  style={[
+                    styles.volcanoPulse,
+                    {
+                      transform: [{ scale: volcanoPulseAnim }],
+                    },
+                  ]}
+                />
+              )}
+              <View style={[styles.volcanoDot, { backgroundColor: '#DC2626' }]} />
+            </View>
+          </Marker>
+        );
+      })}
 
       {showNuclearPlants && nuclearPlants.map((n) => (
         <Marker key={`np-${n.id}`} coordinate={{ latitude: n.latitude, longitude: n.longitude }}>
@@ -111,7 +137,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         </Marker>
       ))}
 
-      {earthquakes.map((eq) => {
+      {!clusteringEnabled && earthquakes.map((eq) => {
         const color = getMagnitudeColor(eq.magnitude);
         const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
         return (
@@ -137,7 +163,9 @@ const styles = StyleSheet.create({
   pulse: { position: 'absolute' },
   marker: { justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#FFFFFF' },
   markerText: { color: '#FFFFFF', fontWeight: FONT_WEIGHT.bold },
-  volcanoDot: { width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: '#fff' },
+  volcanoContainer: { alignItems: 'center', justifyContent: 'center' },
+  volcanoPulse: { position: 'absolute', width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(220, 38, 38, 0.4)', borderWidth: 2, borderColor: 'rgba(220, 38, 38, 0.6)' },
+  volcanoDot: { width: 20, height: 20, borderRadius: 10, borderWidth: 3, borderColor: '#fff' },
   nuclearIcon: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#10B981', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#fff' },
   nuclearText: { fontSize: 12 },
   cluster: { minWidth: 28, paddingHorizontal: 8, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#fff' },

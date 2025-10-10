@@ -232,24 +232,7 @@ export default function SettingsScreen() {
           </View>
         </GlassView>
 
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Sources</Text>
-          <View style={styles.card}>
-            <SettingToggle
-              title="Earthquakes"
-              subtitle="Show earthquake data from USGS"
-              value={preferences.earthquakesEnabled}
-              onValueChange={(value) => updatePreferences({ earthquakesEnabled: value })}
-            />
-            <View style={styles.divider} />
-            <SettingToggle
-              title="Volcanoes"
-              subtitle="Show volcano data"
-              value={preferences.volcanoesEnabled}
-              onValueChange={(value) => updatePreferences({ volcanoesEnabled: value })}
-            />
-          </View>
-        </GlassView>
+
 
         <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>Map</Text>
@@ -292,7 +275,7 @@ export default function SettingsScreen() {
         <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
           <View style={styles.card}>
-            <SettingRow title="Data Sources" subtitle="USGS, NOAA/NWS Alerts, Smithsonian GVP, Tectonic Plates (PB2002), Nuclear Plants (Plotly dataset)" showChevron={false} />
+            <SettingRow title="Data Sources" subtitle="Automatically updated from USGS, NOAA/NWS, PHIVOLCS, Smithsonian GVP, PB2002, and other trusted sources" showChevron={false} />
             <View style={styles.divider} />
             <SettingRow title="Version" subtitle="1.0.0" showChevron={false} />
             <View style={styles.divider} />
