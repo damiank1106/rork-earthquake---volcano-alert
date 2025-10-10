@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { BlurView, BlurTint } from 'expo-blur';
 import { MapPin, Clock, Layers } from 'lucide-react-native';
 import { Earthquake } from '@/types';
-import { getMagnitudeColor, COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/constants/theme';
+import { getMagnitudeColor, COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { formatTime, formatDepth, calculateDistance } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
+
+const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 interface EarthquakeCardProps {
   earthquake: Earthquake;
@@ -27,65 +30,70 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
       )
     : null;
 
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+
   return (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={onPress}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={`Earthquake magnitude ${earthquake.magnitude.toFixed(1)} in ${earthquake.place}`}
-    >
-      <View style={styles.header}>
-        <View style={[styles.magnitudeBadge, { backgroundColor: magnitudeColor }]}>
-          <Text style={styles.magnitudeText}>{earthquake.magnitude.toFixed(1)}</Text>
-        </View>
-        <View style={styles.headerInfo}>
-          <Text style={styles.place} numberOfLines={2}>
-            {earthquake.place}
-          </Text>
-          <View style={styles.metaRow}>
-            <Clock size={14} color={COLORS.text.secondary.light} />
-            <Text style={styles.metaText}>
-              {formatTime(earthquake.time, preferences.timeFormat)}
+    <GlassView {...glassProps} style={styles.card}>
+      <TouchableOpacity
+        style={styles.cardTouchable}
+        onPress={onPress}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`Earthquake magnitude ${earthquake.magnitude.toFixed(1)} in ${earthquake.place}`}
+      >
+        <View style={styles.header}>
+          <View style={[styles.magnitudeBadge, { backgroundColor: magnitudeColor }]}>
+            <Text style={styles.magnitudeText}>{earthquake.magnitude.toFixed(1)}</Text>
+          </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.place} numberOfLines={2}>
+              {earthquake.place}
             </Text>
+            <View style={styles.metaRow}>
+              <Clock size={14} color={COLORS.text.secondary.light} />
+              <Text style={styles.metaText}>
+                {formatTime(earthquake.time, preferences.timeFormat)}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.details}>
-        <View style={styles.detailItem}>
-          <Layers size={16} color={COLORS.text.secondary.light} />
-          <Text style={styles.detailText}>
-            Depth: {formatDepth(earthquake.depth, preferences.units)}
-          </Text>
-        </View>
-        {distance !== null && (
+        <View style={styles.details}>
           <View style={styles.detailItem}>
-            <MapPin size={16} color={COLORS.text.secondary.light} />
+            <Layers size={16} color={COLORS.text.secondary.light} />
             <Text style={styles.detailText}>
-              {distance.toFixed(0)} {preferences.units === 'metric' ? 'km' : 'mi'} away
+              Depth: {formatDepth(earthquake.depth, preferences.units)}
             </Text>
+          </View>
+          {distance !== null && (
+            <View style={styles.detailItem}>
+              <MapPin size={16} color={COLORS.text.secondary.light} />
+              <Text style={styles.detailText}>
+                {distance.toFixed(0)} {preferences.units === 'metric' ? 'km' : 'mi'} away
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {earthquake.tsunami && (
+          <View style={styles.tsunamiWarning}>
+            <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
           </View>
         )}
-      </View>
-
-      {earthquake.tsunami && (
-        <View style={styles.tsunamiWarning}>
-          <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
-        </View>
-      )}
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </GlassView>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface.light,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
     marginHorizontal: SPACING.md,
     marginBottom: SPACING.md,
-    ...SHADOW.md,
+    borderRadius: BORDER_RADIUS.lg,
+    overflow: 'hidden',
+  },
+  cardTouchable: {
+    padding: SPACING.md,
   },
   header: {
     flexDirection: 'row',

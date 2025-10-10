@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView, BlurTint } from 'expo-blur';
 import { ChevronRight, Info } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 
+const GlassView = Platform.OS === 'web' ? View : BlurView;
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { preferences, updatePreferences } = usePreferences();
+
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const SettingRow = ({
     title,
@@ -63,13 +68,10 @@ export default function SettingsScreen() {
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[styles.content, { paddingTop: insets.top + SPACING.md }]}
-    >
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingTop: insets.top + SPACING.md }]}>
       <Text style={styles.title}>Settings</Text>
 
-      <View style={styles.section}>
+      <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>Display</Text>
         <View style={styles.card}>
           <SettingRow
@@ -94,9 +96,9 @@ export default function SettingsScreen() {
             }
           />
         </View>
-      </View>
+      </GlassView>
 
-      <View style={styles.section}>
+      <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>Data Sources</Text>
         <View style={styles.card}>
           <SettingToggle
@@ -113,9 +115,9 @@ export default function SettingsScreen() {
             onValueChange={(value) => updatePreferences({ volcanoesEnabled: value })}
           />
         </View>
-      </View>
+      </GlassView>
 
-      <View style={styles.section}>
+      <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>Map</Text>
         <View style={styles.card}>
           <SettingToggle
@@ -132,9 +134,9 @@ export default function SettingsScreen() {
             onValueChange={(value) => updatePreferences({ heatmapEnabled: value })}
           />
         </View>
-      </View>
+      </GlassView>
 
-      <View style={styles.section}>
+      <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>Notifications</Text>
         <View style={styles.card}>
           <SettingToggle
@@ -151,9 +153,9 @@ export default function SettingsScreen() {
             onValueChange={(value) => updatePreferences({ quietHoursEnabled: value })}
           />
         </View>
-      </View>
+      </GlassView>
 
-      <View style={styles.section}>
+      <GlassView {...glassProps} style={styles.section}>
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.card}>
           <SettingRow title="Data Sources" subtitle="USGS, Smithsonian GVP" showChevron={false} />
@@ -164,7 +166,7 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <SettingRow title="Terms of Use" onPress={() => {}} />
         </View>
-      </View>
+      </GlassView>
 
       <View style={styles.disclaimer}>
         <Info size={20} color={COLORS.alert.orange} />
@@ -194,6 +196,8 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: SPACING.xl,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   sectionTitle: {
     fontSize: FONT_SIZE.md,
@@ -202,6 +206,8 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    padding: SPACING.md,
+    paddingBottom: 0,
   },
   card: {
     backgroundColor: COLORS.surface.light,

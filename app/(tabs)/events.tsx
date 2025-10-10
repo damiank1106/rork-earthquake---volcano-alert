@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { BlurView, BlurTint } from 'expo-blur';
 import { SortAsc } from 'lucide-react-native';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { useLocation } from '@/contexts/LocationContext';
@@ -17,6 +18,8 @@ import { EarthquakeCard } from '@/components/EarthquakeCard';
 import { sortEarthquakes } from '@/utils/helpers';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { Earthquake, SortOption } from '@/types';
+
+const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 export default function EventsScreen() {
   const insets = useSafeAreaInsets();
@@ -59,8 +62,10 @@ export default function EventsScreen() {
     }
   };
 
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+
   const renderHeader = () => (
-    <View style={styles.headerContainer}>
+    <GlassView {...glassProps} style={styles.headerContainer}>
       <Text style={styles.title}>Earthquake Events</Text>
       <View style={styles.tabs}>
         <TouchableOpacity
@@ -90,20 +95,20 @@ export default function EventsScreen() {
       </View>
       <View style={styles.controls}>
         <TouchableOpacity style={styles.controlButton} onPress={toggleSort}>
-          <SortAsc size={20} color={COLORS.primary[500]} />
+          <SortAsc size={20} color={COLORS.primary[600]} />
           <Text style={styles.controlText}>
             Sort: {sortBy.field === 'time' ? 'Time' : sortBy.field === 'magnitude' ? 'Magnitude' : 'Distance'}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </GlassView>
   );
 
   if (isLoading && earthquakes.length === 0) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary[500]} />
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
           <Text style={styles.loadingText}>Loading earthquakes...</Text>
         </View>
       </View>
@@ -129,7 +134,7 @@ export default function EventsScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={COLORS.primary[500]}
+            tintColor={COLORS.primary[600]}
           />
         }
       />
@@ -145,6 +150,10 @@ const styles = StyleSheet.create({
   headerContainer: {
     padding: SPACING.md,
     paddingBottom: SPACING.sm,
+    margin: SPACING.md,
+    marginBottom: SPACING.sm,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   title: {
     fontSize: FONT_SIZE.xxxl,

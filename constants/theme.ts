@@ -1,16 +1,16 @@
 export const COLORS = {
   primary: {
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6',
-    600: '#2563EB',
-    700: '#1D4ED8',
-    800: '#1E3A8A',
-    900: '#1E3A5F',
-    950: '#0A1929',
+    50: '#FFFFFF',
+    100: '#F8F8F8',
+    200: '#F1F1F1',
+    300: '#E5E5E5',
+    400: '#D4D4D4',
+    500: '#A3A3A3',
+    600: '#737373',
+    700: '#525252',
+    800: '#404040',
+    900: '#262626',
+    950: '#171717',
   },
   magnitude: {
     micro: '#10B981',
@@ -36,25 +36,25 @@ export const COLORS = {
   },
   background: {
     light: '#FFFFFF',
-    dark: '#F8FAFC',
+    dark: '#F8F8F8',
   },
   surface: {
     light: '#FFFFFF',
-    dark: '#F1F5F9',
+    dark: '#F1F1F1',
   },
   text: {
     primary: {
-      light: '#0F172A',
-      dark: '#334155',
+      light: '#171717',
+      dark: '#F8F8F8',
     },
     secondary: {
-      light: '#64748B',
-      dark: '#94A3B8',
+      light: '#737373',
+      dark: '#D4D4D4',
     },
   },
   border: {
-    light: '#E2E8F0',
-    dark: '#CBD5E1',
+    light: '#E5E5E5',
+    dark: '#D4D4D4',
   },
 };
 

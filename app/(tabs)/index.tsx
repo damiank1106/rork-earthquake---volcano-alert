@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RefreshCw, MapPin } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
+import { BlurView, BlurTint } from 'expo-blur';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { useLocation } from '@/contexts/LocationContext';
 import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/constants/theme';
@@ -10,6 +10,8 @@ import { Earthquake } from '@/types';
 import { formatTime, formatDepth } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import NativeMap from '@/components/NativeMap';
+
+const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
@@ -29,16 +31,18 @@ export default function MapScreen() {
     setSelectedMarker(earthquake);
   };
 
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+
   if (Platform.OS === 'web') {
     return (
       <View style={styles.container}>
         <View style={styles.webMapPlaceholder}>
-          <MapPin size={48} color={COLORS.primary[500]} />
+          <MapPin size={48} color={COLORS.primary[600]} />
           <Text style={styles.webMapText}>Map view is available on mobile devices</Text>
           <Text style={styles.webMapSubtext}>Use the Events tab to view earthquake data</Text>
         </View>
 
-        <BlurView intensity={80} tint="light" style={[styles.header, { top: insets.top + 10 }]}>
+        <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
           <View style={styles.headerContent}>
             <Text style={styles.title}>Seismic Monitor</Text>
             <Text style={styles.subtitle}>
@@ -51,12 +55,12 @@ export default function MapScreen() {
             disabled={isRefreshing}
           >
             {isRefreshing ? (
-              <ActivityIndicator size="small" color={COLORS.primary[500]} />
+              <ActivityIndicator size="small" color={COLORS.primary[600]} />
             ) : (
-              <RefreshCw size={20} color={COLORS.primary[500]} />
+              <RefreshCw size={20} color={COLORS.primary[600]} />
             )}
           </TouchableOpacity>
-        </BlurView>
+        </GlassView>
 
         <ScrollView style={styles.webEventsList} contentContainerStyle={styles.webEventsContent}>
           {earthquakes.slice(0, 10).map((eq) => (
@@ -86,7 +90,7 @@ export default function MapScreen() {
         </ScrollView>
 
         {selectedMarker && (
-          <BlurView intensity={80} tint="light" style={styles.infoCard}>
+          <GlassView {...glassProps} style={styles.infoCard}>
             <View style={styles.infoHeader}>
               <View
                 style={[
@@ -117,12 +121,12 @@ export default function MapScreen() {
                 <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
               )}
             </View>
-          </BlurView>
+          </GlassView>
         )}
 
         {isLoading && (
           <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={COLORS.primary[500]} />
+            <ActivityIndicator size="large" color={COLORS.primary[600]} />
             <Text style={styles.loadingText}>Loading earthquakes...</Text>
           </View>
         )}
@@ -139,7 +143,7 @@ export default function MapScreen() {
         userLocation={userLocation}
       />
 
-      <BlurView intensity={80} tint="light" style={[styles.header, { top: insets.top + 10 }]}>
+      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
         <View style={styles.headerContent}>
           <Text style={styles.title}>Seismic Monitor</Text>
           <Text style={styles.subtitle}>
@@ -152,15 +156,15 @@ export default function MapScreen() {
           disabled={isRefreshing}
         >
           {isRefreshing ? (
-            <ActivityIndicator size="small" color={COLORS.primary[500]} />
+            <ActivityIndicator size="small" color={COLORS.primary[600]} />
           ) : (
-            <RefreshCw size={20} color={COLORS.primary[500]} />
+            <RefreshCw size={20} color={COLORS.primary[600]} />
           )}
         </TouchableOpacity>
-      </BlurView>
+      </GlassView>
 
       {selectedMarker && (
-        <BlurView intensity={80} tint="light" style={styles.infoCard}>
+        <GlassView {...glassProps} style={styles.infoCard}>
           <View style={styles.infoHeader}>
             <View
               style={[
@@ -191,12 +195,12 @@ export default function MapScreen() {
               <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
             )}
           </View>
-        </BlurView>
+        </GlassView>
       )}
 
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={COLORS.primary[500]} />
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
           <Text style={styles.loadingText}>Loading earthquakes...</Text>
         </View>
       )}
