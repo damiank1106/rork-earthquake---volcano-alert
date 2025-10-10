@@ -61,32 +61,52 @@ export const fetchEarthquakes = async (
 
 export const fetchVolcanoes = async (): Promise<Volcano[]> => {
   try {
-    const url = 'https://raw.githubusercontent.com/opendatasoft/datasets/master/volcanoes/volcanoes.json';
+    const url = 'https://raw.githubusercontent.com/datasets/volcano-global/master/data/volcano.csv';
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-    return data
-      .filter((v: any) => v.coordinates && Array.isArray(v.coordinates) && v.coordinates.length >= 2)
-      .map((v: any, idx: number) => ({
-        id: v.number?.toString() ?? String(idx),
-        name: v.name ?? 'Unknown volcano',
-        latitude: Number(v.coordinates[1] ?? 0),
-        longitude: Number(v.coordinates[0] ?? 0),
-        country: v.country ?? 'Unknown',
-        region: v.region ?? 'Unknown',
-        elevation: Number(v.elevation ?? 0),
-        type: v.type ?? 'Volcano',
-        status: v.status ?? 'active',
-        lastEruptionDate: v.last_eruption_year ?? undefined,
-        activitySummary: undefined,
-        alertLevel: undefined,
-        vei: undefined,
-        sources: ['Smithsonian GVP'],
-        url: undefined,
-      })) as Volcano[];
+    const text = await response.text();
+    const lines = text.split('\n').filter((l) => l.trim().length > 0);
+    const header = lines.shift();
+    if (!header) return [];
+    
+    const cols = header.split(',');
+    const nameIdx = cols.findIndex((c) => /volcano.*name/i.test(c) || c.toLowerCase() === 'name');
+    const latIdx = cols.findIndex((c) => /latitude/i.test(c));
+    const lonIdx = cols.findIndex((c) => /longitude/i.test(c));
+    const countryIdx = cols.findIndex((c) => /country/i.test(c));
+    const typeIdx = cols.findIndex((c) => /type/i.test(c));
+    const elevIdx = cols.findIndex((c) => /elevation/i.test(c));
+    const statusIdx = cols.findIndex((c) => /status/i.test(c));
+    const lastEruptionIdx = cols.findIndex((c) => /last.*eruption/i.test(c));
+
+    const volcanoes: Volcano[] = [];
+    lines.forEach((line, idx) => {
+      const parts = line.split(',');
+      const lat = Number(parts[latIdx] ?? 0);
+      const lon = Number(parts[lonIdx] ?? 0);
+      if (Number.isFinite(lat) && Number.isFinite(lon) && lat !== 0 && lon !== 0) {
+        volcanoes.push({
+          id: String(idx),
+          name: (parts[nameIdx] ?? 'Unknown volcano').trim(),
+          latitude: lat,
+          longitude: lon,
+          country: (parts[countryIdx] ?? 'Unknown').trim(),
+          region: (parts[countryIdx] ?? 'Unknown').trim(),
+          elevation: Number(parts[elevIdx] ?? 0),
+          type: (parts[typeIdx] ?? 'Volcano').trim(),
+          status: (parts[statusIdx] ?? 'active').trim().toLowerCase(),
+          lastEruptionDate: parts[lastEruptionIdx] ?? undefined,
+          activitySummary: undefined,
+          alertLevel: undefined,
+          vei: undefined,
+          sources: ['Smithsonian GVP'],
+          url: undefined,
+        });
+      }
+    });
+    return volcanoes;
   } catch (error) {
     console.error('Failed to fetch volcanoes:', error);
     return [];
