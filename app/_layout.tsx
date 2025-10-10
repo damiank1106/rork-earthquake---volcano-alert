@@ -81,18 +81,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
     padding: 20,
   },
   errorText: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MapPin, Clock, Layers } from 'lucide-react-native';
 import { Earthquake } from '@/types';
 import { getMagnitudeColor, COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/constants/theme';
@@ -44,7 +44,7 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
             {earthquake.place}
           </Text>
           <View style={styles.metaRow}>
-            <Clock size={14} color={COLORS.text.secondary.dark} />
+            <Clock size={14} color={COLORS.text.secondary.light} />
             <Text style={styles.metaText}>
               {formatTime(earthquake.time, preferences.timeFormat)}
             </Text>
@@ -54,14 +54,14 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
 
       <View style={styles.details}>
         <View style={styles.detailItem}>
-          <Layers size={16} color={COLORS.text.secondary.dark} />
+          <Layers size={16} color={COLORS.text.secondary.light} />
           <Text style={styles.detailText}>
             Depth: {formatDepth(earthquake.depth, preferences.units)}
           </Text>
         </View>
         {distance !== null && (
           <View style={styles.detailItem}>
-            <MapPin size={16} color={COLORS.text.secondary.dark} />
+            <MapPin size={16} color={COLORS.text.secondary.light} />
             <Text style={styles.detailText}>
               {distance.toFixed(0)} {preferences.units === 'metric' ? 'km' : 'mi'} away
             </Text>
@@ -80,13 +80,12 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
     marginHorizontal: SPACING.md,
     marginBottom: SPACING.md,
-    ...(Platform.OS === 'ios' ? SHADOW.md : {}),
-    ...(Platform.OS === 'android' ? { elevation: 3 } : {}),
+    ...SHADOW.md,
   },
   header: {
     flexDirection: 'row',
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
   place: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.xs,
   },
   metaRow: {
@@ -122,7 +121,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   details: {
     flexDirection: 'row',
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   tsunamiWarning: {
     marginTop: SPACING.sm,

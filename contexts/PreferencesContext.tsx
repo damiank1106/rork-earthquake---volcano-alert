@@ -11,7 +11,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   volcanoesEnabled: false,
   heatmapEnabled: false,
   clusteringEnabled: true,
-  theme: 'dark',
+  theme: 'light',
   notificationsEnabled: true,
   quietHoursEnabled: false,
   quietHoursStart: '22:00',

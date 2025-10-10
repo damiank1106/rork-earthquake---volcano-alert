@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RefreshCw, MapPin } from 'lucide-react-native';
+import { BlurView } from 'expo-blur';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { useLocation } from '@/contexts/LocationContext';
-import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
+import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/constants/theme';
 import { Earthquake } from '@/types';
-import { formatTime } from '@/services/api';
+import { formatTime, formatDepth } from '@/services/api';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import NativeMap from '@/components/NativeMap';
 
@@ -37,7 +38,7 @@ export default function MapScreen() {
           <Text style={styles.webMapSubtext}>Use the Events tab to view earthquake data</Text>
         </View>
 
-        <View style={[styles.header, { top: insets.top + 10 }]}>
+        <BlurView intensity={80} tint="light" style={[styles.header, { top: insets.top + 10 }]}>
           <View style={styles.headerContent}>
             <Text style={styles.title}>Seismic Monitor</Text>
             <Text style={styles.subtitle}>
@@ -55,7 +56,7 @@ export default function MapScreen() {
               <RefreshCw size={20} color={COLORS.primary[500]} />
             )}
           </TouchableOpacity>
-        </View>
+        </BlurView>
 
         <ScrollView style={styles.webEventsList} contentContainerStyle={styles.webEventsContent}>
           {earthquakes.slice(0, 10).map((eq) => (
@@ -77,7 +78,7 @@ export default function MapScreen() {
                   {eq.place}
                 </Text>
                 <Text style={styles.webEventTime}>
-                  {formatTime(eq.time, preferences.timeFormat)} • Depth: {eq.depth.toFixed(1)} km
+                  {formatTime(eq.time, preferences.timeFormat)} • Depth: {formatDepth(eq.depth, preferences.units)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -85,7 +86,7 @@ export default function MapScreen() {
         </ScrollView>
 
         {selectedMarker && (
-          <View style={styles.infoCard}>
+          <BlurView intensity={80} tint="light" style={styles.infoCard}>
             <View style={styles.infoHeader}>
               <View
                 style={[
@@ -111,12 +112,12 @@ export default function MapScreen() {
               </TouchableOpacity>
             </View>
             <View style={styles.infoDetails}>
-              <Text style={styles.infoDetailText}>Depth: {selectedMarker.depth.toFixed(1)} km</Text>
+              <Text style={styles.infoDetailText}>Depth: {formatDepth(selectedMarker.depth, preferences.units)}</Text>
               {selectedMarker.tsunami && (
                 <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
               )}
             </View>
-          </View>
+          </BlurView>
         )}
 
         {isLoading && (
@@ -130,7 +131,7 @@ export default function MapScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <NativeMap
         earthquakes={earthquakes}
         selectedMarker={selectedMarker}
@@ -138,7 +139,7 @@ export default function MapScreen() {
         userLocation={userLocation}
       />
 
-      <View style={[styles.header, { top: insets.top + 10 }]}>
+      <BlurView intensity={80} tint="light" style={[styles.header, { top: insets.top + 10 }]}>
         <View style={styles.headerContent}>
           <Text style={styles.title}>Seismic Monitor</Text>
           <Text style={styles.subtitle}>
@@ -156,10 +157,10 @@ export default function MapScreen() {
             <RefreshCw size={20} color={COLORS.primary[500]} />
           )}
         </TouchableOpacity>
-      </View>
+      </BlurView>
 
       {selectedMarker && (
-        <View style={styles.infoCard}>
+        <BlurView intensity={80} tint="light" style={styles.infoCard}>
           <View style={styles.infoHeader}>
             <View
               style={[
@@ -185,12 +186,12 @@ export default function MapScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.infoDetails}>
-            <Text style={styles.infoDetailText}>Depth: {selectedMarker.depth.toFixed(1)} km</Text>
+            <Text style={styles.infoDetailText}>Depth: {formatDepth(selectedMarker.depth, preferences.units)}</Text>
             {selectedMarker.tsunami && (
               <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
             )}
           </View>
-        </View>
+        </BlurView>
       )}
 
       {isLoading && (
@@ -206,7 +207,7 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
   },
   header: {
     position: 'absolute',
@@ -214,18 +215,9 @@ const styles = StyleSheet.create({
     right: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface.dark + 'F0',
     borderRadius: 12,
     padding: SPACING.md,
-    ...(Platform.OS === 'ios'
-      ? {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-        }
-      : {}),
-    ...(Platform.OS === 'android' ? { elevation: 5 } : {}),
+    overflow: 'hidden',
   },
   headerContent: {
     flex: 1,
@@ -233,12 +225,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: 2,
   },
   subtitle: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   refreshButton: {
     width: 40,
@@ -253,18 +245,9 @@ const styles = StyleSheet.create({
     bottom: SPACING.md,
     left: SPACING.md,
     right: SPACING.md,
-    backgroundColor: COLORS.surface.dark,
     borderRadius: 12,
     padding: SPACING.md,
-    ...(Platform.OS === 'ios'
-      ? {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-        }
-      : {}),
-    ...(Platform.OS === 'android' ? { elevation: 8 } : {}),
+    overflow: 'hidden',
   },
   infoHeader: {
     flexDirection: 'row',
@@ -290,24 +273,24 @@ const styles = StyleSheet.create({
   infoPlace: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: 4,
   },
   infoTime: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   closeButton: {
     width: 32,
     height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.text.secondary.dark + '20',
+    backgroundColor: COLORS.text.secondary.light + '20',
     borderRadius: 16,
   },
   closeButtonText: {
     fontSize: 18,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   infoDetails: {
     flexDirection: 'row',
@@ -316,7 +299,7 @@ const styles = StyleSheet.create({
   },
   infoDetailText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   tsunamiText: {
     fontSize: FONT_SIZE.sm,
@@ -329,14 +312,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: COLORS.background.dark + 'CC',
+    backgroundColor: COLORS.background.light + 'CC',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
     marginTop: SPACING.md,
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
   },
   webMapPlaceholder: {
     flex: 1,
@@ -346,14 +329,14 @@ const styles = StyleSheet.create({
   },
   webMapText: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.text.primary.light,
     marginTop: SPACING.md,
     textAlign: 'center',
   },
   webMapSubtext: {
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginTop: SPACING.sm,
     textAlign: 'center',
   },
@@ -367,19 +350,11 @@ const styles = StyleSheet.create({
   },
   webEventCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: 12,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
-    ...(Platform.OS === 'ios'
-      ? {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-        }
-      : {}),
-    ...(Platform.OS === 'android' ? { elevation: 2 } : {}),
+    ...SHADOW.md,
   },
   webEventBadge: {
     width: 48,
@@ -401,11 +376,11 @@ const styles = StyleSheet.create({
   webEventPlace: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: 4,
   },
   webEventTime: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
 });

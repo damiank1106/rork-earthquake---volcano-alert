@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronRight, Info } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
@@ -33,7 +33,7 @@ export default function SettingsScreen() {
         {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
       </View>
       {value && <Text style={styles.settingValue}>{value}</Text>}
-      {showChevron && onPress && <ChevronRight size={20} color={COLORS.text.secondary.dark} />}
+      {showChevron && onPress && <ChevronRight size={20} color={COLORS.text.secondary.light} />}
     </TouchableOpacity>
   );
 
@@ -56,8 +56,8 @@ export default function SettingsScreen() {
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: COLORS.border.dark, true: COLORS.primary[500] }}
-        thumbColor={COLORS.text.primary.dark}
+        trackColor={{ false: COLORS.border.light, true: COLORS.primary[500] }}
+        thumbColor={COLORS.text.primary.light}
       />
     </View>
   );
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
   },
   content: {
     padding: SPACING.md,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.lg,
   },
   section: {
@@ -198,15 +198,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginBottom: SPACING.sm,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   card: {
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: BORDER_RADIUS.lg,
     overflow: 'hidden',
+    ...SHADOW.md,
   },
   settingRow: {
     flexDirection: 'row',
@@ -220,21 +221,21 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: 2,
   },
   settingSubtitle: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   settingValue: {
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginRight: SPACING.sm,
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.border.dark,
+    backgroundColor: COLORS.border.light,
     marginLeft: SPACING.md,
   },
   disclaimer: {
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
   disclaimerText: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     lineHeight: 20,
   },
 });

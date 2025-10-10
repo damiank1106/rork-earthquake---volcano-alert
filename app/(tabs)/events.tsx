@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SortAsc } from 'lucide-react-native';
 import { useEarthquakes } from '@/contexts/EarthquakesContext';
@@ -18,6 +19,7 @@ import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { Earthquake, SortOption } from '@/types';
 
 export default function EventsScreen() {
+  const insets = useSafeAreaInsets();
   const { earthquakes, isLoading, refetch, significantEarthquakes, recentEarthquakes } =
     useEarthquakes();
   const { userLocation } = useLocation();
@@ -99,7 +101,7 @@ export default function EventsScreen() {
 
   if (isLoading && earthquakes.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary[500]} />
           <Text style={styles.loadingText}>Loading earthquakes...</Text>
@@ -109,7 +111,7 @@ export default function EventsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <FlatList
         data={displayedEarthquakes}
         keyExtractor={(item) => item.id}
@@ -138,7 +140,7 @@ export default function EventsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
   },
   headerContainer: {
     padding: SPACING.md,
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.md,
   },
   tabs: {
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.medium,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   activeTabText: {
     color: '#FFFFFF',
@@ -184,12 +186,12 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: 8,
   },
   controlText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
   },
   listContent: {
     paddingBottom: SPACING.xl,
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SPACING.md,
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
   emptyContainer: {
     padding: SPACING.xl,
@@ -210,6 +212,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
   },
 });

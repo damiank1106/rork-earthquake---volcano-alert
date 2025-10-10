@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MAGNITUDE_SCALE, SAFETY_GUIDES } from '@/constants/education';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 
 export default function EducationScreen() {
   const insets = useSafeAreaInsets();
@@ -64,7 +64,7 @@ export default function EducationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.dark,
+    backgroundColor: COLORS.background.light,
   },
   content: {
     padding: SPACING.md,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.lg,
   },
   section: {
@@ -82,20 +82,21 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.sm,
   },
   sectionDescription: {
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginBottom: SPACING.md,
   },
   magnitudeCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.md,
+    ...SHADOW.md,
   },
   magnitudeBadge: {
     width: 56,
@@ -116,34 +117,35 @@ const styles = StyleSheet.create({
   magnitudeLabel: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: 4,
   },
   magnitudeDescription: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginBottom: 4,
   },
   magnitudeEffects: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     marginBottom: 2,
   },
   magnitudeFrequency: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     fontStyle: 'italic',
   },
   guideCard: {
-    backgroundColor: COLORS.surface.dark,
+    backgroundColor: COLORS.surface.light,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.md,
+    ...SHADOW.md,
   },
   guideTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.dark,
+    color: COLORS.text.primary.light,
     marginBottom: SPACING.xs,
   },
   guideCategory: {
@@ -165,12 +167,12 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     lineHeight: 20,
   },
   sources: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     fontStyle: 'italic',
     marginTop: SPACING.sm,
   },
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
   },
   disclaimerText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.dark,
+    color: COLORS.text.secondary.light,
     lineHeight: 20,
   },
 });

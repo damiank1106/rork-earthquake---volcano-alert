@@ -36,16 +36,16 @@ export const COLORS = {
   },
   background: {
     light: '#FFFFFF',
-    dark: '#0A1929',
+    dark: '#F8FAFC',
   },
   surface: {
-    light: '#F8FAFC',
-    dark: '#1E3A5F',
+    light: '#FFFFFF',
+    dark: '#F1F5F9',
   },
   text: {
     primary: {
       light: '#0F172A',
-      dark: '#F8FAFC',
+      dark: '#334155',
     },
     secondary: {
       light: '#64748B',
@@ -54,7 +54,7 @@ export const COLORS = {
   },
   border: {
     light: '#E2E8F0',
-    dark: '#334155',
+    dark: '#CBD5E1',
   },
 };
 
