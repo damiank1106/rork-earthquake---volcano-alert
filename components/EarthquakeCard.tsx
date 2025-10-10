@@ -1,0 +1,154 @@
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { MapPin, Clock, Layers } from 'lucide-react-native';
+import { Earthquake } from '@/types';
+import { getMagnitudeColor, COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/constants/theme';
+import { formatTime, formatDepth, calculateDistance } from '@/services/api';
+import { usePreferences } from '@/contexts/PreferencesContext';
+import { useLocation } from '@/contexts/LocationContext';
+
+interface EarthquakeCardProps {
+  earthquake: Earthquake;
+  onPress: () => void;
+}
+
+export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPress }) => {
+  const { preferences } = usePreferences();
+  const { userLocation } = useLocation();
+
+  const magnitudeColor = getMagnitudeColor(earthquake.magnitude);
+
+  const distance = userLocation
+    ? calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        earthquake.latitude,
+        earthquake.longitude
+      )
+    : null;
+
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`Earthquake magnitude ${earthquake.magnitude.toFixed(1)} in ${earthquake.place}`}
+    >
+      <View style={styles.header}>
+        <View style={[styles.magnitudeBadge, { backgroundColor: magnitudeColor }]}>
+          <Text style={styles.magnitudeText}>{earthquake.magnitude.toFixed(1)}</Text>
+        </View>
+        <View style={styles.headerInfo}>
+          <Text style={styles.place} numberOfLines={2}>
+            {earthquake.place}
+          </Text>
+          <View style={styles.metaRow}>
+            <Clock size={14} color={COLORS.text.secondary.dark} />
+            <Text style={styles.metaText}>
+              {formatTime(earthquake.time, preferences.timeFormat)}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.details}>
+        <View style={styles.detailItem}>
+          <Layers size={16} color={COLORS.text.secondary.dark} />
+          <Text style={styles.detailText}>
+            Depth: {formatDepth(earthquake.depth, preferences.units)}
+          </Text>
+        </View>
+        {distance !== null && (
+          <View style={styles.detailItem}>
+            <MapPin size={16} color={COLORS.text.secondary.dark} />
+            <Text style={styles.detailText}>
+              {distance.toFixed(0)} {preferences.units === 'metric' ? 'km' : 'mi'} away
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {earthquake.tsunami && (
+        <View style={styles.tsunamiWarning}>
+          <Text style={styles.tsunamiText}>⚠️ Tsunami Warning</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: COLORS.surface.dark,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.md,
+    marginHorizontal: SPACING.md,
+    marginBottom: SPACING.md,
+    ...(Platform.OS === 'ios' ? SHADOW.md : {}),
+    ...(Platform.OS === 'android' ? { elevation: 3 } : {}),
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.sm,
+  },
+  magnitudeBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: BORDER_RADIUS.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.md,
+  },
+  magnitudeText: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: '#FFFFFF',
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  place: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.text.primary.dark,
+    marginBottom: SPACING.xs,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  metaText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.dark,
+  },
+  details: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.md,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  detailText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.dark,
+  },
+  tsunamiWarning: {
+    marginTop: SPACING.sm,
+    padding: SPACING.sm,
+    backgroundColor: COLORS.alert.red + '20',
+    borderRadius: BORDER_RADIUS.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.alert.red,
+  },
+  tsunamiText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.alert.red,
+  },
+});
