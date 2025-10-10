@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ import { Mountain, MapPin } from 'lucide-react-native';
 import { fetchVolcanoes } from '@/services/api';
 import { Volcano } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 
 export default function VolcanoesScreen() {
   const insets = useSafeAreaInsets();
@@ -15,22 +15,22 @@ export default function VolcanoesScreen() {
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
 
   const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
-  const [hasShownAlert, setHasShownAlert] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!hasShownAlert && volcanoes.length > 0) {
-      setHasShownAlert(true);
-      if (Platform.OS === 'web') {
-        alert('To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.');
-      } else {
-        Alert.alert(
-          'Volcano Map View',
-          'To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.',
-          [{ text: 'OK' }]
-        );
+  useFocusEffect(
+    useCallback(() => {
+      if (volcanoes.length > 0) {
+        if (Platform.OS === 'web') {
+          alert('To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.');
+        } else {
+          Alert.alert(
+            'Volcano Map View',
+            'To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.',
+            [{ text: 'OK' }]
+          );
+        }
       }
-    }
-  }, [volcanoes, hasShownAlert]);
+    }, [volcanoes])
+  );
 
   const sections = useMemo(() => {
     const grouped = volcanoes.reduce((acc: { [key: string]: Volcano[] }, v) => {

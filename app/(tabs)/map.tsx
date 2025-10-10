@@ -47,8 +47,8 @@ export default function MapScreen() {
         mapRef.current?.animateToRegion({
           latitude: highlightedVolcano.latitude,
           longitude: highlightedVolcano.longitude,
-          latitudeDelta: 2,
-          longitudeDelta: 2,
+          latitudeDelta: 0.5,
+          longitudeDelta: 0.5,
         }, 1000);
       }, 300);
     }

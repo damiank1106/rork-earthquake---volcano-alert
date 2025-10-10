@@ -17,6 +17,8 @@ export default function WelcomeScreen() {
   const wave3Anim = useRef(new Animated.Value(0)).current;
   const wave4Anim = useRef(new Animated.Value(0)).current;
   const wave5Anim = useRef(new Animated.Value(0)).current;
+  const wave6Anim = useRef(new Animated.Value(0)).current;
+  const wave7Anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -132,7 +134,41 @@ export default function WelcomeScreen() {
         }),
       ])
     ).start();
-  }, [fadeAnim, slideAnim, logoScale, logoRotate, wave1Anim, wave2Anim, wave3Anim, wave4Anim, wave5Anim]);
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(wave6Anim, {
+          toValue: 1,
+          duration: 18000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(wave6Anim, {
+          toValue: 0,
+          duration: 18000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(wave7Anim, {
+          toValue: 1,
+          duration: 20000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(wave7Anim, {
+          toValue: 0,
+          duration: 20000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [fadeAnim, slideAnim, logoScale, logoRotate, wave1Anim, wave2Anim, wave3Anim, wave4Anim, wave5Anim, wave6Anim, wave7Anim]);
 
   const wave1TranslateY = wave1Anim.interpolate({
     inputRange: [0, 1],
@@ -184,6 +220,26 @@ export default function WelcomeScreen() {
     outputRange: [0, -30],
   });
 
+  const wave6TranslateY = wave6Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -60],
+  });
+
+  const wave6TranslateX = wave6Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -45],
+  });
+
+  const wave7TranslateY = wave7Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 65],
+  });
+
+  const wave7TranslateX = wave7Anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 50],
+  });
+
   const logoRotation = logoRotate.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -201,6 +257,8 @@ export default function WelcomeScreen() {
         <Animated.View style={[styles.wave, styles.wave3, { transform: [{ translateY: wave3TranslateY }, { translateX: wave3TranslateX }] }]} />
         <Animated.View style={[styles.wave, styles.wave4, { transform: [{ translateY: wave4TranslateY }, { translateX: wave4TranslateX }] }]} />
         <Animated.View style={[styles.wave, styles.wave5, { transform: [{ translateY: wave5TranslateY }, { translateX: wave5TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave6, { transform: [{ translateY: wave6TranslateY }, { translateX: wave6TranslateX }] }]} />
+        <Animated.View style={[styles.wave, styles.wave7, { transform: [{ translateY: wave7TranslateY }, { translateX: wave7TranslateX }] }]} />
       </View>
 
       <Animated.View
@@ -291,6 +349,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(14, 165, 233, 0.15)',
     bottom: height * 0.2,
     right: -width * 0.4,
+  },
+  wave6: {
+    width: width * 1.5,
+    height: width * 1.5,
+    backgroundColor: 'rgba(56, 189, 248, 0.25)',
+    top: height * 0.6,
+    right: -width * 0.3,
+  },
+  wave7: {
+    width: width * 1.9,
+    height: width * 1.9,
+    backgroundColor: 'rgba(186, 230, 253, 0.35)',
+    bottom: -width * 0.7,
+    right: -width * 0.5,
   },
   content: {
     width: '85%',
