@@ -2,19 +2,16 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
-import { BlurView, BlurTint } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import { Mountain, MapPin, ExternalLink } from 'lucide-react-native';
 import { fetchVolcanoes } from '@/services/api';
 import { Volcano } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 import { router } from 'expo-router';
 
-const GlassView = Platform.OS === 'web' ? View : BlurView;
-
 export default function VolcanoesScreen() {
   const insets = useSafeAreaInsets();
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes'], queryFn: fetchVolcanoes, refetchInterval: 12 * 60 * 60 * 1000 });
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255,255,255,0.8)' } } : { intensity: 80, tint: 'light' as BlurTint };
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
 
   const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
@@ -42,10 +39,17 @@ export default function VolcanoesScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}> 
-      <GlassView {...glassProps} style={styles.header}>
-        <Text style={styles.title}>Active Volcanoes</Text>
-        <Text style={styles.subtitle}>{volcanoes.length} records</Text>
-      </GlassView>
+      {Platform.OS === 'web' ? (
+        <View style={[styles.header, { backgroundColor: 'rgba(255,255,255,0.8)' }]}>
+          <Text style={styles.title}>Active Volcanoes</Text>
+          <Text style={styles.subtitle}>{volcanoes.length} records</Text>
+        </View>
+      ) : (
+        <BlurView intensity={80} tint="light" style={styles.header}>
+          <Text style={styles.title}>Active Volcanoes</Text>
+          <Text style={styles.subtitle}>{volcanoes.length} records</Text>
+        </BlurView>
+      )}
 
       <SectionList
         sections={sections}
@@ -60,7 +64,8 @@ export default function VolcanoesScreen() {
 
       <Modal visible={!!selectedVolcano} animationType="fade" transparent>
         <View style={styles.modalOverlay}>
-          <GlassView {...glassProps} style={styles.modalContent}>
+          {Platform.OS === 'web' ? (
+            <View style={[styles.modalContent, { backgroundColor: 'rgba(255,255,255,0.8)' }]}>
             {selectedVolcano && (
               <>
                 <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
@@ -90,7 +95,40 @@ export default function VolcanoesScreen() {
                 </TouchableOpacity>
               </>
             )}
-          </GlassView>
+            </View>
+          ) : (
+            <BlurView intensity={80} tint="light" style={styles.modalContent}>
+            {selectedVolcano && (
+              <>
+                <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
+                <Text style={styles.modalDetail}>Country: {selectedVolcano.country}</Text>
+                <Text style={styles.modalDetail}>Region: {selectedVolcano.region}</Text>
+                <Text style={styles.modalDetail}>Elevation: {selectedVolcano.elevation} m</Text>
+                <Text style={styles.modalDetail}>Type: {selectedVolcano.type}</Text>
+                <Text style={styles.modalDetail}>Status: {selectedVolcano.status}</Text>
+                <Text style={styles.modalDetail}>Last Eruption: {selectedVolcano.lastEruptionDate || 'Unknown'}</Text>
+                {selectedVolcano.activitySummary && <Text style={styles.modalDetail}>Activity: {selectedVolcano.activitySummary}</Text>}
+                {selectedVolcano.alertLevel && <Text style={styles.modalDetail}>Alert Level: {selectedVolcano.alertLevel}</Text>}
+                {selectedVolcano.vei && <Text style={styles.modalDetail}>VEI: {selectedVolcano.vei}</Text>}
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity style={styles.modalButton} onPress={() => router.push(`/map?volcanoId=${selectedVolcano.id}`)}>
+                    <MapPin size={16} color="#fff" />
+                    <Text style={styles.modalButtonText}>Show on Map</Text>
+                  </TouchableOpacity>
+                  {selectedVolcano.url && (
+                    <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => {}}>
+                      <ExternalLink size={16} color={COLORS.primary[600]} />
+                      <Text style={styles.modalButtonTextSecondary}>Official Site</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <TouchableOpacity style={styles.closeModal} onPress={() => setSelectedVolcano(null)}>
+                  <Text style={styles.closeModalText}>Close</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            </BlurView>
+          )}
         </View>
       </Modal>
     </View>
