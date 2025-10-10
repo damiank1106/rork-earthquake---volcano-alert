@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { initDatabase } from '@/services/database';
@@ -19,6 +19,15 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color={COLORS.primary[600]} />
+      <Text style={styles.loadingText}>Loading...</Text>
+    </View>
   );
 }
 
@@ -53,25 +62,22 @@ export default function RootLayout() {
   }
 
   if (!isReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary[600]} />
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
+    return <LoadingFallback />;
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PreferencesProvider>
-        <LocationProvider>
-          <EarthquakesProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <RootLayoutNav />
-            </GestureHandlerRootView>
-          </EarthquakesProvider>
-        </LocationProvider>
-      </PreferencesProvider>
+      <Suspense fallback={<LoadingFallback />}>
+        <PreferencesProvider>
+          <LocationProvider>
+            <EarthquakesProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
+            </EarthquakesProvider>
+          </LocationProvider>
+        </PreferencesProvider>
+      </Suspense>
     </QueryClientProvider>
   );
 }
