@@ -16,6 +16,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
 
   const requestLocationPermission = useCallback(async () => {
     try {
+      setIsLoadingLocation(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
       setLocationPermission(status === 'granted');
 
@@ -38,7 +39,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   useEffect(() => {
     requestLocationPermission();
     loadSavedPlaces();
-  }, []);
+  }, [requestLocationPermission]);
 
   const loadSavedPlaces = async () => {
     try {

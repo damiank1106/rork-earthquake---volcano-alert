@@ -3,12 +3,10 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { initDatabase } from '@/services/database';
 import { PreferencesProvider } from '@/contexts/PreferencesContext';
 import { LocationProvider } from '@/contexts/LocationContext';
 import { EarthquakesProvider } from '@/contexts/EarthquakesContext';
-import { COLORS } from '@/constants/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,18 +20,10 @@ function RootLayoutNav() {
   );
 }
 
-function LoadingFallback() {
-  return (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color={COLORS.primary[600]} />
-      <Text style={styles.loadingText}>Loading...</Text>
-    </View>
-  );
-}
+
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     initializeApp();
@@ -44,25 +34,16 @@ export default function RootLayout() {
       console.log('Initializing database...');
       await initDatabase();
       console.log('Database initialized successfully');
-      setIsReady(true);
-      await SplashScreen.hideAsync();
     } catch (err) {
       console.error('Failed to initialize app:', err);
-      setError('Failed to initialize app. Please restart.');
+    } finally {
+      setIsReady(true);
       await SplashScreen.hideAsync();
     }
   };
 
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
-
   if (!isReady) {
-    return <LoadingFallback />;
+    return null;
   }
 
   return (
@@ -80,28 +61,3 @@ export default function RootLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background.light,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: COLORS.text.primary.light,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background.light,
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: COLORS.alert.red,
-    textAlign: 'center',
-  },
-});
