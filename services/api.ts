@@ -67,13 +67,24 @@ export const fetchVolcanoes = async (): Promise<Volcano[]> => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const text = await response.text();
-    if (!text || typeof text !== 'string') {
-      console.error('Invalid response text from volcano API');
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      console.error('Invalid response text from volcano API: empty or invalid response');
+      return [];
+    }
+    if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+      console.error('Invalid response text from volcano API: received HTML instead of CSV');
       return [];
     }
     const lines = text.replace(/\r/g, '').split('\n').filter((l) => l.trim().length > 0);
+    if (lines.length === 0) {
+      console.error('Invalid response text from volcano API: no data lines');
+      return [];
+    }
     const header = lines.shift();
-    if (!header) return [];
+    if (!header) {
+      console.error('Invalid response text from volcano API: no header');
+      return [];
+    }
     
     const cols = header.split(',');
     const nameIdx = cols.findIndex((c) => /volcano.*name/i.test(c) || c.toLowerCase() === 'name');
