@@ -85,9 +85,6 @@ export interface UserPreferences {
   notificationsEnabled: boolean;
   notificationCountry?: string;
   notificationMinMagnitude?: number;
-  quietHoursEnabled: boolean;
-  quietHoursStart?: string;
-  quietHoursEnd?: string;
   lastUpdated?: number;
 }
 

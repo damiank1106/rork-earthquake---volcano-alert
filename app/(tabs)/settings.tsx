@@ -135,6 +135,159 @@ Contact
 For questions: support@seismicmonitor.com
 `;
 
+const APP_INFO = `
+Seismic Monitor - Your Earthquake & Volcano Companion
+
+Version 1.0.0 | October 2025
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT THIS APP OFFERS
+
+🌍 Real-Time Earthquake Monitoring
+• Live earthquake data from USGS
+• Interactive map with customizable filters
+• Magnitude-based color coding
+• Distance calculations from your location
+• Detailed event information and impact radius
+
+🌋 Active Volcano Tracking
+• Global volcano database from Smithsonian GVP
+• Real-time volcano locations on map
+• Eruption history and activity status
+• Toggle volcano markers on/off
+
+🌊 Tsunami Alerts
+• Live tsunami warnings from NOAA/NWS and PHIVOLCS
+• Affected regions and threat levels
+• Automatic refresh for latest updates
+• Critical safety information
+
+📚 Educational Resources
+• Comprehensive magnitude scale guide
+• Safety guides for earthquakes and tsunamis
+• Before, during, and after preparedness tips
+• Emergency contact information
+
+🔔 Smart Notifications
+• Customizable earthquake alerts
+• Filter by country and magnitude
+• Stay informed about significant events
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HOW TO USE THE APP
+
+📍 Map Tab
+• View earthquakes and volcanoes on interactive map
+• Tap markers to see detailed information
+• Use Menu button to filter by magnitude
+• Toggle earthquakes/volcanoes/heatmap
+• Pinch to zoom, drag to explore
+• Click "Show on Map" from Events to locate specific earthquakes
+
+📋 Events Tab
+• Browse recent earthquakes in list format
+• Sort by time, magnitude, or distance
+• Tap any event to view on map
+• Pull down to refresh data
+• See time, location, magnitude, and depth
+
+🌋 Volcanoes Tab
+• Explore active volcanoes worldwide
+• View eruption history and status
+• Toggle volcano markers on map
+• Click "Show on Map" to locate on map
+• Pulsing animation shows selected volcano
+
+🌊 Tsunami Tab
+• Check active tsunami warnings
+• View affected regions and threat levels
+• Tap refresh icon for latest updates
+• Read safety guidelines
+
+📖 Education Tab
+• Learn about earthquake magnitudes
+• Read comprehensive safety guides
+• Understand what to do before, during, and after
+• Access emergency preparedness tips
+
+⚙️ Settings Tab
+• Customize display units (metric/imperial)
+• Set time format (12h/24h)
+• Configure notifications by country and magnitude
+• Toggle map features (clustering, heatmap)
+• View privacy policy and terms
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RECENT UPDATES
+
+Version 1.0.0 (October 2025)
+✨ Initial release
+• Real-time earthquake monitoring
+• Interactive map with filters
+• Volcano tracking system
+• Tsunami alert integration
+• Educational resources
+• Customizable notifications
+• Location-based distance calculations
+• Impact radius visualization
+• Multi-platform support (iOS, Android, Web)
+
+Upcoming Features
+• Historical earthquake data analysis
+• Earthquake prediction zones
+• Community reports and photos
+• Offline mode for saved data
+• Widget support for home screen
+• Apple Watch and Android Wear support
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TIPS & TRICKS
+
+💡 Quick Actions
+• Double-tap map to zoom in
+• Long-press markers for quick info
+• Swipe between tabs for faster navigation
+• Pull down on lists to refresh data
+
+🎯 Best Practices
+• Enable location for accurate distance calculations
+• Set up notifications for your region
+• Check tsunami alerts regularly if near coast
+• Review safety guides before emergencies
+• Keep app updated for latest features
+
+⚠️ Important Reminders
+• This is NOT an official early warning system
+• Always follow local emergency authorities
+• Data may have delays or revisions
+• Use for informational purposes only
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DATA SOURCES
+
+• USGS - United States Geological Survey
+• NOAA/NWS - National Oceanic and Atmospheric Administration
+• PHIVOLCS - Philippine Institute of Volcanology and Seismology
+• Smithsonian GVP - Global Volcanism Program
+• PB2002 - Tectonic Plate Boundaries
+
+All data is updated automatically from trusted sources.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUPPORT & FEEDBACK
+
+Need help? Have suggestions?
+Contact: support@seismicmonitor.com
+
+Stay safe and informed! 🌍
+`;
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { preferences, updatePreferences } = usePreferences();
@@ -334,19 +487,25 @@ export default function SettingsScreen() {
                 />
               </>
             )}
-            <View style={styles.divider} />
-            <SettingToggle
-              title="Quiet Hours"
-              subtitle="Mute notifications during set hours"
-              value={preferences.quietHoursEnabled}
-              onValueChange={(value) => updatePreferences({ quietHoursEnabled: value })}
-            />
+
           </View>
         </GlassView>
 
         <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>App</Text>
           <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => openModal('About This App', APP_INFO)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>About & How to Use</Text>
+                <Text style={styles.settingSubtitle}>Learn about features and updates</Text>
+              </View>
+              <Info size={20} color={COLORS.text.secondary.light} />
+            </TouchableOpacity>
+            <View style={styles.divider} />
             <TouchableOpacity
               style={styles.settingRow}
               onPress={() => router.push('/welcome')}
