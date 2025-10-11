@@ -83,6 +83,8 @@ export interface UserPreferences {
   clusteringEnabled: boolean;
   theme: 'light' | 'dark' | 'auto';
   notificationsEnabled: boolean;
+  notificationCountry?: string;
+  notificationMinMagnitude?: number;
   quietHoursEnabled: boolean;
   quietHoursStart?: string;
   quietHoursEnd?: string;

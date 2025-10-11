@@ -13,6 +13,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   clusteringEnabled: true,
   theme: 'light',
   notificationsEnabled: true,
+  notificationCountry: undefined,
+  notificationMinMagnitude: 5.0,
   quietHoursEnabled: false,
   quietHoursStart: '22:00',
   quietHoursEnd: '07:00',
