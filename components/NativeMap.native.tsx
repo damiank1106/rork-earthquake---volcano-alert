@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useMemo, forwardRef, useImperativeHandle, useState } from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
 import MapView, { Marker, Polyline, Circle } from 'react-native-maps';
 import { getMagnitudeColor, FONT_WEIGHT } from '@/constants/theme';
@@ -22,6 +22,7 @@ interface NativeMapProps {
 
 const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true }, ref) {
   const mapRef = useRef<any>(null);
+  const [mapReady, setMapReady] = useState<boolean>(false);
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
   const [pulsingMarkerId, setPulsingMarkerId] = React.useState<string | null>(null);
@@ -30,7 +31,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
     animateToRegion: (region: any, duration?: number) => {
       mapRef.current?.animateToRegion(region, duration);
     },
-  }));
+  }), [mapReady]);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const volcanoPulseAnim = useRef(new Animated.Value(1)).current;
   const volcanoPulseOpacity = useRef(new Animated.Value(1)).current;
@@ -93,7 +94,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   }, [highlightedVolcanoId, volcanoPulseAnim, volcanoPulseOpacity]);
 
   useEffect(() => {
-    if (selectedMarker && mapRef.current) {
+    if (selectedMarker && mapRef.current && mapReady) {
       mapRef.current.animateToRegion({
         latitude: selectedMarker.latitude,
         longitude: selectedMarker.longitude,
@@ -101,7 +102,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         longitudeDelta: 5,
       });
     }
-  }, [selectedMarker]);
+  }, [selectedMarker, mapReady]);
 
   const initialRegion = userLocation
     ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: 50, longitudeDelta: 50 }
@@ -123,7 +124,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   }, [earthquakes]);
 
   return (
-    <MapView ref={mapRef} style={styles.map} initialRegion={initialRegion} showsUserLocation={true} showsMyLocationButton={false}>
+    <MapView ref={mapRef} style={styles.map} initialRegion={initialRegion} showsUserLocation={true} showsMyLocationButton={false} onMapReady={() => setMapReady(true)}>
       {showPlateBoundaries && plateBoundaries.map((b) => (
         <Polyline
           key={`pb-${b.id}`}

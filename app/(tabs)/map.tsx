@@ -166,27 +166,24 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
-  const showMap = earthquakes.length > 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {showMap && (
-        <NativeMap
-          ref={mapRef}
-          earthquakes={filteredEarthquakes}
-          selectedMarker={selectedMarker}
-          onMarkerPress={handleMarkerPress}
-          userLocation={userLocation}
-          plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-          volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
-          nuclearPlants={[]}
-          showPlateBoundaries={showPlates}
-          showVolcanoes={showVolcanoes}
-          showNuclearPlants={false}
-          heatmapEnabled={preferences.heatmapEnabled}
-          clusteringEnabled={preferences.clusteringEnabled}
-        />
-      )}
+      <NativeMap
+        ref={mapRef}
+        earthquakes={filteredEarthquakes}
+        selectedMarker={selectedMarker}
+        onMarkerPress={handleMarkerPress}
+        userLocation={userLocation}
+        plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
+        volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
+        nuclearPlants={[]}
+        showPlateBoundaries={showPlates}
+        showVolcanoes={showVolcanoes}
+        showNuclearPlants={false}
+        heatmapEnabled={preferences.heatmapEnabled}
+        clusteringEnabled={preferences.clusteringEnabled}
+      />
       
       {isDataLoading && (
         <View style={styles.emptyMapContainer}>
