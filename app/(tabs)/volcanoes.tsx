@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
@@ -7,30 +7,22 @@ import { Mountain, MapPin } from 'lucide-react-native';
 import { fetchVolcanoes } from '@/services/api';
 import { Volcano } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
+import { usePreferences } from '@/contexts/PreferencesContext';
 
 export default function VolcanoesScreen() {
   const insets = useSafeAreaInsets();
+  const { updatePreferences } = usePreferences();
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes'], queryFn: fetchVolcanoes, refetchInterval: 12 * 60 * 60 * 1000 });
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
 
   const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (volcanoes.length > 0) {
-        if (Platform.OS === 'web') {
-          alert('To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.');
-        } else {
-          Alert.alert(
-            'Volcano Map View',
-            'To view volcanoes on the map, please enable the Volcanoes filter from the Home Page Menu.',
-            [{ text: 'OK' }]
-          );
-        }
-      }
-    }, [volcanoes])
-  );
+  const handleShowOnMap = (volcano: Volcano) => {
+    updatePreferences({ volcanoesEnabled: true });
+    setSelectedVolcano(null);
+    router.push(`/map?volcanoId=${volcano.id}`);
+  };
 
   const sections = useMemo(() => {
     const grouped = volcanoes.reduce((acc: { [key: string]: Volcano[] }, v) => {
@@ -94,10 +86,7 @@ export default function VolcanoesScreen() {
                 {selectedVolcano.activitySummary && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Activity:</Text> {selectedVolcano.activitySummary}</Text>}
                 {selectedVolcano.alertLevel && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Alert Level:</Text> {selectedVolcano.alertLevel}</Text>}
                 {selectedVolcano.vei && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>VEI:</Text> {selectedVolcano.vei}</Text>}
-                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                  setSelectedVolcano(null);
-                  router.push(`/map?volcanoId=${selectedVolcano.id}`);
-                }}>
+                <TouchableOpacity style={styles.modalButton} onPress={() => handleShowOnMap(selectedVolcano)}>
                   <MapPin size={16} color="#fff" />
                   <Text style={styles.modalButtonText}>Show on Map</Text>
                 </TouchableOpacity>
@@ -121,10 +110,7 @@ export default function VolcanoesScreen() {
                 {selectedVolcano.activitySummary && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Activity:</Text> {selectedVolcano.activitySummary}</Text>}
                 {selectedVolcano.alertLevel && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>Alert Level:</Text> {selectedVolcano.alertLevel}</Text>}
                 {selectedVolcano.vei && <Text style={styles.modalDetail}><Text style={styles.modalLabel}>VEI:</Text> {selectedVolcano.vei}</Text>}
-                <TouchableOpacity style={styles.modalButton} onPress={() => {
-                  setSelectedVolcano(null);
-                  router.push(`/map?volcanoId=${selectedVolcano.id}`);
-                }}>
+                <TouchableOpacity style={styles.modalButton} onPress={() => handleShowOnMap(selectedVolcano)}>
                   <MapPin size={16} color="#fff" />
                   <Text style={styles.modalButtonText}>Show on Map</Text>
                 </TouchableOpacity>

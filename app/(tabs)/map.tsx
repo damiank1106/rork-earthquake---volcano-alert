@@ -27,7 +27,7 @@ export default function MapScreen() {
   const [magCategory, setMagCategory] = useState<number | null | 'all'>('all');
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(false);
-  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
+  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(preferences.volcanoesEnabled || false);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -47,15 +47,18 @@ export default function MapScreen() {
   }, [highlightedVolcanoId, volcanoesQuery.data]);
 
   useEffect(() => {
-    if (highlightedVolcano && mapRef.current) {
-      setTimeout(() => {
-        mapRef.current?.animateToRegion({
-          latitude: highlightedVolcano.latitude,
-          longitude: highlightedVolcano.longitude,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        }, 1000);
-      }, 300);
+    if (highlightedVolcano) {
+      setShowVolcanoes(true);
+      if (mapRef.current) {
+        setTimeout(() => {
+          mapRef.current?.animateToRegion({
+            latitude: highlightedVolcano.latitude,
+            longitude: highlightedVolcano.longitude,
+            latitudeDelta: 0.5,
+            longitudeDelta: 0.5,
+          }, 1000);
+        }, 300);
+      }
     }
   }, [highlightedVolcano]);
 

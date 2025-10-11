@@ -66,7 +66,7 @@ We may update this policy. Changes will be posted in the app and on our website.
 
 Contact Us
 
-For privacy questions: privacy@seismicmonitor.com
+For privacy questions: seismicsupport@icloud.com
 `;
 
 const TERMS_OF_USE = `
@@ -132,7 +132,7 @@ These terms are governed by the laws of the United States.
 
 Contact
 
-For questions: support@seismicmonitor.com
+For questions: seismicsupport@icloud.com
 `;
 
 const APP_INFO = `
@@ -235,14 +235,6 @@ Version 1.0.0 (October 2025)
 • Impact radius visualization
 • Multi-platform support (iOS, Android, Web)
 
-Upcoming Features
-• Historical earthquake data analysis
-• Earthquake prediction zones
-• Community reports and photos
-• Offline mode for saved data
-• Widget support for home screen
-• Apple Watch and Android Wear support
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 TIPS & TRICKS
@@ -283,7 +275,7 @@ All data is updated automatically from trusted sources.
 SUPPORT & FEEDBACK
 
 Need help? Have suggestions?
-Contact: support@seismicmonitor.com
+Contact: seismicsupport@icloud.com
 
 Stay safe and informed! 🌍
 `;
@@ -297,6 +289,7 @@ export default function SettingsScreen() {
   const [magnitudeModalVisible, setMagnitudeModalVisible] = useState(false);
   const [tempCountry, setTempCountry] = useState<string>(preferences.notificationCountry || '');
   const [tempMagnitude, setTempMagnitude] = useState<string>(String(preferences.notificationMinMagnitude || 5.0));
+  const [showSavedMessage, setShowSavedMessage] = useState<boolean>(false);
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
@@ -391,6 +384,8 @@ export default function SettingsScreen() {
   const handleCountrySave = () => {
     updatePreferences({ notificationCountry: tempCountry || undefined });
     setCountryModalVisible(false);
+    setShowSavedMessage(true);
+    setTimeout(() => setShowSavedMessage(false), 3000);
   };
 
   const handleMagnitudeSave = () => {
@@ -398,6 +393,8 @@ export default function SettingsScreen() {
     if (!isNaN(mag) && mag >= 1.0 && mag <= 10.0) {
       updatePreferences({ notificationMinMagnitude: mag });
       setMagnitudeModalVisible(false);
+      setShowSavedMessage(true);
+      setTimeout(() => setShowSavedMessage(false), 3000);
     }
   };
 
@@ -540,6 +537,12 @@ export default function SettingsScreen() {
             guidance from local authorities.
           </Text>
         </View>
+
+        {showSavedMessage && (
+          <View style={styles.savedMessage}>
+            <Text style={styles.savedMessageText}>Notification has been saved</Text>
+          </View>
+        )}
       </ScrollView>
 
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
@@ -674,4 +677,6 @@ const styles = StyleSheet.create({
   magnitudeOptionLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   magnitudeOptionLabelSelected: { color: COLORS.primary[600] },
   magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
+  savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
+  savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
 });
