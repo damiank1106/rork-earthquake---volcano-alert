@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Earthquake & Volcano Alert",
-    "slug": "earthquake-volcano-alert",
+    "name": "Seismic Monitor",
+    "slug": "seismic-monitor",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.rork.earthquake-volcano-alert",
+      "bundleIdentifier": "app.rork.seismic-monitor",
       "entitlements": {
         "com": {
           "apple": {
@@ -41,7 +41,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.earthquake-volcano-alert",
+      "package": "app.rork.seismic-monitor",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
