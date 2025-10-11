@@ -117,22 +117,22 @@ const styles = StyleSheet.create({
   magnitudeLabel: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
     marginBottom: 4,
   },
   magnitudeDescription: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     marginBottom: 4,
   },
   magnitudeEffects: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     marginBottom: 2,
   },
   magnitudeFrequency: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     fontStyle: 'italic',
   },
   guideCard: {
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   guideTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
     marginBottom: SPACING.xs,
   },
   guideCategory: {
@@ -167,12 +167,12 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     lineHeight: 20,
   },
   sources: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     fontStyle: 'italic',
     marginTop: SPACING.sm,
   },

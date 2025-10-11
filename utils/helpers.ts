@@ -158,3 +158,21 @@ export const isInQuietHours = (
     return currentTime >= startTime || currentTime < endTime;
   }
 };
+
+export const getFeltDistance = (magnitude: number): string => {
+  if (magnitude < 3) {
+    return 'Felt within 10 km (6 mi) - Usually not felt';
+  } else if (magnitude < 4) {
+    return 'Felt within 30 km (19 mi) - Often felt by people indoors';
+  } else if (magnitude < 5) {
+    return 'Felt within 100 km (62 mi) - Noticeable shaking';
+  } else if (magnitude < 6) {
+    return 'Felt within 200 km (124 mi) - Strong shaking near epicenter';
+  } else if (magnitude < 7) {
+    return 'Felt within 400 km (249 mi) - Considerable damage possible';
+  } else if (magnitude < 8) {
+    return 'Felt within 800 km (497 mi) - Major earthquake';
+  } else {
+    return 'Felt over 1000 km (621 mi) - Great earthquake';
+  }
+};

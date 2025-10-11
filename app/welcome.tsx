@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
+import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -245,7 +246,15 @@ export default function WelcomeScreen() {
     outputRange: ['0deg', '360deg'],
   });
 
-  const handleContinue = () => {
+  const { locationPermission, isLoadingLocation, refreshLocation } = useLocation();
+  const [isRequestingPermission, setIsRequestingPermission] = useState<boolean>(false);
+
+  const handleContinue = async () => {
+    if (!locationPermission && !isRequestingPermission) {
+      setIsRequestingPermission(true);
+      await refreshLocation();
+      setIsRequestingPermission(false);
+    }
     router.replace('/map');
   };
 
@@ -291,9 +300,23 @@ export default function WelcomeScreen() {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleContinue} testID="btn-continue">
-          <Text style={styles.buttonText}>Get Started</Text>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={handleContinue} 
+          testID="btn-continue"
+          disabled={isRequestingPermission || isLoadingLocation}
+        >
+          {isRequestingPermission || isLoadingLocation ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Get Started</Text>
+          )}
         </TouchableOpacity>
+        {!locationPermission && !isLoadingLocation && (
+          <Text style={styles.permissionNote}>
+            Location permission will be requested for better experience
+          </Text>
+        )}
       </Animated.View>
     </View>
   );
@@ -432,5 +455,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
+  },
+  permissionNote: {
+    fontSize: FONT_SIZE.sm,
+    color: '#0369A1',
+    textAlign: 'center',
+    marginTop: SPACING.md,
   },
 });

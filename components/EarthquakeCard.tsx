@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { BlurView, BlurTint } from 'expo-blur';
-import { MapPin, Clock, Layers, AlertTriangle } from 'lucide-react-native';
+import { MapPin, Clock, Layers, AlertTriangle, Radio } from 'lucide-react-native';
 import { Earthquake } from '@/types';
 import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { formatTime, formatDepth, calculateDistance } from '@/services/api';
+import { getFeltDistance } from '@/utils/helpers';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
 
@@ -75,6 +76,12 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
               </Text>
             </View>
           )}
+          <View style={styles.detailItem}>
+            <Radio size={16} color={COLORS.primary[600]} />
+            <Text style={styles.feltDistanceText}>
+              {getFeltDistance(earthquake.magnitude)}
+            </Text>
+          </View>
         </View>
 
         {(earthquake.tsunami || hasAftershockRisk) && (
@@ -174,5 +181,10 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     fontWeight: FONT_WEIGHT.semibold,
     color: COLORS.alert.orange,
+  },
+  feltDistanceText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.primary[600],
+    fontWeight: FONT_WEIGHT.medium,
   },
 });
