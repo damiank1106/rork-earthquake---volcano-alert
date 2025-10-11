@@ -140,8 +140,9 @@ const fetchNOAATsunamiAlerts = async (): Promise<TsunamiAlert[]> => {
     let data;
     try {
       data = JSON.parse(text);
-    } catch {
+    } catch (parseError) {
       console.warn('NOAA Tsunami API returned invalid JSON:', text.substring(0, 100));
+      console.warn('Parse error:', parseError);
       return [];
     }
     const features = Array.isArray(data.features) ? data.features : [];
@@ -177,6 +178,7 @@ const fetchUSGSTsunamiData = async (): Promise<TsunamiAlert[]> => {
       console.warn(`USGS Tsunami data error: ${response.status}`);
       return [];
     }
+    const contentType = response.headers.get('content-type');
     const text = await response.text();
     if (!text || text.trim().length === 0) {
       console.warn('USGS Tsunami API returned empty response');
@@ -185,8 +187,10 @@ const fetchUSGSTsunamiData = async (): Promise<TsunamiAlert[]> => {
     let data;
     try {
       data = JSON.parse(text);
-    } catch {
+    } catch (parseError) {
       console.warn('USGS Tsunami API returned invalid JSON:', text.substring(0, 100));
+      console.warn('Parse error:', parseError);
+      console.warn('Content-Type:', contentType);
       return [];
     }
     const features = Array.isArray(data.features) ? data.features : [];
