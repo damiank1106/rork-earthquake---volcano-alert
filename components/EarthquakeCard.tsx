@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { BlurView, BlurTint } from 'expo-blur';
-import { MapPin, Clock, Layers, AlertTriangle, Radio } from 'lucide-react-native';
+import { MapPin, Clock, Layers, AlertTriangle, Radio, Map } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { Earthquake } from '@/types';
 import { getMagnitudeColor, COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
 import { formatTime, formatDepth, calculateDistance } from '@/services/api';
@@ -13,7 +14,7 @@ const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 interface EarthquakeCardProps {
   earthquake: Earthquake;
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPress }) => {
@@ -35,15 +36,14 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
+  const handleShowOnMap = () => {
+    const magCategory = Math.floor(earthquake.magnitude);
+    router.push(`/map?earthquakeId=${earthquake.id}&magCategory=${magCategory}`);
+  };
+
   return (
     <GlassView {...glassProps} style={styles.card}>
-      <TouchableOpacity
-        style={styles.cardTouchable}
-        onPress={onPress}
-        activeOpacity={0.7}
-        accessibilityRole="button"
-        accessibilityLabel={`Earthquake magnitude ${earthquake.magnitude.toFixed(1)} in ${earthquake.place}`}
-      >
+      <View style={styles.cardTouchable}>
         <View style={styles.header}>
           <View style={[styles.magnitudeBadge, { backgroundColor: magnitudeColor }]}>
             <Text style={styles.magnitudeText}>{earthquake.magnitude.toFixed(1)}</Text>
@@ -100,7 +100,17 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
             )}
           </View>
         )}
-      </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.showOnMapButton}
+          onPress={handleShowOnMap}
+          activeOpacity={0.7}
+          testID="btn-show-on-map"
+        >
+          <Map size={18} color="#FFFFFF" />
+          <Text style={styles.showOnMapText}>Show on Map</Text>
+        </TouchableOpacity>
+      </View>
     </GlassView>
   );
 };
@@ -186,5 +196,21 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     color: COLORS.primary[600],
     fontWeight: FONT_WEIGHT.medium,
+  },
+  showOnMapButton: {
+    marginTop: SPACING.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.xs,
+    backgroundColor: COLORS.primary[600],
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: 8,
+  },
+  showOnMapText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: '#FFFFFF',
   },
 });

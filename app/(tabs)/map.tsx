@@ -28,9 +28,12 @@ export default function MapScreen() {
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
+  const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
+  const earthquakeId = params.earthquakeId as string | undefined;
+  const paramMagCategory = params.magCategory as string | undefined;
   const mapRef = useRef<any>(null);
 
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
@@ -53,6 +56,32 @@ export default function MapScreen() {
       }, 300);
     }
   }, [highlightedVolcano]);
+
+  useEffect(() => {
+    if (earthquakeId && !hasInitializedEarthquake && earthquakes.length > 0) {
+      const earthquake = earthquakes.find(eq => eq.id === earthquakeId);
+      if (earthquake) {
+        if (paramMagCategory) {
+          const magCat = parseInt(paramMagCategory, 10);
+          setMagCategory(magCat);
+          setMagFilterOff(false);
+        }
+        setSelectedMarker(earthquake);
+        setHasInitializedEarthquake(true);
+        
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.animateToRegion({
+              latitude: earthquake.latitude,
+              longitude: earthquake.longitude,
+              latitudeDelta: 5,
+              longitudeDelta: 5,
+            }, 1000);
+          }
+        }, 300);
+      }
+    }
+  }, [earthquakeId, earthquakes, hasInitializedEarthquake, paramMagCategory]);
 
   const filteredEarthquakes = useMemo(() => {
     if (magFilterOff) return [];
