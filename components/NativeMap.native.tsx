@@ -183,7 +183,23 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         const color = getMagnitudeColor(eq.magnitude);
         const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
         const isPulsing = pulsingMarkerId === eq.id;
-        const feltRadiusKm = Math.pow(10, 0.43 * eq.magnitude + 1.7);
+        
+        let feltRadiusKm: number;
+        if (eq.magnitude < 3) {
+          feltRadiusKm = 10;
+        } else if (eq.magnitude < 4) {
+          feltRadiusKm = 30;
+        } else if (eq.magnitude < 5) {
+          feltRadiusKm = 100;
+        } else if (eq.magnitude < 6) {
+          feltRadiusKm = 200;
+        } else if (eq.magnitude < 7) {
+          feltRadiusKm = 400;
+        } else if (eq.magnitude < 8) {
+          feltRadiusKm = 800;
+        } else {
+          feltRadiusKm = 1000;
+        }
         const feltRadiusMeters = feltRadiusKm * 1000;
         
         return (
