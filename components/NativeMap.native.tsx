@@ -24,6 +24,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   const mapRef = useRef<any>(null);
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
+  const [pulsingMarkerId, setPulsingMarkerId] = React.useState<string | null>(null);
 
   useImperativeHandle(ref, () => ({
     animateToRegion: (region: any, duration?: number) => {
@@ -35,13 +36,24 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   const volcanoPulseOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.3, duration: 1000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-      ])
-    ).start();
-  }, [pulseAnim]);
+    if (selectedMarker) {
+      setPulsingMarkerId(selectedMarker.id);
+    }
+  }, [selectedMarker]);
+
+  useEffect(() => {
+    if (pulsingMarkerId) {
+      pulseAnim.setValue(1);
+      const animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.5, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        ])
+      );
+      animation.start();
+      return () => animation.stop();
+    }
+  }, [pulsingMarkerId, pulseAnim]);
 
   const pulseAnimationRef = useRef<any>(null);
 
@@ -170,15 +182,30 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
       {!clusteringEnabled && earthquakes.map((eq) => {
         const color = getMagnitudeColor(eq.magnitude);
         const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
+        const isPulsing = pulsingMarkerId === eq.id;
+        const feltRadiusKm = Math.pow(10, 0.43 * eq.magnitude + 1.7);
+        const feltRadiusMeters = feltRadiusKm * 1000;
+        
         return (
-          <Marker key={eq.id} coordinate={{ latitude: eq.latitude, longitude: eq.longitude }} onPress={() => onMarkerPress(eq)} tracksViewChanges={false}>
-            <View style={styles.markerContainer}>
-              <Animated.View style={[styles.pulse, { width: size * 2, height: size * 2, borderRadius: size, backgroundColor: color + '30', transform: [{ scale: selectedMarker?.id === eq.id ? pulseAnim : 1 }] }]} />
-              <View style={[styles.marker, { width: size, height: size, borderRadius: size / 2, backgroundColor: color }]}>
-                <Text style={[styles.markerText, { fontSize: size / 3 }]}>{eq.magnitude.toFixed(1)}</Text>
+          <React.Fragment key={eq.id}>
+            {isPulsing && (
+              <Circle
+                center={{ latitude: eq.latitude, longitude: eq.longitude }}
+                radius={feltRadiusMeters}
+                strokeColor={color}
+                strokeWidth={2}
+                fillColor={color + '15'}
+              />
+            )}
+            <Marker coordinate={{ latitude: eq.latitude, longitude: eq.longitude }} onPress={() => onMarkerPress(eq)} tracksViewChanges={false}>
+              <View style={styles.markerContainer}>
+                <Animated.View style={[styles.pulse, { width: size * 2, height: size * 2, borderRadius: size, backgroundColor: color + '30', transform: [{ scale: isPulsing ? pulseAnim : 1 }] }]} />
+                <View style={[styles.marker, { width: size, height: size, borderRadius: size / 2, backgroundColor: color }]}>
+                  <Text style={[styles.markerText, { fontSize: size / 3 }]}>{eq.magnitude.toFixed(1)}</Text>
+                </View>
               </View>
-            </View>
-          </Marker>
+            </Marker>
+          </React.Fragment>
         );
       })}
     </MapView>

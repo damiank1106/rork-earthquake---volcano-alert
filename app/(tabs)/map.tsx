@@ -83,6 +83,17 @@ export default function MapScreen() {
     setSelectedMarker(earthquake);
   };
 
+  const getFeltDistance = (magnitude: number): string => {
+    const distanceKm = Math.pow(10, 0.43 * magnitude + 1.7);
+    if (distanceKm < 1) {
+      return `${(distanceKm * 1000).toFixed(0)} m`;
+    } else if (distanceKm < 100) {
+      return `${distanceKm.toFixed(1)} km`;
+    } else {
+      return `${distanceKm.toFixed(0)} km`;
+    }
+  };
+
   const hasAftershockRisk = (earthquake: Earthquake): boolean => {
     return earthquake.magnitude > 5.5;
   };
@@ -218,6 +229,7 @@ export default function MapScreen() {
             <Text style={styles.infoDetailText}>Magnitude: {selectedMarker.magnitude.toFixed(2)} {selectedMarker.magnitudeType}</Text>
             <Text style={styles.infoDetailText}>Depth: {formatDepth(selectedMarker.depth, preferences.units)}</Text>
             <Text style={styles.infoDetailText}>Location: {selectedMarker.latitude.toFixed(4)}°, {selectedMarker.longitude.toFixed(4)}°</Text>
+            <Text style={styles.infoDetailText}>Felt up to: {getFeltDistance(selectedMarker.magnitude)} away</Text>
             {selectedMarker.tsunami && (
               <View style={styles.warningRow}>
                 <AlertTriangle size={16} color={COLORS.alert.red} />
