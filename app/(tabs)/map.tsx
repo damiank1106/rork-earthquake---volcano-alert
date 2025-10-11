@@ -36,6 +36,7 @@ export default function MapScreen() {
   const earthquakeId = params.earthquakeId as string | undefined;
   const paramMagCategory = params.magCategory as string | undefined;
   const mapRef = useRef<any>(null);
+  const prevEarthquakeIdRef = useRef<string | undefined>(undefined);
 
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
@@ -59,8 +60,15 @@ export default function MapScreen() {
   }, [highlightedVolcano]);
 
   useEffect(() => {
-    if (earthquakeId && !hasInitializedEarthquake) {
-      if (earthquakes.length > 0 && !isLoading) {
+    if (earthquakeId !== prevEarthquakeIdRef.current) {
+      setHasInitializedEarthquake(false);
+      prevEarthquakeIdRef.current = earthquakeId;
+    }
+  }, [earthquakeId]);
+
+  useEffect(() => {
+    if (earthquakeId) {
+      if (earthquakes.length > 0 && !hasInitializedEarthquake) {
         const earthquake = earthquakes.find(eq => eq.id === earthquakeId);
         if (earthquake) {
           if (paramMagCategory) {
@@ -81,11 +89,11 @@ export default function MapScreen() {
                 longitudeDelta: 5,
               }, 1000);
             }
-          }, 300);
-        } else {
+          }, 500);
+        } else if (!isLoading) {
           setShowCenterRefresh(true);
         }
-      } else if (!isLoading) {
+      } else if (earthquakes.length === 0 && !isLoading) {
         setShowCenterRefresh(true);
       }
     }
@@ -158,26 +166,39 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
-  const shouldShowMap = earthquakes.length > 0 || !isDataLoading;
+  const shouldShowMap = earthquakes.length > 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {shouldShowMap && (
+      {shouldShowMap ? (
         <NativeMap
-        ref={mapRef}
-        earthquakes={filteredEarthquakes}
-        selectedMarker={selectedMarker}
-        onMarkerPress={handleMarkerPress}
-        userLocation={userLocation}
-        plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-        volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
-        nuclearPlants={[]}
-        showPlateBoundaries={showPlates}
-        showVolcanoes={showVolcanoes}
-        showNuclearPlants={false}
-        heatmapEnabled={preferences.heatmapEnabled}
-        clusteringEnabled={preferences.clusteringEnabled}
-      />
+          ref={mapRef}
+          earthquakes={filteredEarthquakes}
+          selectedMarker={selectedMarker}
+          onMarkerPress={handleMarkerPress}
+          userLocation={userLocation}
+          plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
+          volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
+          nuclearPlants={[]}
+          showPlateBoundaries={showPlates}
+          showVolcanoes={showVolcanoes}
+          showNuclearPlants={false}
+          heatmapEnabled={preferences.heatmapEnabled}
+          clusteringEnabled={preferences.clusteringEnabled}
+        />
+      ) : isLoading ? (
+        <View style={styles.emptyMapContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.emptyMapText}>Loading map data...</Text>
+        </View>
+      ) : (
+        <View style={styles.emptyMapContainer}>
+          <Text style={styles.emptyMapText}>No earthquake data available</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+            <RefreshCw size={20} color="#FFFFFF" />
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
@@ -398,4 +419,8 @@ const styles = StyleSheet.create({
   loadingPercentage: { marginTop: SPACING.sm, fontSize: FONT_SIZE.xxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600] },
   centerRefreshButton: { position: 'absolute', right: SPACING.md, backgroundColor: '#FFFFFF', padding: SPACING.lg, borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 8, zIndex: 15, transform: [{ translateY: -50 }] },
   centerRefreshText: { marginTop: SPACING.sm, fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium },
+  emptyMapContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.background.light, gap: SPACING.md },
+  emptyMapText: { fontSize: FONT_SIZE.lg, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium, marginTop: SPACING.sm },
+  retryButton: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, backgroundColor: COLORS.primary[600], paddingVertical: SPACING.sm, paddingHorizontal: SPACING.lg, borderRadius: 8, marginTop: SPACING.md },
+  retryButtonText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: '#FFFFFF' },
 });
