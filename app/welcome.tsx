@@ -255,7 +255,7 @@ export default function WelcomeScreen() {
       await refreshLocation();
       setIsRequestingPermission(false);
     }
-    router.replace('/map');
+    router.replace('/loading');
   };
 
   return (

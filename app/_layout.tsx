@@ -17,6 +17,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerBackTitle: "Back", animation: 'fade' }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
+      <Stack.Screen name="loading" options={{ headerShown: false, animation: 'fade' }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
     </Stack>
   );
