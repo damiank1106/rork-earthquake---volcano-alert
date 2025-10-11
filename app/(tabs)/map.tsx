@@ -29,6 +29,7 @@ export default function MapScreen() {
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
+  const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
@@ -58,27 +59,34 @@ export default function MapScreen() {
   }, [highlightedVolcano]);
 
   useEffect(() => {
-    if (earthquakeId && !hasInitializedEarthquake && earthquakes.length > 0 && !isLoading) {
-      const earthquake = earthquakes.find(eq => eq.id === earthquakeId);
-      if (earthquake) {
-        if (paramMagCategory) {
-          const magCat = parseInt(paramMagCategory, 10);
-          setMagCategory(magCat);
-          setMagFilterOff(false);
-        }
-        setSelectedMarker(earthquake);
-        setHasInitializedEarthquake(true);
-        
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.animateToRegion({
-              latitude: earthquake.latitude,
-              longitude: earthquake.longitude,
-              latitudeDelta: 5,
-              longitudeDelta: 5,
-            }, 1000);
+    if (earthquakeId && !hasInitializedEarthquake) {
+      if (earthquakes.length > 0 && !isLoading) {
+        const earthquake = earthquakes.find(eq => eq.id === earthquakeId);
+        if (earthquake) {
+          if (paramMagCategory) {
+            const magCat = parseInt(paramMagCategory, 10);
+            setMagCategory(magCat);
+            setMagFilterOff(false);
           }
-        }, 300);
+          setSelectedMarker(earthquake);
+          setHasInitializedEarthquake(true);
+          setShowCenterRefresh(false);
+          
+          setTimeout(() => {
+            if (mapRef.current) {
+              mapRef.current.animateToRegion({
+                latitude: earthquake.latitude,
+                longitude: earthquake.longitude,
+                latitudeDelta: 5,
+                longitudeDelta: 5,
+              }, 1000);
+            }
+          }, 300);
+        } else {
+          setShowCenterRefresh(true);
+        }
+      } else if (!isLoading) {
+        setShowCenterRefresh(true);
       }
     }
   }, [earthquakeId, earthquakes, hasInitializedEarthquake, paramMagCategory, isLoading]);
@@ -103,6 +111,13 @@ export default function MapScreen() {
   const translateX = panelAnim.interpolate({ inputRange: [0, 1], outputRange: [260, 0] });
 
   const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  };
+
+  const handleCenterRefresh = async () => {
+    setShowCenterRefresh(false);
     setIsRefreshing(true);
     await refetch();
     setIsRefreshing(false);
@@ -142,20 +157,13 @@ export default function MapScreen() {
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
-  if (isLoading && earthquakes.length === 0) {
-    return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={COLORS.primary[600]} />
-          <Text style={styles.loadingText}>Loading earthquakes...</Text>
-        </View>
-      </View>
-    );
-  }
+  const isDataLoading = isLoading && earthquakes.length === 0;
+  const shouldShowMap = earthquakes.length > 0 || !isDataLoading;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <NativeMap
+      {shouldShowMap && (
+        <NativeMap
         ref={mapRef}
         earthquakes={filteredEarthquakes}
         selectedMarker={selectedMarker}
@@ -170,6 +178,7 @@ export default function MapScreen() {
         heatmapEnabled={preferences.heatmapEnabled}
         clusteringEnabled={preferences.clusteringEnabled}
       />
+      )}
 
       <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
         <View style={styles.headerContent}>
@@ -316,10 +325,29 @@ export default function MapScreen() {
         </GlassView>
       )}
 
-      {isLoading && earthquakes.length > 0 && (
+      {isDataLoading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
-          <Text style={styles.loadingText}>Refreshing...</Text>
+          <Text style={styles.loadingText}>Loading earthquakes...</Text>
+          <Text style={styles.loadingPercentage}>{Math.round((earthquakes.length / 100) * 100)}%</Text>
+        </View>
+      )}
+
+      {showCenterRefresh && !isRefreshing && (
+        <TouchableOpacity
+          style={[styles.centerRefreshButton, { top: '50%' }]}
+          onPress={handleCenterRefresh}
+          testID="btn-center-refresh"
+        >
+          <RefreshCw size={32} color={COLORS.primary[600]} />
+          <Text style={styles.centerRefreshText}>Tap to load data</Text>
+        </TouchableOpacity>
+      )}
+
+      {isRefreshing && showCenterRefresh && (
+        <View style={[styles.centerRefreshButton, { top: '50%' }]}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.centerRefreshText}>Loading...</Text>
         </View>
       )}
     </View>
@@ -367,4 +395,7 @@ const styles = StyleSheet.create({
   volcanoDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 4 },
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', alignItems: 'center', justifyContent: 'center', zIndex: 20 },
   loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light },
+  loadingPercentage: { marginTop: SPACING.sm, fontSize: FONT_SIZE.xxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600] },
+  centerRefreshButton: { position: 'absolute', right: SPACING.md, backgroundColor: '#FFFFFF', padding: SPACING.lg, borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 8, zIndex: 15, transform: [{ translateY: -50 }] },
+  centerRefreshText: { marginTop: SPACING.sm, fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium },
 });
