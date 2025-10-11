@@ -166,11 +166,23 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
-  const shouldShowMap = earthquakes.length > 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {shouldShowMap ? (
+      {isDataLoading ? (
+        <View style={styles.emptyMapContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.emptyMapText}>Loading map data...</Text>
+        </View>
+      ) : earthquakes.length === 0 ? (
+        <View style={styles.emptyMapContainer}>
+          <Text style={styles.emptyMapText}>No earthquake data available</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+            <RefreshCw size={20} color="#FFFFFF" />
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
         <NativeMap
           ref={mapRef}
           earthquakes={filteredEarthquakes}
@@ -186,19 +198,6 @@ export default function MapScreen() {
           heatmapEnabled={preferences.heatmapEnabled}
           clusteringEnabled={preferences.clusteringEnabled}
         />
-      ) : isLoading ? (
-        <View style={styles.emptyMapContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary[600]} />
-          <Text style={styles.emptyMapText}>Loading map data...</Text>
-        </View>
-      ) : (
-        <View style={styles.emptyMapContainer}>
-          <Text style={styles.emptyMapText}>No earthquake data available</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
-            <RefreshCw size={20} color="#FFFFFF" />
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
       )}
 
       <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
