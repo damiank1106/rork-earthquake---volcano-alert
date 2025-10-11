@@ -7,6 +7,7 @@ import { initDatabase } from '@/services/database';
 import { PreferencesProvider } from '@/contexts/PreferencesContext';
 import { LocationProvider } from '@/contexts/LocationContext';
 import { EarthquakesProvider } from '@/contexts/EarthquakesContext';
+import { trpc, trpcClient } from '@/lib/trpc';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -50,17 +51,19 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <PreferencesProvider>
-        <LocationProvider>
-          <EarthquakesProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <RootLayoutNav />
-            </GestureHandlerRootView>
-          </EarthquakesProvider>
-        </LocationProvider>
-      </PreferencesProvider>
-    </QueryClientProvider>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <PreferencesProvider>
+          <LocationProvider>
+            <EarthquakesProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
+            </EarthquakesProvider>
+          </LocationProvider>
+        </PreferencesProvider>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }
 
