@@ -38,6 +38,8 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   useEffect(() => {
     if (selectedMarker) {
       setPulsingMarkerId(selectedMarker.id);
+    } else {
+      setPulsingMarkerId(null);
     }
   }, [selectedMarker]);
 

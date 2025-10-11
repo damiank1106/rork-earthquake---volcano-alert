@@ -83,6 +83,10 @@ export default function MapScreen() {
     setSelectedMarker(earthquake);
   };
 
+  const handleCloseInfo = () => {
+    setSelectedMarker(null);
+  };
+
   const getFeltDistance = (magnitude: number): string => {
     let distanceKm: number;
     if (magnitude < 3) {
@@ -228,7 +232,7 @@ export default function MapScreen() {
             </View>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setSelectedMarker(null)}
+              onPress={handleCloseInfo}
               testID="btn-close-info"
             >
               <Text style={styles.closeButtonText}>✕</Text>
