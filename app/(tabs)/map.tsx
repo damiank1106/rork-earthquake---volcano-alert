@@ -182,7 +182,9 @@ export default function MapScreen() {
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : (
+      ) : null}
+      
+      {earthquakes.length > 0 && (
         <NativeMap
           ref={mapRef}
           earthquakes={filteredEarthquakes}
