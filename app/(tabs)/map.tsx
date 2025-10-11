@@ -84,14 +84,23 @@ export default function MapScreen() {
   };
 
   const getFeltDistance = (magnitude: number): string => {
-    const distanceKm = Math.pow(10, 0.43 * magnitude + 1.7);
-    if (distanceKm < 1) {
-      return `${(distanceKm * 1000).toFixed(0)} m`;
-    } else if (distanceKm < 100) {
-      return `${distanceKm.toFixed(1)} km`;
+    let distanceKm: number;
+    if (magnitude < 3) {
+      distanceKm = 10;
+    } else if (magnitude < 4) {
+      distanceKm = 30;
+    } else if (magnitude < 5) {
+      distanceKm = 100;
+    } else if (magnitude < 6) {
+      distanceKm = 200;
+    } else if (magnitude < 7) {
+      distanceKm = 400;
+    } else if (magnitude < 8) {
+      distanceKm = 800;
     } else {
-      return `${distanceKm.toFixed(0)} km`;
+      distanceKm = 1000;
     }
+    return `${distanceKm} km`;
   };
 
   const hasAftershockRisk = (earthquake: Earthquake): boolean => {
