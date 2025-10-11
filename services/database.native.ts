@@ -9,7 +9,9 @@ export const initDatabase = async (): Promise<void> => {
 
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
-      
+    `);
+
+    await db.execAsync(`
       CREATE TABLE IF NOT EXISTS earthquakes (
         id TEXT PRIMARY KEY,
         time INTEGER NOT NULL,
@@ -106,9 +108,8 @@ export const initDatabase = async (): Promise<void> => {
         clusteringEnabled INTEGER NOT NULL,
         theme TEXT NOT NULL,
         notificationsEnabled INTEGER NOT NULL,
-        quietHoursEnabled INTEGER NOT NULL,
-        quietHoursStart TEXT,
-        quietHoursEnd TEXT,
+        notificationCountry TEXT,
+        notificationMinMagnitude REAL,
         lastUpdated INTEGER
       );
       
@@ -120,7 +121,56 @@ export const initDatabase = async (): Promise<void> => {
       );
     `);
 
-    console.log('Database initialized successfully');
+    try {
+      const columns = await db.getAllAsync<{ name: string }>(
+        `PRAGMA table_info(user_preferences)`
+      );
+      const columnNames = columns.map(col => col.name);
+      
+      if (!columnNames.includes('notificationCountry')) {
+        await db.execAsync(`
+          ALTER TABLE user_preferences ADD COLUMN notificationCountry TEXT;
+          ALTER TABLE user_preferences ADD COLUMN notificationMinMagnitude REAL;
+        `);
+        console.log('Migrated user_preferences table to new schema');
+      }
+      
+      const hasOldColumns = columnNames.includes('quietHoursEnabled');
+      if (hasOldColumns) {
+        await db.execAsync(`
+          CREATE TABLE user_preferences_new (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            units TEXT NOT NULL,
+            timeFormat TEXT NOT NULL,
+            pollingFrequency INTEGER NOT NULL,
+            earthquakesEnabled INTEGER NOT NULL,
+            volcanoesEnabled INTEGER NOT NULL,
+            heatmapEnabled INTEGER NOT NULL,
+            clusteringEnabled INTEGER NOT NULL,
+            theme TEXT NOT NULL,
+            notificationsEnabled INTEGER NOT NULL,
+            notificationCountry TEXT,
+            notificationMinMagnitude REAL,
+            lastUpdated INTEGER
+          );
+          
+          INSERT INTO user_preferences_new 
+            (id, units, timeFormat, pollingFrequency, earthquakesEnabled, volcanoesEnabled,
+             heatmapEnabled, clusteringEnabled, theme, notificationsEnabled, lastUpdated)
+          SELECT id, units, timeFormat, pollingFrequency, earthquakesEnabled, volcanoesEnabled,
+                 heatmapEnabled, clusteringEnabled, theme, notificationsEnabled, lastUpdated
+          FROM user_preferences;
+          
+          DROP TABLE user_preferences;
+          ALTER TABLE user_preferences_new RENAME TO user_preferences;
+        `);
+        console.log('Migrated user_preferences from old schema');
+      }
+    } catch (migrationError) {
+      console.log('Migration check/execution:', migrationError);
+    }
+
+    console.log('Database initialized and migrated successfully');
   } catch (error) {
     console.error('Failed to initialize database:', error);
     throw error;
@@ -400,8 +450,8 @@ export const saveUserPreferences = async (prefs: UserPreferences): Promise<void>
       `INSERT OR REPLACE INTO user_preferences (
         id, units, timeFormat, pollingFrequency, earthquakesEnabled, volcanoesEnabled,
         heatmapEnabled, clusteringEnabled, theme, notificationsEnabled,
-        quietHoursEnabled, quietHoursStart, quietHoursEnd, lastUpdated
-      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        notificationCountry, notificationMinMagnitude, lastUpdated
+      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         prefs.units,
         prefs.timeFormat,
@@ -412,9 +462,8 @@ export const saveUserPreferences = async (prefs: UserPreferences): Promise<void>
         prefs.clusteringEnabled ? 1 : 0,
         prefs.theme,
         prefs.notificationsEnabled ? 1 : 0,
-        prefs.quietHoursEnabled ? 1 : 0,
-        prefs.quietHoursStart ?? null,
-        prefs.quietHoursEnd ?? null,
+        prefs.notificationCountry ?? null,
+        prefs.notificationMinMagnitude ?? null,
         prefs.lastUpdated ?? null,
       ]
     );
@@ -439,9 +488,8 @@ export const getUserPreferences = async (): Promise<UserPreferences | null> => {
       clusteringEnabled: number;
       theme: string;
       notificationsEnabled: number;
-      quietHoursEnabled: number;
-      quietHoursStart: string | null;
-      quietHoursEnd: string | null;
+      notificationCountry: string | null;
+      notificationMinMagnitude: number | null;
       lastUpdated: number | null;
     }>('SELECT * FROM user_preferences WHERE id = 1');
 
@@ -457,9 +505,8 @@ export const getUserPreferences = async (): Promise<UserPreferences | null> => {
       clusteringEnabled: row.clusteringEnabled === 1,
       theme: row.theme as 'light' | 'dark' | 'auto',
       notificationsEnabled: row.notificationsEnabled === 1,
-      quietHoursEnabled: row.quietHoursEnabled === 1,
-      quietHoursStart: row.quietHoursStart ?? undefined,
-      quietHoursEnd: row.quietHoursEnd ?? undefined,
+      notificationCountry: row.notificationCountry ?? undefined,
+      notificationMinMagnitude: row.notificationMinMagnitude ?? undefined,
       lastUpdated: row.lastUpdated ?? undefined,
     };
   } catch (error) {
