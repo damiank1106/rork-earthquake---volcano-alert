@@ -58,7 +58,7 @@ export default function MapScreen() {
   }, [highlightedVolcano]);
 
   useEffect(() => {
-    if (earthquakeId && !hasInitializedEarthquake && earthquakes.length > 0) {
+    if (earthquakeId && !hasInitializedEarthquake && earthquakes.length > 0 && !isLoading) {
       const earthquake = earthquakes.find(eq => eq.id === earthquakeId);
       if (earthquake) {
         if (paramMagCategory) {
@@ -81,7 +81,7 @@ export default function MapScreen() {
         }, 300);
       }
     }
-  }, [earthquakeId, earthquakes, hasInitializedEarthquake, paramMagCategory]);
+  }, [earthquakeId, earthquakes, hasInitializedEarthquake, paramMagCategory, isLoading]);
 
   const filteredEarthquakes = useMemo(() => {
     if (magFilterOff) return [];
@@ -141,6 +141,17 @@ export default function MapScreen() {
   };
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+
+  if (isLoading && earthquakes.length === 0) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.loadingText}>Loading earthquakes...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -305,10 +316,10 @@ export default function MapScreen() {
         </GlassView>
       )}
 
-      {isLoading && (
+      {isLoading && earthquakes.length > 0 && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
-          <Text style={styles.loadingText}>Loading earthquakes...</Text>
+          <Text style={styles.loadingText}>Refreshing...</Text>
         </View>
       )}
     </View>
