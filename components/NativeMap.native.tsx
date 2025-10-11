@@ -29,7 +29,9 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
 
   useImperativeHandle(ref, () => ({
     animateToRegion: (region: any, duration?: number) => {
-      mapRef.current?.animateToRegion(region, duration);
+      if (mapReady && mapRef.current) {
+        mapRef.current.animateToRegion(region, duration);
+      }
     },
   }), [mapReady]);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -95,12 +97,16 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
 
   useEffect(() => {
     if (selectedMarker && mapRef.current && mapReady) {
-      mapRef.current.animateToRegion({
-        latitude: selectedMarker.latitude,
-        longitude: selectedMarker.longitude,
-        latitudeDelta: 5,
-        longitudeDelta: 5,
-      });
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude: selectedMarker.latitude,
+            longitude: selectedMarker.longitude,
+            latitudeDelta: 5,
+            longitudeDelta: 5,
+          }, 1000);
+        }
+      }, 100);
     }
   }, [selectedMarker, mapReady]);
 

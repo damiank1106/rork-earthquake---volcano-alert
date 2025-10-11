@@ -75,6 +75,9 @@ export default function MapScreen() {
             const magCat = parseInt(paramMagCategory, 10);
             setMagCategory(magCat);
             setMagFilterOff(false);
+          } else {
+            setMagCategory('all');
+            setMagFilterOff(false);
           }
           setSelectedMarker(earthquake);
           setHasInitializedEarthquake(true);
@@ -89,12 +92,18 @@ export default function MapScreen() {
                 longitudeDelta: 5,
               }, 1000);
             }
-          }, 500);
+          }, 800);
         } else if (!isLoading) {
           setShowCenterRefresh(true);
         }
       } else if (earthquakes.length === 0 && !isLoading) {
         setShowCenterRefresh(true);
+      }
+    } else {
+      if (!hasInitializedEarthquake && earthquakes.length > 0) {
+        setMagCategory('all');
+        setMagFilterOff(false);
+        setHasInitializedEarthquake(true);
       }
     }
   }, [earthquakeId, earthquakes, hasInitializedEarthquake, paramMagCategory, isLoading]);
@@ -166,24 +175,27 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
+  const shouldShowMap = earthquakes.length > 0 || !isLoading;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <NativeMap
-        ref={mapRef}
-        earthquakes={filteredEarthquakes}
-        selectedMarker={selectedMarker}
-        onMarkerPress={handleMarkerPress}
-        userLocation={userLocation}
-        plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-        volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
-        nuclearPlants={[]}
-        showPlateBoundaries={showPlates}
-        showVolcanoes={showVolcanoes}
-        showNuclearPlants={false}
-        heatmapEnabled={preferences.heatmapEnabled}
-        clusteringEnabled={preferences.clusteringEnabled}
-      />
+      {shouldShowMap && (
+        <NativeMap
+          ref={mapRef}
+          earthquakes={filteredEarthquakes}
+          selectedMarker={selectedMarker}
+          onMarkerPress={handleMarkerPress}
+          userLocation={userLocation}
+          plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
+          volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
+          nuclearPlants={[]}
+          showPlateBoundaries={showPlates}
+          showVolcanoes={showVolcanoes}
+          showNuclearPlants={false}
+          heatmapEnabled={preferences.heatmapEnabled}
+          clusteringEnabled={preferences.clusteringEnabled}
+        />
+      )}
       
       {isDataLoading && (
         <View style={styles.emptyMapContainer}>
