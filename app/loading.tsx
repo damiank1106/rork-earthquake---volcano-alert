@@ -112,7 +112,11 @@ export default function LoadingScreen() {
           ]}
         >
           <View style={styles.logoCircle}>
-            <Text style={styles.logoEmoji}>🌍</Text>
+            <Image
+              source={{ uri: RING_OF_FIRE_URI }}
+              resizeMode="contain"
+              style={styles.logoImage}
+            />
           </View>
         </Animated.View>
 
@@ -178,10 +182,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: BACKGROUND_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -189,9 +193,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 20,
     elevation: 12,
+    overflow: 'hidden',
   },
-  logoEmoji: {
-    fontSize: 60,
+  logoImage: {
+    width: 140,
+    height: 140,
   },
   textContainer: {
     width: '100%',
