@@ -9,7 +9,7 @@ import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
-const BACKGROUND_COLOR = '#D8DFE5';
+const BACKGROUND_COLOR = '#ebe7e2';
 
 export default function LoadingScreen() {
   const insets = useSafeAreaInsets();
@@ -181,12 +181,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#0EA5E9',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 20,
     elevation: 12,
   },
@@ -199,17 +199,21 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxl,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#E2E8F0',
+    color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
-    color: '#93C5FD',
+    color: '#FFFFFF',
     textAlign: 'center',
     fontWeight: '600' as const,
+    opacity: 0.9,
   },
   progressContainer: {
     width: '100%',
@@ -218,21 +222,24 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     width: '100%',
-    height: 8,
-    backgroundColor: 'rgba(59, 130, 246, 0.25)',
-    borderRadius: 4,
+    height: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 5,
     overflow: 'hidden',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#60A5FA',
-    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 5,
   },
   progressText: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: 24,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#BFDBFE',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   statusContainer: {
     width: '100%',
@@ -241,7 +248,8 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: FONT_SIZE.md,
-    color: '#93C5FD',
+    color: '#FFFFFF',
     textAlign: 'center',
+    opacity: 0.85,
   },
 });

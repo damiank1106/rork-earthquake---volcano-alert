@@ -8,7 +8,7 @@ import { useLocation } from '@/contexts/LocationContext';
 const { width, height } = Dimensions.get('window');
 
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
-const BACKGROUND_COLOR = '#D8DFE5';
+const BACKGROUND_COLOR = '#ebe7e2';
 
 type OutlinedTextProps = { text: string; textStyle: TextStyle; testID?: string };
 const OutlinedText: React.FC<OutlinedTextProps> = React.memo(function OutlinedText({ text, textStyle, testID }) {
@@ -204,17 +204,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#D8DFE5',
+    color: '#FFFFFF',
     textAlign: 'center',
     letterSpacing: 0.6,
-    textShadowColor: 'rgba(255, 94, 58, 0.56)',
-    textShadowOffset: { width: 0, height: 4 },
-    textShadowRadius: 18,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
-    color: '#D8DFE5',
+    color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
   },
