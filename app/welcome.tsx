@@ -20,20 +20,21 @@ export default function WelcomeScreen() {
 
   const fadeIn = useRef(new Animated.Value(0)).current;
   const contentFadeIn = useRef(new Animated.Value(0)).current;
-  const contentSlideUp = useRef(new Animated.Value(30)).current;
+  const contentSlideUp = useRef(new Animated.Value(50)).current;
   const screenFadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(screenFadeIn, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+    Animated.sequence([
+      Animated.timing(screenFadeIn, { toValue: 1, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.delay(200),
+      Animated.timing(fadeIn, { toValue: 1, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
     ]).start();
     
     Animated.sequence([
-      Animated.delay(400),
+      Animated.delay(800),
       Animated.parallel([
-        Animated.timing(contentFadeIn, { toValue: 1, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(contentSlideUp, { toValue: 0, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(contentFadeIn, { toValue: 1, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(contentSlideUp, { toValue: 0, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       ]),
     ]).start();
   }, [fadeIn, contentFadeIn, contentSlideUp, screenFadeIn]);
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     width: '88%',
     maxWidth: 520,
     alignItems: 'center',
-    paddingBottom: height * 0.28,
+    paddingBottom: height * 0.18,
   },
   title: {
     fontSize: 34,
