@@ -98,7 +98,12 @@ export default function VolcanoesScreen() {
           ListEmptyComponent={<Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>No volcano data available</Text>}
         />
       ) : (
-        <ScrollView contentContainerStyle={styles.list}>
+        <ScrollView 
+          contentContainerStyle={styles.list}
+          style={{ flex: 1 }}
+          scrollEnabled={true}
+          nestedScrollEnabled={true}
+        >
           {superVolcanoes.map((volcano) => (
             <SuperVolcanoItem key={volcano.id} v={volcano} onPress={() => setSelectedVolcano(volcano)} />
           ))}
@@ -108,7 +113,11 @@ export default function VolcanoesScreen() {
       <Modal visible={!!selectedVolcano} animationType="fade" transparent>
         <View style={styles.modalOverlay}>
           {Platform.OS === 'web' ? (
-            <View style={[styles.modalContent, { backgroundColor: 'rgba(255,255,255,0.95)' }]}>
+            <ScrollView 
+              style={[styles.modalContent, { backgroundColor: 'rgba(255,255,255,0.95)' }]}
+              contentContainerStyle={{ padding: SPACING.lg }}
+              scrollEnabled={true}
+            >
             {selectedVolcano && (
               <>
                 <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
@@ -137,9 +146,13 @@ export default function VolcanoesScreen() {
                 </TouchableOpacity>
               </>
             )}
-            </View>
+            </ScrollView>
           ) : (
             <BlurView intensity={80} tint="light" style={styles.modalContent}>
+            <ScrollView 
+              contentContainerStyle={{ padding: SPACING.lg }}
+              scrollEnabled={true}
+            >
             {selectedVolcano && (
               <>
                 <Text style={styles.modalTitle}>{selectedVolcano.name}</Text>
@@ -168,6 +181,7 @@ export default function VolcanoesScreen() {
                 </TouchableOpacity>
               </>
             )}
+            </ScrollView>
             </BlurView>
           )}
         </View>
@@ -205,7 +219,7 @@ function SuperVolcanoItem({ v, onPress }: { v: Volcano; onPress: () => void }) {
       )}
       {v.lastMajorEruption && (
         <View style={styles.row}>
-          <Mountain size={16} color={COLORS.primary[600]} />
+          <Mountain size={16} color="#2563EB" />
           <Text style={styles.rowText}>Last major eruption: {v.lastMajorEruption}</Text>
         </View>
       )}
@@ -229,7 +243,7 @@ const styles = StyleSheet.create({
   list: { padding: SPACING.md, paddingTop: 0, paddingBottom: SPACING.xxl },
   sectionHeader: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600], marginTop: SPACING.md, marginBottom: SPACING.sm },
   card: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md },
-  superCard: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4, borderLeftColor: COLORS.primary[500] },
+  superCard: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4, borderLeftColor: '#2563EB' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
   cardTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginRight: SPACING.md },
   cardMeta: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
@@ -238,7 +252,7 @@ const styles = StyleSheet.create({
   rowText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   superDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: SPACING.sm, lineHeight: 20 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { margin: SPACING.md, padding: SPACING.lg, borderRadius: BORDER_RADIUS.lg, maxWidth: 500, width: '90%', maxHeight: '80%', ...SHADOW.lg },
+  modalContent: { margin: SPACING.md, borderRadius: BORDER_RADIUS.lg, maxWidth: 500, width: '90%', maxHeight: '80%', ...SHADOW.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#000000', marginBottom: SPACING.md },
   modalLabel: { fontWeight: FONT_WEIGHT.bold, color: '#000000' },
   modalDetail: { fontSize: FONT_SIZE.md, color: '#000000', marginBottom: SPACING.xs },

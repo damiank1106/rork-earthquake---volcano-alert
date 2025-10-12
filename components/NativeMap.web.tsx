@@ -161,6 +161,8 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     if (showVolcanoes && volcanoes.length > 0) {
       volcanoes.forEach((v) => {
         const isHighlighted = selectedVolcano?.id === v.id;
+        const isSuperVolcano = v.category === 'super';
+        const volcanoColor = isSuperVolcano ? (isHighlighted ? '#1E3A8A' : '#2563EB') : (isHighlighted ? '#DC2626' : '#EF4444');
         const size = isHighlighted ? 32 : 24;
         const icon = L.divIcon({
           className: 'custom-volcano-marker',
@@ -168,7 +170,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
             <div style="
               width: ${size}px;
               height: ${size}px;
-              background-color: ${isHighlighted ? '#DC2626' : '#EF4444'};
+              background-color: ${volcanoColor};
               border: 3px solid white;
               border-radius: 50%;
               box-shadow: 0 2px 8px rgba(0,0,0,0.3);

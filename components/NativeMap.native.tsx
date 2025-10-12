@@ -146,6 +146,8 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
 
       {showVolcanoes && volcanoes.map((v) => {
         const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;
+        const isSuperVolcano = v.category === 'super';
+        const volcanoColor = isSuperVolcano ? (isHighlighted ? '#1E3A8A' : '#2563EB') : (isHighlighted ? '#DC2626' : '#EF4444');
         return (
           <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }} onPress={() => onVolcanoPress?.(v)}>
             <View style={styles.volcanoContainer}>
@@ -156,11 +158,12 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
                     {
                       transform: [{ scale: volcanoPulseAnim }],
                       opacity: volcanoPulseOpacity,
+                      backgroundColor: isSuperVolcano ? '#2563EB' : '#DC2626',
                     },
                   ]}
                 />
               )}
-              <View style={[styles.volcanoDot, { backgroundColor: isHighlighted ? '#DC2626' : '#EF4444', width: isHighlighted ? 32 : 24, height: isHighlighted ? 32 : 24, borderRadius: isHighlighted ? 16 : 12 }]} />
+              <View style={[styles.volcanoDot, { backgroundColor: volcanoColor, width: isHighlighted ? 32 : 24, height: isHighlighted ? 32 : 24, borderRadius: isHighlighted ? 16 : 12 }]} />
             </View>
           </Marker>
         );

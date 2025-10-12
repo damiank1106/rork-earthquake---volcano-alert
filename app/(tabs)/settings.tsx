@@ -150,29 +150,63 @@ WHAT THIS APP OFFERS
 • Magnitude-based color coding
 • Distance calculations from your location
 • Detailed event information and impact radius
+• Click on earthquake markers to see details in glass containers
+• Zoom and pulse animations for selected events
 
 🌋 Active Volcano Tracking
 • Global volcano database from Smithsonian GVP
+• 44+ currently erupting volcanoes worldwide
 • Real-time volcano locations on map
 • Eruption history and activity status
 • Toggle volcano markers on/off
+• Click on volcano markers to zoom, pulse, and view details
+• Separate tabs for Active Volcanoes and Super Volcanoes
+• Filter volcanoes by category in map view
 
-🌊 Tsunami Alerts
+🌋 Super Volcanoes
+• Comprehensive database of 11 major supervolcanoes
+• Detailed information about each supervolcano:
+  - Yellowstone (USA)
+  - Taupō (New Zealand)
+  - Toba (Indonesia)
+  - La Garita (USA)
+  - La Pacana (Chile)
+  - Cerro Galán (Argentina)
+  - Campi Flegrei (Italy)
+  - Long Valley Caldera (USA)
+  - Aso Caldera (Japan)
+  - Whakamaru Caldera (New Zealand)
+  - Apolaki Caldera (Philippine Sea)
+• Caldera size, last major eruption dates
+• Educational descriptions and fun facts
+• Dark blue markers distinguish from active volcanoes
+• Interactive map integration with zoom and pulse effects
+
+🌊 Tsunami Alerts & Safety
 • Live tsunami warnings from NOAA/NWS and PHIVOLCS
 • Affected regions and threat levels
 • Automatic refresh for latest updates
 • Critical safety information
+• Comprehensive tsunami safety guidelines:
+  - How to recognize tsunami warning signs
+  - What to do before, during, and after
+  - Evacuation procedures
+  - Emergency preparedness tips
 
 📚 Educational Resources
 • Comprehensive magnitude scale guide
 • Safety guides for earthquakes and tsunamis
 • Before, during, and after preparedness tips
 • Emergency contact information
+• Tsunami recognition and response guidelines
+• Volcano and supervolcano educational content
 
 🔔 Smart Notifications
 • Customizable earthquake alerts
 • Filter by country and magnitude
 • Stay informed about significant events
+• Works on iOS and Android devices
+• Background notification support
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -180,37 +214,55 @@ HOW TO USE THE APP
 
 📍 Map Tab
 • View earthquakes and volcanoes on interactive map
-• Tap markers to see detailed information
+• Tap earthquake markers to see detailed information in glass containers
+• Tap volcano markers to zoom in, pulse, and view details
 • Use Menu button to filter by magnitude
 • Toggle earthquakes/volcanoes/heatmap
+• Filter volcanoes by Active or Super categories
 • Pinch to zoom, drag to explore
-• Click "Show on Map" from Events to locate specific earthquakes
+• Click "Show on Map" from Events/Volcanoes to locate specific items
+• Selected items pulse and zoom for easy identification
 
 📋 Events Tab
 • Browse recent earthquakes in list format
 • Sort by time, magnitude, or distance
-• Tap any event to view on map
+• Tap any event to view on map with zoom and pulse
 • Pull down to refresh data
 • See time, location, magnitude, and depth
+• Glass container displays with crisp black text
 
 🌋 Volcanoes Tab
-• Explore active volcanoes worldwide
-• View eruption history and status
+• Two tabs: Active Volcanoes and Super Volcanoes
+• Active Volcanoes (44+ currently erupting):
+  - Explore active volcanoes worldwide
+  - View eruption history and status
+  - See last eruption dates and activity summaries
+  - Click "Show on Map" to locate with zoom and pulse
+• Super Volcanoes (11 major calderas):
+  - Learn about Earth's largest volcanic systems
+  - Read detailed descriptions and fun facts
+  - View caldera sizes and eruption history
+  - Dark blue markers on map
+  - Scrollable list with full descriptions
 • Toggle volcano markers on map
-• Click "Show on Map" to locate on map
 • Pulsing animation shows selected volcano
 
 🌊 Tsunami Tab
 • Check active tsunami warnings
 • View affected regions and threat levels
 • Tap refresh icon for latest updates
-• Read safety guidelines
+• Read comprehensive safety guidelines:
+  - Warning signs (rapid ocean recession, roaring sound)
+  - Evacuation procedures
+  - What to do before, during, and after
+  - Emergency preparedness checklist
 
 📖 Education Tab
 • Learn about earthquake magnitudes
 • Read comprehensive safety guides
 • Understand what to do before, during, and after
 • Access emergency preparedness tips
+• Tsunami safety and recognition guidelines
 
 ⚙️ Settings Tab
 • Customize display units (metric/imperial)
@@ -218,6 +270,7 @@ HOW TO USE THE APP
 • Configure notifications by country and magnitude
 • Toggle map features (clustering, heatmap)
 • View privacy policy and terms
+• Access this comprehensive guide
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -227,13 +280,20 @@ Version 1.0.0 (October 2025)
 ✨ Initial release
 • Real-time earthquake monitoring
 • Interactive map with filters
-• Volcano tracking system
+• Volcano tracking system (Active + Super)
+• 44+ currently erupting volcanoes
+• 11 supervolcanoes with detailed information
 • Tsunami alert integration
+• Comprehensive tsunami safety guidelines
 • Educational resources
-• Customizable notifications
+• Customizable notifications (iOS & Android)
 • Location-based distance calculations
 • Impact radius visualization
+• Zoom and pulse animations for selected items
+• Glass container UI with crisp black text
 • Multi-platform support (iOS, Android, Web)
+• Smooth transitions and loading animations
+• Welcome page with Earth imagery
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -241,9 +301,10 @@ TIPS & TRICKS
 
 💡 Quick Actions
 • Double-tap map to zoom in
-• Long-press markers for quick info
+• Tap markers for quick info with zoom and pulse
 • Swipe between tabs for faster navigation
 • Pull down on lists to refresh data
+• Switch between Active and Super volcano tabs
 
 🎯 Best Practices
 • Enable location for accurate distance calculations
@@ -251,12 +312,16 @@ TIPS & TRICKS
 • Check tsunami alerts regularly if near coast
 • Review safety guides before emergencies
 • Keep app updated for latest features
+• Explore both Active and Super volcano categories
+• Read tsunami warning signs in Education tab
 
 ⚠️ Important Reminders
 • This is NOT an official early warning system
 • Always follow local emergency authorities
 • Data may have delays or revisions
 • Use for informational purposes only
+• Supervolcano eruptions are extremely rare
+• Tsunami warnings require immediate action
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
