@@ -8,7 +8,7 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
-const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
+const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ihiq2cfuz275qzpzap5yk';
 const BACKGROUND_COLOR = '#ebe7e2';
 
 export default function LoadingScreen() {
@@ -80,7 +80,7 @@ export default function LoadingScreen() {
       setHasNavigated(true);
       setTimeout(() => {
         router.replace('/map');
-      }, 500);
+      }, 3500);
     }
   }, [preferencesLoading, isLoadingLocation, earthquakesLoading, earthquakes.length, hasNavigated, progressAnim]);
 
