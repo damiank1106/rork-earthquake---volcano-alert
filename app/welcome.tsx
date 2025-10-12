@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Alert, TextStyle } from 'react-native';
+import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Alert, TextStyle, Platform, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
@@ -8,10 +8,10 @@ import { useLocation } from '@/contexts/LocationContext';
 const { width, height } = Dimensions.get('window');
 
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
-const BACKGROUND_COLOR = '#0A1220';
+const BACKGROUND_COLOR = '#D8DFE5';
 
 type OutlinedTextProps = { text: string; textStyle: TextStyle; testID?: string };
-const OutlinedText: React.FC<OutlinedTextProps> = React.memo(({ text, textStyle, testID }) => {
+const OutlinedText: React.FC<OutlinedTextProps> = React.memo(function OutlinedText({ text, textStyle, testID }) {
   const outlineColor = '#000000';
   const offsets = [
     { x: -1, y: -1 },
@@ -39,6 +39,7 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { locationPermission, isLoadingLocation, refreshLocation } = useLocation();
   const [isRequestingPermission, setIsRequestingPermission] = useState<boolean>(false);
+  const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
   const fadeIn = useRef(new Animated.Value(0)).current;
 
@@ -47,34 +48,58 @@ export default function WelcomeScreen() {
   }, [fadeIn]);
 
   const handleContinue = async () => {
-    Alert.alert(
-      'Enable Location',
-      'To personalize seismic alerts for your area, allow location access. You can change this later in Settings.',
-      [
-        {
-          text: 'Not now',
-          style: 'cancel',
-          onPress: () => router.replace('/loading'),
-        },
-        {
-          text: 'Continue',
-          onPress: async () => {
-            try {
-              if (!locationPermission && !isRequestingPermission) {
-                setIsRequestingPermission(true);
-                await refreshLocation();
-              }
-            } catch (e) {
-              console.log('Location init error', e);
-            } finally {
-              setIsRequestingPermission(false);
-              router.replace('/loading');
-            }
+    if (Platform.OS === 'web') {
+      setShowLocationModal(true);
+    } else {
+      Alert.alert(
+        'Enable Location',
+        'To personalize seismic alerts for your area, allow location access. You can change this later in Settings.',
+        [
+          {
+            text: 'Not now',
+            style: 'cancel',
+            onPress: () => router.replace('/loading'),
           },
-        },
-      ],
-      { cancelable: true }
-    );
+          {
+            text: 'Continue',
+            onPress: async () => {
+              try {
+                if (!locationPermission && !isRequestingPermission) {
+                  setIsRequestingPermission(true);
+                  await refreshLocation();
+                }
+              } catch (e) {
+                console.log('Location init error', e);
+              } finally {
+                setIsRequestingPermission(false);
+                router.replace('/loading');
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
+
+  const handleModalNotNow = () => {
+    setShowLocationModal(false);
+    router.replace('/loading');
+  };
+
+  const handleModalContinue = async () => {
+    setShowLocationModal(false);
+    try {
+      if (!locationPermission && !isRequestingPermission) {
+        setIsRequestingPermission(true);
+        await refreshLocation();
+      }
+    } catch (e) {
+      console.log('Location init error', e);
+    } finally {
+      setIsRequestingPermission(false);
+      router.replace('/loading');
+    }
   };
 
   const source: ImageURISource = { uri: RING_OF_FIRE_URI };
@@ -109,12 +134,44 @@ export default function WelcomeScreen() {
           accessibilityLabel="Continue"
         >
           {isRequestingPermission || isLoadingLocation ? (
-            <ActivityIndicator size="small" color="#0B0F14" />
+            <ActivityIndicator size="small" color="#0B1A2E" />
           ) : (
-            <OutlinedText text="Continue" textStyle={styles.buttonText} />
+            <Text style={styles.buttonText}>Continue</Text>
           )}
         </TouchableOpacity>
       </Animated.View>
+
+      <Modal
+        visible={showLocationModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLocationModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Enable Location</Text>
+            <Text style={styles.modalMessage}>
+              To personalize seismic alerts for your area, allow location access. You can change this later in Settings.
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                onPress={handleModalNotNow}
+                style={[styles.modalButton, styles.modalButtonCancel]}
+                testID="modal-btn-not-now"
+              >
+                <Text style={styles.modalButtonTextCancel}>Not now</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleModalContinue}
+                style={[styles.modalButton, styles.modalButtonConfirm]}
+                testID="modal-btn-continue"
+              >
+                <Text style={styles.modalButtonTextConfirm}>Continue</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -147,7 +204,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#F8FAFC',
+    color: '#D8DFE5',
     textAlign: 'center',
     letterSpacing: 0.6,
     textShadowColor: 'rgba(255, 94, 58, 0.56)',
@@ -157,26 +214,88 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
-    color: '#CBD5E1',
+    color: '#D8DFE5',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
   },
   button: {
-    backgroundColor: '#FF6B4A',
+    backgroundColor: '#E8F0F7',
     paddingVertical: 16,
     paddingHorizontal: SPACING.xxl,
     borderRadius: 14,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#FF6B4A',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
     elevation: 6,
   },
   buttonText: {
-    color: '#0B0F14',
+    color: '#0B1A2E',
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
+    textShadowColor: 'transparent',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 0,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.xl,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: SPACING.xl,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: FONT_WEIGHT.bold,
+    color: '#0B1A2E',
+    textAlign: 'center',
+    marginBottom: SPACING.md,
+  },
+  modalMessage: {
+    fontSize: FONT_SIZE.md,
+    color: '#475569',
+    textAlign: 'center',
+    marginBottom: SPACING.xl,
+    lineHeight: 22,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#E2E8F0',
+  },
+  modalButtonConfirm: {
+    backgroundColor: '#FF6B4A',
+  },
+  modalButtonTextCancel: {
+    color: '#475569',
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semibold,
+  },
+  modalButtonTextConfirm: {
+    color: '#FFFFFF',
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semibold,
   },
 });

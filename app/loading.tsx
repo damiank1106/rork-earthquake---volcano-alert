@@ -9,7 +9,7 @@ import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
-const BACKGROUND_COLOR = '#0A1220';
+const BACKGROUND_COLOR = '#D8DFE5';
 
 export default function LoadingScreen() {
   const insets = useSafeAreaInsets();
