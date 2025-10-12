@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Alert } from 'react-native';
+import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Alert, TextStyle } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
@@ -8,6 +8,32 @@ import { useLocation } from '@/contexts/LocationContext';
 const { width, height } = Dimensions.get('window');
 
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
+const BACKGROUND_COLOR = '#0A1220';
+
+type OutlinedTextProps = { text: string; textStyle: TextStyle; testID?: string };
+const OutlinedText: React.FC<OutlinedTextProps> = React.memo(({ text, textStyle, testID }) => {
+  const outlineColor = '#000000';
+  const offsets = [
+    { x: -1, y: -1 },
+    { x: 1, y: -1 },
+    { x: -1, y: 1 },
+    { x: 1, y: 1 },
+  ];
+  return (
+    <View style={{ position: 'relative', alignItems: 'center' }} accessibilityElementsHidden={true} importantForAccessibility="no-hide-descendants">
+      {offsets.map((o, idx) => (
+        <Text
+          key={`outline-${idx}`}
+          style={[textStyle, { position: 'absolute', left: o.x, top: o.y, color: outlineColor }]}
+          testID={testID ? `${testID}-outline-${idx}` : undefined}
+        >
+          {text}
+        </Text>
+      ))}
+      <Text style={textStyle} testID={testID}>{text}</Text>
+    </View>
+  );
+});
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
@@ -19,8 +45,6 @@ export default function WelcomeScreen() {
   useEffect(() => {
     Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
   }, [fadeIn]);
-
-
 
   const handleContinue = async () => {
     Alert.alert(
@@ -73,11 +97,9 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-
-
       <Animated.View style={[styles.content, { opacity: fadeIn, transform: [{ translateY: fadeIn.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }] }]}>
-        <Text style={styles.title} testID="title-text">Seismic Monitor</Text>
-        <Text style={styles.subtitle}>Global Ring of Fire • Real-time seismic insights</Text>
+        <OutlinedText text="Seismic Monitor" textStyle={styles.title} testID="title-text" />
+        <OutlinedText text="Global Ring of Fire • Real-time seismic insights" textStyle={styles.subtitle} />
         <TouchableOpacity
           onPress={handleContinue}
           style={styles.button}
@@ -89,7 +111,7 @@ export default function WelcomeScreen() {
           {isRequestingPermission || isLoadingLocation ? (
             <ActivityIndicator size="small" color="#0B0F14" />
           ) : (
-            <Text style={styles.buttonText}>Continue</Text>
+            <OutlinedText text="Continue" textStyle={styles.buttonText} />
           )}
         </TouchableOpacity>
       </Animated.View>
@@ -100,7 +122,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#02050A',
+    backgroundColor: BACKGROUND_COLOR,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
@@ -108,12 +130,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#02050A',
+    backgroundColor: BACKGROUND_COLOR,
   },
   ringImage: {
     width: width,
     height: height,
-    backgroundColor: '#02050A',
+    backgroundColor: BACKGROUND_COLOR,
   },
 
   content: {

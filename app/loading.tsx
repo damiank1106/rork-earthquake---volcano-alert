@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Text, Animated, Easing, Dimensions, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
@@ -7,7 +7,9 @@ import { useEarthquakes } from '@/contexts/EarthquakesContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
 
-
+const { width, height } = Dimensions.get('window');
+const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/4frlq0qiwtpl1p0rkxttl';
+const BACKGROUND_COLOR = '#0A1220';
 
 export default function LoadingScreen() {
   const insets = useSafeAreaInsets();
@@ -89,7 +91,9 @@ export default function LoadingScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      <View style={styles.backgroundGradient} />
+      <View style={styles.background}>
+        <Image source={{ uri: RING_OF_FIRE_URI }} resizeMode="contain" style={styles.ringImage} />
+      </View>
 
       <Animated.View
         style={[
@@ -148,13 +152,20 @@ export default function LoadingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0F2FE',
+    backgroundColor: BACKGROUND_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  backgroundGradient: {
+  background: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#E0F2FE',
+    backgroundColor: BACKGROUND_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ringImage: {
+    width: width,
+    height: height,
+    backgroundColor: BACKGROUND_COLOR,
   },
   content: {
     width: '85%',
@@ -190,13 +201,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#0C4A6E',
+    color: '#E2E8F0',
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
-    color: '#0369A1',
+    color: '#93C5FD',
     textAlign: 'center',
     fontWeight: '600' as const,
   },
@@ -208,20 +219,20 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: 8,
-    backgroundColor: 'rgba(14, 165, 233, 0.2)',
+    backgroundColor: 'rgba(59, 130, 246, 0.25)',
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: SPACING.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#0EA5E9',
+    backgroundColor: '#60A5FA',
     borderRadius: 4,
   },
   progressText: {
     fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
-    color: '#0C4A6E',
+    color: '#BFDBFE',
   },
   statusContainer: {
     width: '100%',
@@ -230,7 +241,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: FONT_SIZE.md,
-    color: '#075985',
+    color: '#93C5FD',
     textAlign: 'center',
   },
 });
