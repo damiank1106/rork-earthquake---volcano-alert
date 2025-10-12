@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MAGNITUDE_SCALE, SAFETY_GUIDES } from '@/constants/education';
+import { MAGNITUDE_SCALE, SAFETY_GUIDES, TSUNAMI_SAFETY_GUIDES } from '@/constants/education';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 
 export default function EducationScreen() {
@@ -32,8 +32,30 @@ export default function EducationScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Safety Guides</Text>
+        <Text style={styles.sectionTitle}>Earthquake Safety Guides</Text>
         {SAFETY_GUIDES.filter((guide) => guide.eventType === 'earthquake').map((guide) => (
+          <View key={guide.id} style={styles.guideCard}>
+            <Text style={styles.guideTitle}>{guide.title}</Text>
+            <Text style={styles.guideCategory}>
+              {guide.category === 'before' ? '📋 Before' : guide.category === 'during' ? '⚠️ During' : '✅ After'}
+            </Text>
+            {guide.steps.map((step, index) => (
+              <View key={index} style={styles.stepContainer}>
+                <Text style={styles.stepNumber}>{index + 1}.</Text>
+                <Text style={styles.stepText}>{step}</Text>
+              </View>
+            ))}
+            <Text style={styles.sources}>Sources: {guide.sources.join(', ')}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Tsunami Safety Guidelines</Text>
+        <Text style={styles.sectionDescription}>
+          How to recognize tsunami warning signs and what actions to take
+        </Text>
+        {TSUNAMI_SAFETY_GUIDES.map((guide) => (
           <View key={guide.id} style={styles.guideCard}>
             <Text style={styles.guideTitle}>{guide.title}</Text>
             <Text style={styles.guideCategory}>

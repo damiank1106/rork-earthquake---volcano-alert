@@ -49,6 +49,10 @@ export interface Volcano {
   vei?: number;
   sources: string[];
   url?: string;
+  category: 'active' | 'super';
+  description?: string;
+  calderaSize?: string;
+  lastMajorEruption?: string;
 }
 
 export interface SavedPlace {
