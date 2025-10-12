@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Platform } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, Text, Animated, Easing, TouchableOpacity, Dimensions, ActivityIndicator, ImageURISource, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants/theme';
@@ -14,53 +14,43 @@ export default function WelcomeScreen() {
   const { locationPermission, isLoadingLocation, refreshLocation } = useLocation();
   const [isRequestingPermission, setIsRequestingPermission] = useState<boolean>(false);
 
-  const bgScale = useRef(new Animated.Value(1)).current;
-  const bgRotate = useRef(new Animated.Value(0)).current;
-  const bgTranslate = useRef(new Animated.Value(0)).current;
   const fadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(bgScale, { toValue: 1.05, duration: 7000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-          Animated.timing(bgScale, { toValue: 1, duration: 7000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        ]),
-      ),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(bgRotate, { toValue: 1, duration: 12000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-          Animated.timing(bgRotate, { toValue: 0, duration: 12000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        ]),
-      ),
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(bgTranslate, { toValue: 1, duration: 9000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-          Animated.timing(bgTranslate, { toValue: 0, duration: 9000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        ]),
-      ),
-    ]).start();
-  }, [bgRotate, bgScale, bgTranslate, fadeIn]);
+    Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [fadeIn]);
 
-  const rotateDeg = bgRotate.interpolate({ inputRange: [0, 1], outputRange: ['-2deg', '2deg'] });
-  const translate = useMemo(() => ({
-    x: bgTranslate.interpolate({ inputRange: [0, 1], outputRange: [0, Platform.OS === 'web' ? 12 : 18] }),
-    y: bgTranslate.interpolate({ inputRange: [0, 1], outputRange: [0, Platform.OS === 'web' ? -8 : -12] }),
-  }), [bgTranslate]);
+
 
   const handleContinue = async () => {
-    try {
-      if (!locationPermission && !isRequestingPermission) {
-        setIsRequestingPermission(true);
-        await refreshLocation();
-      }
-    } catch (e) {
-      console.log('Location init error', e);
-    } finally {
-      setIsRequestingPermission(false);
-      router.replace('/loading');
-    }
+    Alert.alert(
+      'Enable Location',
+      'To personalize seismic alerts for your area, allow location access. You can change this later in Settings.',
+      [
+        {
+          text: 'Not now',
+          style: 'cancel',
+          onPress: () => router.replace('/loading'),
+        },
+        {
+          text: 'Continue',
+          onPress: async () => {
+            try {
+              if (!locationPermission && !isRequestingPermission) {
+                setIsRequestingPermission(true);
+                await refreshLocation();
+              }
+            } catch (e) {
+              console.log('Location init error', e);
+            } finally {
+              setIsRequestingPermission(false);
+              router.replace('/loading');
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const source: ImageURISource = { uri: RING_OF_FIRE_URI };
@@ -72,12 +62,6 @@ export default function WelcomeScreen() {
           styles.bgWrapper,
           {
             opacity: fadeIn,
-            transform: [
-              { scale: bgScale },
-              { rotate: rotateDeg },
-              { translateX: translate.x },
-              { translateY: translate.y },
-            ],
           },
         ]}
       >
@@ -89,7 +73,7 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-      <View style={styles.scrim} />
+
 
       <Animated.View style={[styles.content, { opacity: fadeIn, transform: [{ translateY: fadeIn.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }] }]}>
         <Text style={styles.title} testID="title-text">Seismic Monitor</Text>
@@ -116,7 +100,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0F14',
+    backgroundColor: '#02050A',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
@@ -124,15 +108,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#02050A',
   },
   ringImage: {
     width: width,
     height: height,
+    backgroundColor: '#02050A',
   },
-  scrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 12, 16, 0.35)',
-  },
+
   content: {
     width: '88%',
     maxWidth: 520,
