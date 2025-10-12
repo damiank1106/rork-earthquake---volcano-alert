@@ -8,7 +8,7 @@ import { useLocation } from '@/contexts/LocationContext';
 const { width, height } = Dimensions.get('window');
 
 const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ll967onyuzhjbd6a88nw6';
-const BACKGROUND_COLOR = '#ebe7e2';
+const BACKGROUND_COLOR = '#f0efe8';
 
 
 
@@ -21,9 +21,13 @@ export default function WelcomeScreen() {
   const fadeIn = useRef(new Animated.Value(0)).current;
   const contentFadeIn = useRef(new Animated.Value(0)).current;
   const contentSlideUp = useRef(new Animated.Value(30)).current;
+  const screenFadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    Animated.parallel([
+      Animated.timing(screenFadeIn, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+    ]).start();
     
     Animated.sequence([
       Animated.delay(400),
@@ -32,7 +36,7 @@ export default function WelcomeScreen() {
         Animated.timing(contentSlideUp, { toValue: 0, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       ]),
     ]).start();
-  }, [fadeIn, contentFadeIn, contentSlideUp]);
+  }, [fadeIn, contentFadeIn, contentSlideUp, screenFadeIn]);
 
   const handleContinue = async () => {
     if (Platform.OS === 'web') {
@@ -45,7 +49,7 @@ export default function WelcomeScreen() {
           {
             text: 'Not now',
             style: 'cancel',
-            onPress: () => router.replace('/loading'),
+            onPress: () => router.replace('/map'),
           },
           {
             text: 'Continue',
@@ -59,7 +63,7 @@ export default function WelcomeScreen() {
                 console.log('Location init error', e);
               } finally {
                 setIsRequestingPermission(false);
-                router.replace('/loading');
+                router.replace('/map');
               }
             },
           },
@@ -71,7 +75,7 @@ export default function WelcomeScreen() {
 
   const handleModalNotNow = () => {
     setShowLocationModal(false);
-    router.replace('/loading');
+    router.replace('/map');
   };
 
   const handleModalContinue = async () => {
@@ -85,14 +89,14 @@ export default function WelcomeScreen() {
       console.log('Location init error', e);
     } finally {
       setIsRequestingPermission(false);
-      router.replace('/loading');
+      router.replace('/map');
     }
   };
 
   const source: ImageURISource = { uri: RING_OF_FIRE_URI };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]} testID="welcome-screen">
+    <Animated.View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom, opacity: screenFadeIn }]} testID="welcome-screen">
       <Animated.View
         style={[
           styles.bgWrapper,
@@ -159,7 +163,7 @@ export default function WelcomeScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -180,13 +184,14 @@ const styles = StyleSheet.create({
     width: width * 1.2,
     height: width * 1.2,
     backgroundColor: BACKGROUND_COLOR,
+    marginTop: -height * 0.1,
   },
 
   content: {
     width: '88%',
     maxWidth: 520,
     alignItems: 'center',
-    paddingBottom: height * 0.25,
+    paddingBottom: height * 0.28,
   },
   title: {
     fontSize: 34,
@@ -195,18 +200,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.6,
     marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 12,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
     color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 12,
   },
   button: {
     backgroundColor: '#E8F0F7',

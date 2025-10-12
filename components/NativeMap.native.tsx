@@ -65,7 +65,9 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   const pulseAnimationRef = useRef<any>(null);
 
   useEffect(() => {
-    if (highlightedVolcanoId) {
+    const activeVolcanoId = highlightedVolcanoId || selectedVolcano?.id;
+    
+    if (activeVolcanoId) {
       volcanoPulseAnim.setValue(1);
       volcanoPulseOpacity.setValue(1);
       
@@ -95,7 +97,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         pulseAnimationRef.current.stop();
       }
     };
-  }, [highlightedVolcanoId, volcanoPulseAnim, volcanoPulseOpacity]);
+  }, [highlightedVolcanoId, selectedVolcano?.id, volcanoPulseAnim, volcanoPulseOpacity]);
 
   useEffect(() => {
     if (selectedMarker && mapRef.current && mapReady) {
