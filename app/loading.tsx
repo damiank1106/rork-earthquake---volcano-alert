@@ -52,26 +52,26 @@ export default function LoadingScreen() {
     let calculatedProgress = 0;
 
     if (!preferencesLoading) {
-      calculatedProgress += 20;
+      calculatedProgress += 25;
     }
 
     if (!isLoadingLocation) {
-      calculatedProgress += 20;
+      calculatedProgress += 25;
     }
 
     if (!earthquakesLoading) {
-      calculatedProgress += 30;
+      calculatedProgress += 25;
     }
 
     if (earthquakes.length > 0) {
-      calculatedProgress += 30;
+      calculatedProgress += 25;
     }
 
     setProgress(calculatedProgress);
 
     Animated.timing(progressAnim, {
       toValue: calculatedProgress,
-      duration: 500,
+      duration: 600,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start();
@@ -80,7 +80,7 @@ export default function LoadingScreen() {
       setHasNavigated(true);
       setTimeout(() => {
         router.replace('/map');
-      }, 3500);
+      }, 2000);
     }
   }, [preferencesLoading, isLoadingLocation, earthquakesLoading, earthquakes.length, hasNavigated, progressAnim]);
 
@@ -141,11 +141,11 @@ export default function LoadingScreen() {
 
         <View style={styles.statusContainer}>
           <Text style={styles.statusText}>
-            {preferencesLoading && '⏳ Loading preferences...'}
-            {!preferencesLoading && isLoadingLocation && '📍 Getting location...'}
-            {!preferencesLoading && !isLoadingLocation && earthquakesLoading && '🌍 Fetching earthquake data...'}
-            {!preferencesLoading && !isLoadingLocation && !earthquakesLoading && earthquakes.length === 0 && '⏳ Processing data...'}
-            {!preferencesLoading && !isLoadingLocation && !earthquakesLoading && earthquakes.length > 0 && '✅ Ready!'}
+            {progress < 100 && preferencesLoading && '⏳ Loading preferences...'}
+            {progress < 100 && !preferencesLoading && isLoadingLocation && '📍 Getting location...'}
+            {progress < 100 && !preferencesLoading && !isLoadingLocation && earthquakesLoading && '🌍 Fetching earthquake data...'}
+            {progress < 100 && !preferencesLoading && !isLoadingLocation && !earthquakesLoading && earthquakes.length === 0 && '⏳ Processing data...'}
+            {progress >= 100 && '✅ Ready!'}
           </Text>
         </View>
       </Animated.View>

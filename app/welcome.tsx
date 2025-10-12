@@ -19,10 +19,20 @@ export default function WelcomeScreen() {
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
   const fadeIn = useRef(new Animated.Value(0)).current;
+  const contentFadeIn = useRef(new Animated.Value(0)).current;
+  const contentSlideUp = useRef(new Animated.Value(30)).current;
 
   useEffect(() => {
     Animated.timing(fadeIn, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-  }, [fadeIn]);
+    
+    Animated.sequence([
+      Animated.delay(400),
+      Animated.parallel([
+        Animated.timing(contentFadeIn, { toValue: 1, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(contentSlideUp, { toValue: 0, duration: 800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      ]),
+    ]).start();
+  }, [fadeIn, contentFadeIn, contentSlideUp]);
 
   const handleContinue = async () => {
     if (Platform.OS === 'web') {
@@ -99,7 +109,7 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-      <Animated.View style={[styles.content, { opacity: fadeIn, transform: [{ translateY: fadeIn.interpolate({ inputRange: [0, 1], outputRange: [14, 0] }) }] }]}>
+      <Animated.View style={[styles.content, { opacity: contentFadeIn, transform: [{ translateY: contentSlideUp }] }]}>
         <Text style={styles.title} testID="title-text">Seismic Monitor</Text>
         <Text style={styles.subtitle}>Global Ring of Fire • Real-time seismic insights</Text>
         <TouchableOpacity
