@@ -16,6 +16,8 @@ interface NativeMapProps {
   showNuclearPlants?: boolean;
   heatmapEnabled?: boolean;
   clusteringEnabled?: boolean;
+  selectedVolcano?: Volcano | null;
+  onVolcanoPress?: (volcano: Volcano) => void;
 }
 
 const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
@@ -32,6 +34,8 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     showNuclearPlants = false,
     heatmapEnabled = false,
     clusteringEnabled = true,
+    selectedVolcano = null,
+    onVolcanoPress,
   },
   ref
 ) {
@@ -156,30 +160,39 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
 
     if (showVolcanoes && volcanoes.length > 0) {
       volcanoes.forEach((v) => {
+        const isHighlighted = selectedVolcano?.id === v.id;
+        const size = isHighlighted ? 32 : 24;
         const icon = L.divIcon({
           className: 'custom-volcano-marker',
           html: `
             <div style="
-              width: 24px;
-              height: 24px;
-              background-color: #EF4444;
+              width: ${size}px;
+              height: ${size}px;
+              background-color: ${isHighlighted ? '#DC2626' : '#EF4444'};
               border: 3px solid white;
               border-radius: 50%;
               box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+              cursor: pointer;
             "></div>
           `,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12],
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
         });
 
         const marker = L.marker([v.latitude, v.longitude], { icon }).addTo(
           mapInstanceRef.current
         );
 
+        marker.on('click', () => {
+          if (onVolcanoPress) {
+            onVolcanoPress(v);
+          }
+        });
+
         markersRef.current.push(marker);
       });
     }
-  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress]);
+  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress]);
 
   useEffect(() => {
     if (!isMapReady || !mapInstanceRef.current || !selectedMarker) return;

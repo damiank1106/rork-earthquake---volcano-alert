@@ -18,9 +18,11 @@ interface NativeMapProps {
   showNuclearPlants?: boolean;
   heatmapEnabled?: boolean;
   clusteringEnabled?: boolean;
+  selectedVolcano?: Volcano | null;
+  onVolcanoPress?: (volcano: Volcano) => void;
 }
 
-const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true }, ref) {
+const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true, selectedVolcano = null, onVolcanoPress }, ref) {
   const mapRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState<boolean>(false);
   const params = useLocalSearchParams();
@@ -141,9 +143,9 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
       ))}
 
       {showVolcanoes && volcanoes.map((v) => {
-        const isHighlighted = highlightedVolcanoId === v.id;
+        const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;
         return (
-          <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }}>
+          <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }} onPress={() => onVolcanoPress?.(v)}>
             <View style={styles.volcanoContainer}>
               {isHighlighted && (
                 <Animated.View

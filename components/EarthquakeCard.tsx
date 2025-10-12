@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   place: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
     marginBottom: SPACING.xs,
   },
   metaRow: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
   },
   details: {
     marginTop: SPACING.sm,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
   },
   tsunamiText: {
     fontSize: FONT_SIZE.sm,

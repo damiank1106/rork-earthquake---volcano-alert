@@ -7,7 +7,7 @@ import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
 
-const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ihiq2cfuz275qzpzap5yk';
+const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ll967onyuzhjbd6a88nw6';
 const BACKGROUND_COLOR = '#ebe7e2';
 
 
@@ -172,14 +172,13 @@ const styles = StyleSheet.create({
   },
   bgWrapper: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: BACKGROUND_COLOR,
-    paddingTop: height * 0.05,
   },
   ringImage: {
-    width: width * 1.1,
-    height: height * 0.7,
+    width: width * 1.2,
+    height: width * 1.2,
     backgroundColor: BACKGROUND_COLOR,
   },
 
@@ -187,7 +186,7 @@ const styles = StyleSheet.create({
     width: '88%',
     maxWidth: 520,
     alignItems: 'center',
-    paddingBottom: SPACING.xl,
+    paddingBottom: height * 0.25,
   },
   title: {
     fontSize: 34,

@@ -21,6 +21,7 @@ export default function MapScreen() {
   const { userLocation } = useLocation();
   const { preferences } = usePreferences();
   const [selectedMarker, setSelectedMarker] = useState<Earthquake | null>(null);
+  const [selectedVolcanoMarker, setSelectedVolcanoMarker] = useState<Volcano | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
@@ -145,10 +146,30 @@ export default function MapScreen() {
 
   const handleMarkerPress = (earthquake: Earthquake) => {
     setSelectedMarker(earthquake);
+    setSelectedVolcanoMarker(null);
+  };
+
+  const handleVolcanoPress = (volcano: Volcano) => {
+    setSelectedVolcanoMarker(volcano);
+    setSelectedMarker(null);
+    if (mapRef.current) {
+      setTimeout(() => {
+        mapRef.current?.animateToRegion({
+          latitude: volcano.latitude,
+          longitude: volcano.longitude,
+          latitudeDelta: 0.5,
+          longitudeDelta: 0.5,
+        }, 1000);
+      }, 100);
+    }
   };
 
   const handleCloseInfo = () => {
     setSelectedMarker(null);
+  };
+
+  const handleCloseVolcanoInfo = () => {
+    setSelectedVolcanoMarker(null);
   };
 
   const getFeltDistance = (magnitude: number): string => {
@@ -197,6 +218,8 @@ export default function MapScreen() {
           showNuclearPlants={false}
           heatmapEnabled={preferences.heatmapEnabled}
           clusteringEnabled={preferences.clusteringEnabled}
+          selectedVolcano={selectedVolcanoMarker}
+          onVolcanoPress={handleVolcanoPress}
         />
       )}
       
@@ -345,22 +368,26 @@ export default function MapScreen() {
         </GlassView>
       )}
 
-      {highlightedVolcano && (
-        <GlassView {...glassProps} style={styles.volcanoCard}>
-          <View style={styles.volcanoHeader}>
-            <Text style={styles.volcanoTitle}>{highlightedVolcano.name}</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => router.push('/map')} testID="btn-close-volcano">
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.volcanoDetail}>Country: {highlightedVolcano.country}</Text>
-          <Text style={styles.volcanoDetail}>Region: {highlightedVolcano.region}</Text>
-          <Text style={styles.volcanoDetail}>Elevation: {highlightedVolcano.elevation} m</Text>
-          <Text style={styles.volcanoDetail}>Type: {highlightedVolcano.type}</Text>
-          <Text style={styles.volcanoDetail}>Last Eruption: {highlightedVolcano.lastEruptionDate || 'Unknown'}</Text>
-          <Text style={styles.volcanoDetail}>Location: {highlightedVolcano.latitude.toFixed(4)}°, {highlightedVolcano.longitude.toFixed(4)}°</Text>
-        </GlassView>
-      )}
+      {(highlightedVolcano || selectedVolcanoMarker) && (() => {
+        const volcano = selectedVolcanoMarker || highlightedVolcano;
+        if (!volcano) return null;
+        return (
+          <GlassView {...glassProps} style={styles.volcanoCard}>
+            <View style={styles.volcanoHeader}>
+              <Text style={styles.volcanoTitle}>{volcano.name}</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={selectedVolcanoMarker ? handleCloseVolcanoInfo : () => router.push('/map')} testID="btn-close-volcano">
+                <Text style={styles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.volcanoDetail}>Country: {volcano.country}</Text>
+            <Text style={styles.volcanoDetail}>Region: {volcano.region}</Text>
+            <Text style={styles.volcanoDetail}>Elevation: {volcano.elevation} m</Text>
+            <Text style={styles.volcanoDetail}>Type: {volcano.type}</Text>
+            <Text style={styles.volcanoDetail}>Last Eruption: {volcano.lastEruptionDate || 'Unknown'}</Text>
+            <Text style={styles.volcanoDetail}>Location: {volcano.latitude.toFixed(4)}°, {volcano.longitude.toFixed(4)}°</Text>
+          </GlassView>
+        );
+      })()}
 
       {isDataLoading && (
         <View style={styles.loadingOverlay}>
@@ -395,8 +422,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
   header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10 },
   headerContent: { flex: 1 },
-  title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
-  subtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
+  title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: '#000000' },
+  subtitle: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 2 },
   refreshButton: { padding: SPACING.sm },
   panel: { position: 'absolute', right: 0, width: 260, backgroundColor: COLORS.surface.light, padding: SPACING.md, borderTopLeftRadius: 16, borderBottomLeftRadius: 16, ...{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4 }, zIndex: 12 },
   panelTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
@@ -417,19 +444,19 @@ const styles = StyleSheet.create({
   infoBadge: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   infoBadgeText: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#FFFFFF' },
   infoContent: { flex: 1 },
-  infoPlace: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
-  infoTime: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
+  infoPlace: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: '#000000' },
+  infoTime: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 2 },
   closeButton: { padding: SPACING.xs },
-  closeButtonText: { fontSize: FONT_SIZE.xl, color: COLORS.text.secondary.light },
+  closeButtonText: { fontSize: FONT_SIZE.xl, color: '#000000' },
   infoDetails: { marginTop: SPACING.sm, gap: SPACING.xs },
-  infoDetailText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
+  infoDetailText: { fontSize: FONT_SIZE.sm, color: '#000000' },
   tsunamiText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.red },
   warningRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   aftershockText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.orange },
   volcanoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 11 },
   volcanoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.xs },
-  volcanoTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
-  volcanoDetail: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 4 },
+  volcanoTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: '#000000' },
+  volcanoDetail: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 4 },
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', alignItems: 'center', justifyContent: 'center', zIndex: 20 },
   loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light },
   loadingPercentage: { marginTop: SPACING.sm, fontSize: FONT_SIZE.xxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600] },

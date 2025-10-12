@@ -8,7 +8,7 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { useLocation } from '@/contexts/LocationContext';
 
 const { width, height } = Dimensions.get('window');
-const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ihiq2cfuz275qzpzap5yk';
+const RING_OF_FIRE_URI = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/ll967onyuzhjbd6a88nw6';
 const BACKGROUND_COLOR = '#ebe7e2';
 
 export default function LoadingScreen() {
@@ -46,7 +46,26 @@ export default function LoadingScreen() {
         }),
       ])
     ).start();
-  }, [fadeAnim, pulseAnim]);
+
+    Animated.timing(progressAnim, {
+      toValue: 100,
+      duration: 3000,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return Math.min(100, prev + (100 / 30));
+      });
+    }, 100);
+
+    return () => clearInterval(progressInterval);
+  }, [fadeAnim, pulseAnim, progressAnim]);
 
   useEffect(() => {
     let calculatedProgress = 0;
@@ -67,22 +86,13 @@ export default function LoadingScreen() {
       calculatedProgress += 25;
     }
 
-    setProgress(calculatedProgress);
-
-    Animated.timing(progressAnim, {
-      toValue: calculatedProgress,
-      duration: 600,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start();
-
-    if (calculatedProgress >= 100 && !hasNavigated) {
+    if (calculatedProgress >= 100 && progress >= 100 && !hasNavigated) {
       setHasNavigated(true);
       setTimeout(() => {
         router.replace('/map');
-      }, 2000);
+      }, 500);
     }
-  }, [preferencesLoading, isLoadingLocation, earthquakesLoading, earthquakes.length, hasNavigated, progressAnim]);
+  }, [preferencesLoading, isLoadingLocation, earthquakesLoading, earthquakes.length, hasNavigated, progress]);
 
   const progressWidth = progressAnim.interpolate({
     inputRange: [0, 100],

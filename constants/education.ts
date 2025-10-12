@@ -7,7 +7,7 @@ export const MAGNITUDE_SCALE: MagnitudeInfo[] = [
     description: 'Not felt except by very few under especially favorable conditions',
     effects: 'No damage. Detected only by seismographs.',
     frequency: 'Several million per year',
-    color: '#86EFAC',
+    color: '#BBF7D0',
     examples: ['Continuous microseismic activity', 'Mining blasts'],
   },
   {
@@ -25,7 +25,7 @@ export const MAGNITUDE_SCALE: MagnitudeInfo[] = [
     description: 'Felt quite noticeably by persons indoors',
     effects: 'No significant damage. Vibration similar to passing truck.',
     frequency: 'Over 100,000 per year',
-    color: '#22C55E',
+    color: '#16A34A',
     examples: ['2011 Oklahoma (3.0)', '2019 New Jersey (3.1)'],
   },
   {
