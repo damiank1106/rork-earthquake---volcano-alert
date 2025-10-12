@@ -15,6 +15,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   notificationsEnabled: true,
   notificationCountry: undefined,
   notificationMinMagnitude: 5.0,
+  volcanoNotificationsEnabled: true,
+  volcanoNotificationCountry: undefined,
 };
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {

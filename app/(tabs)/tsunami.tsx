@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, Platform, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -16,8 +16,26 @@ export default function TsunamiScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255,255,255,0.8)' } } : { intensity: 80, tint: 'light' as BlurTint };
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [selectedAlert, setSelectedAlert] = useState<TsunamiAlert | null>(null);
+  const [nextUpdateIn, setNextUpdateIn] = useState<number>(0);
+  const [lastFetchTime, setLastFetchTime] = useState<number>(Date.now());
 
   const alerts = useMemo<TsunamiAlert[]>(() => alertsQuery.data ?? [], [alertsQuery.data]);
+
+  useEffect(() => {
+    if (alertsQuery.dataUpdatedAt) {
+      setLastFetchTime(alertsQuery.dataUpdatedAt);
+    }
+  }, [alertsQuery.dataUpdatedAt]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - lastFetchTime;
+      const remaining = Math.max(0, 300000 - elapsed);
+      setNextUpdateIn(Math.ceil(remaining / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lastFetchTime]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -54,7 +72,10 @@ export default function TsunamiScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}> 
       <GlassView {...glassProps} style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Tsunami Alerts</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>Tsunami Alerts</Text>
+            <Text style={styles.updateTimer}>Updates in {nextUpdateIn}s</Text>
+          </View>
           <Text style={styles.subtitle}>{alerts.length} alerts from multiple sources</Text>
         </View>
         <TouchableOpacity
@@ -153,7 +174,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
   header: { margin: SPACING.md, padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, ...SHADOW.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerContent: { flex: 1 },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   title: { fontSize: FONT_SIZE.xxxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
+  updateTimer: { fontSize: FONT_SIZE.sm, color: COLORS.primary[600], fontWeight: FONT_WEIGHT.semibold },
   subtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
   refreshButton: { padding: SPACING.sm },
   list: { padding: SPACING.md, paddingTop: 0, paddingBottom: SPACING.xl },

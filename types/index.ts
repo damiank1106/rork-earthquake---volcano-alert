@@ -89,6 +89,8 @@ export interface UserPreferences {
   notificationsEnabled: boolean;
   notificationCountry?: string;
   notificationMinMagnitude?: number;
+  volcanoNotificationsEnabled?: boolean;
+  volcanoNotificationCountry?: string;
   lastUpdated?: number;
 }
 

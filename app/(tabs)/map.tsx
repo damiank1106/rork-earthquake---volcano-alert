@@ -147,11 +147,17 @@ export default function MapScreen() {
   const handleMarkerPress = (earthquake: Earthquake) => {
     setSelectedMarker(earthquake);
     setSelectedVolcanoMarker(null);
+    if (panelOpen) {
+      togglePanel();
+    }
   };
 
   const handleVolcanoPress = (volcano: Volcano) => {
     setSelectedVolcanoMarker(volcano);
     setSelectedMarker(null);
+    if (panelOpen) {
+      togglePanel();
+    }
     if (mapRef.current) {
       setTimeout(() => {
         mapRef.current?.animateToRegion({
@@ -204,23 +210,33 @@ export default function MapScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {shouldShowMap && (
-        <NativeMap
-          ref={mapRef}
-          earthquakes={filteredEarthquakes}
-          selectedMarker={selectedMarker}
-          onMarkerPress={handleMarkerPress}
-          userLocation={userLocation}
-          plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-          volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
-          nuclearPlants={[]}
-          showPlateBoundaries={showPlates}
-          showVolcanoes={showVolcanoes}
-          showNuclearPlants={false}
-          heatmapEnabled={preferences.heatmapEnabled}
-          clusteringEnabled={preferences.clusteringEnabled}
-          selectedVolcano={selectedVolcanoMarker}
-          onVolcanoPress={handleVolcanoPress}
-        />
+        <TouchableOpacity 
+          style={{ flex: 1 }} 
+          activeOpacity={1} 
+          onPress={() => {
+            if (panelOpen) {
+              togglePanel();
+            }
+          }}
+        >
+          <NativeMap
+            ref={mapRef}
+            earthquakes={filteredEarthquakes}
+            selectedMarker={selectedMarker}
+            onMarkerPress={handleMarkerPress}
+            userLocation={userLocation}
+            plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
+            volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
+            nuclearPlants={[]}
+            showPlateBoundaries={showPlates}
+            showVolcanoes={showVolcanoes}
+            showNuclearPlants={false}
+            heatmapEnabled={preferences.heatmapEnabled}
+            clusteringEnabled={preferences.clusteringEnabled}
+            selectedVolcano={selectedVolcanoMarker}
+            onVolcanoPress={handleVolcanoPress}
+          />
+        </TouchableOpacity>
       )}
       
       {isDataLoading && (

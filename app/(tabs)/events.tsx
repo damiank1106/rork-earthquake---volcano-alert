@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -23,12 +23,13 @@ const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 export default function EventsScreen() {
   const insets = useSafeAreaInsets();
-  const { earthquakes, isLoading, refetch, significantEarthquakes, recentEarthquakes } =
+  const { earthquakes, isLoading, refetch, significantEarthquakes, recentEarthquakes, lastUpdated } =
     useEarthquakes();
   const { userLocation } = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'significant' | 'recent'>('all');
   const [sortBy, setSortBy] = useState<SortOption>({ field: 'time', direction: 'desc' });
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [nextUpdateIn, setNextUpdateIn] = useState<number>(0);
 
   const displayedEarthquakes = useMemo(() => {
     let data: Earthquake[] = [];
@@ -45,6 +46,16 @@ export default function EventsScreen() {
     }
     return sortEarthquakes(data, sortBy.field, sortBy.direction, userLocation ?? undefined);
   }, [activeTab, earthquakes, significantEarthquakes, recentEarthquakes, sortBy, userLocation]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - lastUpdated;
+      const remaining = Math.max(0, 300000 - elapsed);
+      setNextUpdateIn(Math.ceil(remaining / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lastUpdated]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -66,7 +77,10 @@ export default function EventsScreen() {
 
   const renderHeader = () => (
     <GlassView {...glassProps} style={styles.headerContainer}>
-      <Text style={styles.title}>Earthquake Events</Text>
+      <View style={styles.titleRow}>
+        <Text style={styles.title}>Earthquake Events</Text>
+        <Text style={styles.updateTimer}>Updates in {nextUpdateIn}s</Text>
+      </View>
       <View style={styles.tabs}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'all' && styles.activeTab]}
@@ -155,11 +169,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
   title: {
     fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text.primary.light,
-    marginBottom: SPACING.md,
+  },
+  updateTimer: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.primary[600],
+    fontWeight: FONT_WEIGHT.semibold,
   },
   tabs: {
     flexDirection: 'row',
