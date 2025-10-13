@@ -179,7 +179,7 @@ WHAT THIS APP OFFERS
   - Apolaki Caldera (Philippine Sea)
 • Caldera size, last major eruption dates
 • Educational descriptions and fun facts
-• Dark blue markers distinguish from active volcanoes
+• Black markers distinguish from active volcanoes
 • Interactive map integration with zoom and pulse effects
 
 🌊 Tsunami Alerts & Safety
@@ -222,6 +222,7 @@ HOW TO USE THE APP
 • Pinch to zoom, drag to explore
 • Click "Show on Map" from Events/Volcanoes to locate specific items
 • Selected items pulse and zoom for easy identification
+• Blue marker shows your current location
 
 📋 Events Tab
 • Browse recent earthquakes in list format
@@ -232,18 +233,24 @@ HOW TO USE THE APP
 • Glass container displays with crisp black text
 
 🌋 Volcanoes Tab
-• Two tabs: Active Volcanoes and Super Volcanoes
+• Three tabs: Active Volcanoes, Super Volcanoes, and Warnings
 • Active Volcanoes (44+ currently erupting):
   - Explore active volcanoes worldwide
   - View eruption history and status
   - See last eruption dates and activity summaries
+  - Red markers on map
   - Click "Show on Map" to locate with zoom and pulse
 • Super Volcanoes (11 major calderas):
   - Learn about Earth's largest volcanic systems
   - Read detailed descriptions and fun facts
   - View caldera sizes and eruption history
-  - Dark blue markers on map
+  - Black markers on map
   - Scrollable list with full descriptions
+• Warnings Tab:
+  - Live volcano eruption warnings
+  - Sorted by alert level (warning, watch, advisory)
+  - Auto-refresh every 5 minutes
+  - Click "Show on Map" to locate volcano
 • Toggle volcano markers on map
 • Pulsing animation shows selected volcano
 

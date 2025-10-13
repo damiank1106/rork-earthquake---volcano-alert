@@ -274,7 +274,7 @@ function SuperVolcanoItem({ v, onPress }: { v: Volcano; onPress: () => void }) {
       )}
       {v.lastMajorEruption && (
         <View style={styles.row}>
-          <Mountain size={16} color="#2563EB" />
+          <Mountain size={16} color="#000000" />
           <Text style={styles.rowText}>Last major eruption: {v.lastMajorEruption}</Text>
         </View>
       )}
@@ -286,12 +286,20 @@ function SuperVolcanoItem({ v, onPress }: { v: Volcano; onPress: () => void }) {
 }
 
 function WarningItem({ warning }: { warning: VolcanoWarning }) {
+  const { updatePreferences } = usePreferences();
   const getAlertColor = (level: string) => {
     switch (level) {
       case 'warning': return '#DC2626';
       case 'watch': return '#F59E0B';
       case 'advisory': return '#3B82F6';
       default: return COLORS.text.secondary.light;
+    }
+  };
+
+  const handleShowOnMap = () => {
+    if (warning.latitude && warning.longitude) {
+      updatePreferences({ volcanoesEnabled: true });
+      router.push(`/map?volcanoId=${warning.id.replace('warning-', '')}`);
     }
   };
 
@@ -310,8 +318,16 @@ function WarningItem({ warning }: { warning: VolcanoWarning }) {
       <Text style={styles.warningActivity}>{warning.activityType}</Text>
       <Text style={styles.warningDescription} numberOfLines={3}>{warning.description}</Text>
       <View style={styles.warningFooter}>
-        <Text style={styles.warningSource}>Source: {warning.source}</Text>
-        <Text style={styles.warningUpdate}>Updated: {warning.lastUpdate}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.warningSource}>Source: {warning.source}</Text>
+          <Text style={styles.warningUpdate}>Updated: {warning.lastUpdate}</Text>
+        </View>
+        {warning.latitude && warning.longitude && (
+          <TouchableOpacity style={styles.showMapButton} onPress={handleShowOnMap}>
+            <MapPin size={14} color={COLORS.primary[600]} />
+            <Text style={styles.showMapButtonText}>Show on Map</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -330,7 +346,7 @@ const styles = StyleSheet.create({
   list: { padding: SPACING.md, paddingTop: 0, paddingBottom: SPACING.xxl },
   sectionHeader: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600], marginTop: SPACING.md, marginBottom: SPACING.sm },
   card: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4, borderLeftColor: '#DC2626' },
-  superCard: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4, borderLeftColor: '#2563EB' },
+  superCard: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4, borderLeftColor: '#000000' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
   cardTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginRight: SPACING.md },
   cardMeta: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
@@ -348,9 +364,11 @@ const styles = StyleSheet.create({
   alertBadgeText: { fontSize: FONT_SIZE.xs, fontWeight: FONT_WEIGHT.bold, color: '#FFFFFF' },
   warningActivity: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginBottom: SPACING.xs },
   warningDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, lineHeight: 20, marginBottom: SPACING.sm },
-  warningFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: SPACING.xs, paddingTop: SPACING.xs, borderTopWidth: 1, borderTopColor: COLORS.border.light },
+  warningFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: SPACING.xs, paddingTop: SPACING.xs, borderTopWidth: 1, borderTopColor: COLORS.border.light },
   warningSource: { fontSize: FONT_SIZE.xs, color: COLORS.text.secondary.light },
   warningUpdate: { fontSize: FONT_SIZE.xs, color: COLORS.text.secondary.light },
+  showMapButton: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 8, backgroundColor: COLORS.primary[50], borderRadius: BORDER_RADIUS.sm },
+  showMapButtonText: { fontSize: FONT_SIZE.xs, color: COLORS.primary[600], fontWeight: FONT_WEIGHT.semibold },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { margin: SPACING.md, borderRadius: BORDER_RADIUS.lg, maxWidth: 500, width: '90%', maxHeight: '80%', ...SHADOW.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#000000', marginBottom: SPACING.md },

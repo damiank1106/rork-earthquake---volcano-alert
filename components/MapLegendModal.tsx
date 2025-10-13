@@ -14,7 +14,7 @@ interface MapLegendModalProps {
 
 export default function MapLegendModal({ visible, onClose }: MapLegendModalProps) {
   const insets = useSafeAreaInsets();
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.95)' } } : { intensity: 100, tint: "light" as BlurTint };
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.98)' } } : { intensity: 100, tint: "light" as BlurTint };
 
   const magnitudeRanges = [
     { min: 0, max: 1, label: '0-1', description: 'Micro' },
@@ -35,11 +35,17 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
           <View style={styles.header}>
             <Text style={styles.title}>Map Legend</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color={COLORS.text.primary.light} />
+              <X size={24} color="#000000" />
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+          <ScrollView 
+            style={styles.scrollView} 
+            contentContainerStyle={styles.scrollContent}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+          >
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Earthquake Magnitude Icons</Text>
               <Text style={styles.sectionDescription}>
@@ -76,10 +82,17 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
                   </View>
                 </View>
                 <View style={styles.legendItem}>
-                  <View style={[styles.volcanoIcon, { backgroundColor: '#2563EB' }]} />
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#000000' }]} />
                   <View style={styles.legendItemText}>
                     <Text style={styles.legendLabel}>Super Volcanoes</Text>
                     <Text style={styles.legendDescription}>Massive volcanic calderas</Text>
+                  </View>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#2563EB' }]} />
+                  <View style={styles.legendItemText}>
+                    <Text style={styles.legendLabel}>Your Location</Text>
+                    <Text style={styles.legendDescription}>Blue marker shows your current position</Text>
                   </View>
                 </View>
               </View>
@@ -123,7 +136,7 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.md,
@@ -147,7 +160,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
   },
   closeButton: {
     padding: SPACING.xs,
@@ -164,12 +177,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
     marginBottom: SPACING.sm,
   },
   sectionDescription: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     marginBottom: SPACING.md,
     lineHeight: 20,
   },
@@ -207,12 +220,12 @@ const styles = StyleSheet.create({
   legendLabel: {
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.text.primary.light,
+    color: '#000000',
     marginBottom: 2,
   },
   legendDescription: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     lineHeight: 18,
   },
   divider: {
@@ -228,7 +241,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.secondary.light,
+    color: '#000000',
     lineHeight: 20,
     textAlign: 'center',
   },
