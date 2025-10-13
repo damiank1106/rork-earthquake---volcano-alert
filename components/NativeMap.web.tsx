@@ -139,24 +139,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       const icon = L.divIcon({
         className: 'custom-earthquake-marker',
         html: `
-          <style>
-            @keyframes pulse-animation {
-              0%, 100% { transform: scale(1); opacity: 0.3; }
-              50% { transform: scale(1.5); opacity: 0.1; }
-            }
-          </style>
           <div style="position: relative; width: ${size}px; height: ${size}px;">
-            <div style="
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              width: ${size * 2}px;
-              height: ${size * 2}px;
-              background-color: ${color};
-              border-radius: 50%;
-              animation: pulse-animation 2s ease-in-out infinite;
-            "></div>
             <div style="
               position: relative;
               width: ${size}px;

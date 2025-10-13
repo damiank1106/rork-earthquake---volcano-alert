@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, Platform, Modal } from 'react-native';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, Platform, Modal, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView, BlurTint } from 'expo-blur';
@@ -18,8 +18,27 @@ export default function TsunamiScreen() {
   const [selectedAlert, setSelectedAlert] = useState<TsunamiAlert | null>(null);
   const [nextUpdateIn, setNextUpdateIn] = useState<number>(0);
   const [lastFetchTime, setLastFetchTime] = useState<number>(Date.now());
+  const spinValue = useRef(new Animated.Value(0)).current;
 
   const alerts = useMemo<TsunamiAlert[]>(() => alertsQuery.data ?? [], [alertsQuery.data]);
+
+  useEffect(() => {
+    const spinAnimation = Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 1500,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    );
+    spinAnimation.start();
+    return () => spinAnimation.stop();
+  }, [spinValue]);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   useEffect(() => {
     if (alertsQuery.dataUpdatedAt) {
@@ -63,7 +82,12 @@ export default function TsunamiScreen() {
   if (alertsQuery.isLoading && alerts.length === 0) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}> 
-        <ActivityIndicator size="large" color={COLORS.primary[600]} />
+        <View style={styles.loadingContainer}>
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <RefreshCw size={48} color={COLORS.primary[600]} />
+          </Animated.View>
+          <Text style={styles.loadingText}>Loading Data, Please Wait</Text>
+        </View>
       </View>
     );
   }
@@ -195,4 +219,6 @@ const styles = StyleSheet.create({
   modalDescription: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: SPACING.sm, lineHeight: 20 },
   closeModal: { alignSelf: 'center', marginTop: SPACING.md, padding: SPACING.sm, backgroundColor: COLORS.primary[500], borderRadius: BORDER_RADIUS.md, paddingHorizontal: SPACING.lg },
   closeModalText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: SPACING.lg },
+  loadingText: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginTop: SPACING.md },
 });
