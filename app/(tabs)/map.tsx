@@ -12,6 +12,7 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, router } from 'expo-router';
 import NativeMap from '@/components/NativeMap';
+import MapLegendModal from '@/components/MapLegendModal';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
 
@@ -27,10 +28,12 @@ export default function MapScreen() {
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [magCategory, setMagCategory] = useState<number | null | 'all'>('all');
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
-  const [showPlates, setShowPlates] = useState<boolean>(false);
-  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(preferences.volcanoesEnabled || false);
+  const [showPlates, setShowPlates] = useState<boolean>(true);
+  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(true);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
+  const [showLegendModal, setShowLegendModal] = useState<boolean>(false);
+  const [hasShownLegend, setHasShownLegend] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
@@ -69,6 +72,16 @@ export default function MapScreen() {
       prevEarthquakeIdRef.current = earthquakeId;
     }
   }, [earthquakeId]);
+
+  useEffect(() => {
+    if (!hasShownLegend && earthquakes.length > 0 && preferences.showMapLegend !== false) {
+      const timer = setTimeout(() => {
+        setShowLegendModal(true);
+        setHasShownLegend(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [hasShownLegend, earthquakes.length, preferences.showMapLegend]);
 
   useEffect(() => {
     if (earthquakeId) {
@@ -430,6 +443,11 @@ export default function MapScreen() {
           <Text style={styles.centerRefreshText}>Loading...</Text>
         </View>
       )}
+
+      <MapLegendModal
+        visible={showLegendModal}
+        onClose={() => setShowLegendModal(false)}
+      />
     </View>
   );
 }

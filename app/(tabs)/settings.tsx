@@ -501,6 +501,13 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Map</Text>
           <View style={styles.card}>
             <SettingToggle
+              title="Show Legend on Start"
+              subtitle="Display map legend popup when opening Home Page"
+              value={preferences.showMapLegend !== false}
+              onValueChange={(value) => updatePreferences({ showMapLegend: value })}
+            />
+            <View style={styles.divider} />
+            <SettingToggle
               title="Clustering"
               subtitle="Group nearby events on map"
               value={preferences.clusteringEnabled}

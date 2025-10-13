@@ -1,0 +1,259 @@
+import React from 'react';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView, BlurTint } from 'expo-blur';
+import { X } from 'lucide-react-native';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, getMagnitudeColor } from '@/constants/theme';
+
+const GlassView = Platform.OS === 'web' ? View : BlurView;
+
+interface MapLegendModalProps {
+  visible: boolean;
+  onClose: () => void;
+}
+
+export default function MapLegendModal({ visible, onClose }: MapLegendModalProps) {
+  const insets = useSafeAreaInsets();
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.95)' } } : { intensity: 100, tint: "light" as BlurTint };
+
+  const magnitudeRanges = [
+    { min: 0, max: 1, label: '0-1', description: 'Micro' },
+    { min: 1, max: 2, label: '1-2', description: 'Minor' },
+    { min: 2, max: 3, label: '2-3', description: 'Minor' },
+    { min: 3, max: 4, label: '3-4', description: 'Light' },
+    { min: 4, max: 5, label: '4-5', description: 'Moderate' },
+    { min: 5, max: 6, label: '5-6', description: 'Strong' },
+    { min: 6, max: 7, label: '6-7', description: 'Major' },
+    { min: 7, max: 8, label: '7-8', description: 'Great' },
+    { min: 8, max: 10, label: '8+', description: 'Extreme' },
+  ];
+
+  return (
+    <Modal visible={visible} animationType="fade" transparent={true}>
+      <View style={styles.overlay}>
+        <GlassView {...glassProps} style={[styles.modalContainer, { paddingTop: insets.top + SPACING.md }]}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Map Legend</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <X size={24} color={COLORS.text.primary.light} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Earthquake Magnitude Icons</Text>
+              <Text style={styles.sectionDescription}>
+                Colored circles represent earthquake events. The color indicates the magnitude strength:
+              </Text>
+              <View style={styles.legendItems}>
+                {magnitudeRanges.map((range, index) => (
+                  <View key={index} style={styles.legendItem}>
+                    <View
+                      style={[
+                        styles.magnitudeCircle,
+                        { backgroundColor: getMagnitudeColor(range.min + 0.5) },
+                      ]}
+                    />
+                    <View style={styles.legendItemText}>
+                      <Text style={styles.legendLabel}>Magnitude {range.label}</Text>
+                      <Text style={styles.legendDescription}>{range.description}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Volcano Icons</Text>
+              <View style={styles.legendItems}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#FF4444' }]}>
+                    <Text style={styles.volcanoIconText}>🌋</Text>
+                  </View>
+                  <View style={styles.legendItemText}>
+                    <Text style={styles.legendLabel}>Active Volcanoes</Text>
+                    <Text style={styles.legendDescription}>Currently erupting or recently active</Text>
+                  </View>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#1E40AF' }]}>
+                    <Text style={styles.volcanoIconText}>🌋</Text>
+                  </View>
+                  <View style={styles.legendItemText}>
+                    <Text style={styles.legendLabel}>Super Volcanoes</Text>
+                    <Text style={styles.legendDescription}>Massive volcanic calderas</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Tectonic Plate Boundaries</Text>
+              <View style={styles.legendItems}>
+                <View style={styles.legendItem}>
+                  <View style={styles.plateLine} />
+                  <View style={styles.legendItemText}>
+                    <Text style={styles.legendLabel}>Red Lines</Text>
+                    <Text style={styles.legendDescription}>
+                      Show boundaries between Earth&apos;s tectonic plates where earthquakes are most common
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>
+                💡 Tip: You can control this popup from Settings → Map → Show Legend on Start
+              </Text>
+            </View>
+          </ScrollView>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.gotItButton} onPress={onClose}>
+              <Text style={styles.gotItButtonText}>Got It!</Text>
+            </TouchableOpacity>
+          </View>
+        </GlassView>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.md,
+  },
+  modalContainer: {
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '90%',
+    borderRadius: BORDER_RADIUS.xl,
+    overflow: 'hidden',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border.light,
+  },
+  title: {
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.text.primary.light,
+  },
+  closeButton: {
+    padding: SPACING.xs,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: SPACING.lg,
+  },
+  section: {
+    marginBottom: SPACING.md,
+  },
+  sectionTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.text.primary.light,
+    marginBottom: SPACING.sm,
+  },
+  sectionDescription: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.light,
+    marginBottom: SPACING.md,
+    lineHeight: 20,
+  },
+  legendItems: {
+    gap: SPACING.md,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  magnitudeCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  volcanoIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  volcanoIconText: {
+    fontSize: 18,
+  },
+  plateLine: {
+    width: 40,
+    height: 3,
+    backgroundColor: '#FF0000',
+    borderRadius: 2,
+  },
+  legendItemText: {
+    flex: 1,
+  },
+  legendLabel: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.text.primary.light,
+    marginBottom: 2,
+  },
+  legendDescription: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.light,
+    lineHeight: 18,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.border.light,
+    marginVertical: SPACING.lg,
+  },
+  footer: {
+    marginTop: SPACING.md,
+    padding: SPACING.md,
+    backgroundColor: COLORS.primary[50],
+    borderRadius: BORDER_RADIUS.md,
+  },
+  footerText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text.secondary.light,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    padding: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border.light,
+  },
+  gotItButton: {
+    backgroundColor: COLORS.primary[600],
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    alignItems: 'center',
+  },
+  gotItButtonText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.bold,
+    color: '#FFFFFF',
+  },
+});
