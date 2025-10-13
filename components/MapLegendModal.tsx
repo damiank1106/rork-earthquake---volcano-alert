@@ -69,18 +69,14 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
               <Text style={styles.sectionTitle}>Volcano Icons</Text>
               <View style={styles.legendItems}>
                 <View style={styles.legendItem}>
-                  <View style={[styles.volcanoIcon, { backgroundColor: '#FF4444' }]}>
-                    <Text style={styles.volcanoIconText}>🌋</Text>
-                  </View>
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#DC2626' }]} />
                   <View style={styles.legendItemText}>
                     <Text style={styles.legendLabel}>Active Volcanoes</Text>
                     <Text style={styles.legendDescription}>Currently erupting or recently active</Text>
                   </View>
                 </View>
                 <View style={styles.legendItem}>
-                  <View style={[styles.volcanoIcon, { backgroundColor: '#1E40AF' }]}>
-                    <Text style={styles.volcanoIconText}>🌋</Text>
-                  </View>
+                  <View style={[styles.volcanoIcon, { backgroundColor: '#2563EB' }]} />
                   <View style={styles.legendItemText}>
                     <Text style={styles.legendLabel}>Super Volcanoes</Text>
                     <Text style={styles.legendDescription}>Massive volcanic calderas</Text>
@@ -193,14 +189,11 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   volcanoIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  volcanoIconText: {
-    fontSize: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   plateLine: {
     width: 40,

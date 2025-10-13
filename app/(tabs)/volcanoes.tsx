@@ -1,30 +1,52 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
-import { Mountain, MapPin } from 'lucide-react-native';
-import { fetchVolcanoes } from '@/services/api';
-import { Volcano } from '@/types';
+import { Mountain, MapPin, AlertTriangle, Clock } from 'lucide-react-native';
+import { fetchVolcanoes, fetchVolcanoWarnings } from '@/services/api';
+import { Volcano, VolcanoWarning } from '@/types';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 import { router } from 'expo-router';
 import { usePreferences } from '@/contexts/PreferencesContext';
 
-type TabType = 'active' | 'super';
+type TabType = 'active' | 'super' | 'warnings';
 
 export default function VolcanoesScreen() {
   const insets = useSafeAreaInsets();
   const { updatePreferences } = usePreferences();
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes'], queryFn: fetchVolcanoes, refetchInterval: 12 * 60 * 60 * 1000 });
   const volcanoes = useMemo<Volcano[]>(() => volcanoesQuery.data ?? [], [volcanoesQuery.data]);
+  const warningsQuery = useQuery({ 
+    queryKey: ['volcano-warnings'], 
+    queryFn: fetchVolcanoWarnings, 
+    refetchInterval: 5 * 60 * 1000 
+  });
+  const warnings = useMemo<VolcanoWarning[]>(() => warningsQuery.data ?? [], [warningsQuery.data]);
 
   const [selectedVolcano, setSelectedVolcano] = useState<Volcano | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('active');
+  const [nextUpdate, setNextUpdate] = useState<number>(300);
 
   const activeVolcanoes = useMemo(() => volcanoes.filter(v => v.category === 'active'), [volcanoes]);
   const superVolcanoes = useMemo(() => volcanoes.filter(v => v.category === 'super'), [volcanoes]);
 
-  const currentVolcanoes = activeTab === 'active' ? activeVolcanoes : superVolcanoes;
+  const currentVolcanoes = activeTab === 'active' ? activeVolcanoes : activeTab === 'super' ? superVolcanoes : [];
+
+  useEffect(() => {
+    if (activeTab === 'warnings') {
+      const interval = setInterval(() => {
+        setNextUpdate(prev => {
+          if (prev <= 1) {
+            warningsQuery.refetch();
+            return 300;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, warningsQuery.refetch]);
 
   const handleShowOnMap = (volcano: Volcano) => {
     updatePreferences({ volcanoesEnabled: true });
@@ -73,7 +95,7 @@ export default function VolcanoesScreen() {
           onPress={() => setActiveTab('active')}
         >
           <Text style={[styles.tabText, activeTab === 'active' && styles.activeTabText]}>
-            Active Volcanoes ({activeVolcanoes.length})
+            Active ({activeVolcanoes.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -81,7 +103,15 @@ export default function VolcanoesScreen() {
           onPress={() => setActiveTab('super')}
         >
           <Text style={[styles.tabText, activeTab === 'super' && styles.activeTabText]}>
-            Super Volcanoes ({superVolcanoes.length})
+            Super ({superVolcanoes.length})
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'warnings' && styles.activeTab]}
+          onPress={() => setActiveTab('warnings')}
+        >
+          <Text style={[styles.tabText, activeTab === 'warnings' && styles.activeTabText]}>
+            Warnings ({warnings.length})
           </Text>
         </TouchableOpacity>
       </View>
@@ -97,7 +127,7 @@ export default function VolcanoesScreen() {
           contentContainerStyle={styles.list}
           ListEmptyComponent={<Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>No volcano data available</Text>}
         />
-      ) : (
+      ) : activeTab === 'super' ? (
         <ScrollView 
           contentContainerStyle={styles.list}
           style={{ flex: 1 }}
@@ -108,6 +138,31 @@ export default function VolcanoesScreen() {
             <SuperVolcanoItem key={volcano.id} v={volcano} onPress={() => setSelectedVolcano(volcano)} />
           ))}
         </ScrollView>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <View style={styles.timerContainer}>
+            <Clock size={16} color={COLORS.text.secondary.light} />
+            <Text style={styles.timerText}>
+              Updates in {Math.floor(nextUpdate / 60)}:{(nextUpdate % 60).toString().padStart(2, '0')}
+            </Text>
+          </View>
+          <ScrollView 
+            contentContainerStyle={styles.list}
+            style={{ flex: 1 }}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
+          >
+            {warningsQuery.isLoading && warnings.length === 0 ? (
+              <Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>Loading warnings...</Text>
+            ) : warnings.length === 0 ? (
+              <Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>No active warnings</Text>
+            ) : (
+              warnings.map((warning) => (
+                <WarningItem key={warning.id} warning={warning} />
+              ))
+            )}
+          </ScrollView>
+        </View>
       )}
 
       <Modal visible={!!selectedVolcano} animationType="fade" transparent>
@@ -230,6 +285,38 @@ function SuperVolcanoItem({ v, onPress }: { v: Volcano; onPress: () => void }) {
   );
 }
 
+function WarningItem({ warning }: { warning: VolcanoWarning }) {
+  const getAlertColor = (level: string) => {
+    switch (level) {
+      case 'warning': return '#DC2626';
+      case 'watch': return '#F59E0B';
+      case 'advisory': return '#3B82F6';
+      default: return COLORS.text.secondary.light;
+    }
+  };
+
+  return (
+    <View style={[styles.warningCard, { borderLeftColor: getAlertColor(warning.alertLevel) }]}>
+      <View style={styles.warningHeader}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.warningTitle}>{warning.volcanoName}</Text>
+          <Text style={styles.warningLocation}>{warning.country} • {warning.region}</Text>
+        </View>
+        <View style={[styles.alertBadge, { backgroundColor: getAlertColor(warning.alertLevel) }]}>
+          <AlertTriangle size={16} color="#FFFFFF" />
+          <Text style={styles.alertBadgeText}>{warning.alertLevel.toUpperCase()}</Text>
+        </View>
+      </View>
+      <Text style={styles.warningActivity}>{warning.activityType}</Text>
+      <Text style={styles.warningDescription} numberOfLines={3}>{warning.description}</Text>
+      <View style={styles.warningFooter}>
+        <Text style={styles.warningSource}>Source: {warning.source}</Text>
+        <Text style={styles.warningUpdate}>Updated: {warning.lastUpdate}</Text>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
   header: { margin: SPACING.md, padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, ...SHADOW.md },
@@ -251,6 +338,19 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   rowText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   superDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: SPACING.sm, lineHeight: 20 },
+  timerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6, paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, backgroundColor: COLORS.surface.light, borderBottomWidth: 1, borderBottomColor: COLORS.border.light },
+  timerText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium },
+  warningCard: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOW.md, borderLeftWidth: 4 },
+  warningHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: SPACING.sm },
+  warningTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
+  warningLocation: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
+  alertBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 8, borderRadius: BORDER_RADIUS.sm },
+  alertBadgeText: { fontSize: FONT_SIZE.xs, fontWeight: FONT_WEIGHT.bold, color: '#FFFFFF' },
+  warningActivity: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginBottom: SPACING.xs },
+  warningDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, lineHeight: 20, marginBottom: SPACING.sm },
+  warningFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: SPACING.xs, paddingTop: SPACING.xs, borderTopWidth: 1, borderTopColor: COLORS.border.light },
+  warningSource: { fontSize: FONT_SIZE.xs, color: COLORS.text.secondary.light },
+  warningUpdate: { fontSize: FONT_SIZE.xs, color: COLORS.text.secondary.light },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { margin: SPACING.md, borderRadius: BORDER_RADIUS.lg, maxWidth: 500, width: '90%', maxHeight: '80%', ...SHADOW.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#000000', marginBottom: SPACING.md },

@@ -1,4 +1,4 @@
-import { Earthquake, Volcano, TsunamiAlert, PlateBoundary, NuclearPlant } from '@/types';
+import { Earthquake, Volcano, TsunamiAlert, PlateBoundary, NuclearPlant, VolcanoWarning } from '@/types';
 
 const USGS_BASE_URL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary';
 
@@ -644,4 +644,38 @@ export const calculateDistance = (
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+};
+
+export const fetchVolcanoWarnings = async (): Promise<VolcanoWarning[]> => {
+  try {
+    const warnings: VolcanoWarning[] = [];
+
+    const activeVolcanoes = ACTIVE_VOLCANOES.filter(v => 
+      v.alertLevel === 'watch' || v.alertLevel === 'warning' || v.alertLevel === 'advisory'
+    );
+
+    activeVolcanoes.forEach(volcano => {
+      warnings.push({
+        id: `warning-${volcano.id}`,
+        volcanoName: volcano.name,
+        country: volcano.country,
+        region: volcano.region,
+        alertLevel: volcano.alertLevel || 'normal',
+        activityType: volcano.status,
+        description: volcano.activitySummary || `${volcano.name} is currently in ${volcano.status} status.`,
+        lastUpdate: volcano.lastEruptionDate || 'Unknown',
+        source: volcano.sources.join(', '),
+        latitude: volcano.latitude,
+        longitude: volcano.longitude,
+      });
+    });
+
+    return warnings.sort((a, b) => {
+      const alertOrder = { warning: 0, watch: 1, advisory: 2, normal: 3 };
+      return alertOrder[a.alertLevel] - alertOrder[b.alertLevel];
+    });
+  } catch (error) {
+    console.error('Failed to fetch volcano warnings:', error);
+    return [];
+  }
 };

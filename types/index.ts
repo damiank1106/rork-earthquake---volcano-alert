@@ -247,3 +247,17 @@ export interface NuclearPlant {
   latitude: number;
   longitude: number;
 }
+
+export interface VolcanoWarning {
+  id: string;
+  volcanoName: string;
+  country: string;
+  region: string;
+  alertLevel: 'normal' | 'advisory' | 'watch' | 'warning';
+  activityType: string;
+  description: string;
+  lastUpdate: string;
+  source: string;
+  latitude?: number;
+  longitude?: number;
+}
