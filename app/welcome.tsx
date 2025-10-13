@@ -114,9 +114,13 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-      <Animated.View style={[styles.content, { opacity: contentFadeIn, transform: [{ translateY: contentSlideUp }] }]}>
+      <Animated.View style={[
+        styles.content,
+        Platform.OS === 'web' ? stylesWeb.content : null,
+        { opacity: contentFadeIn, transform: [{ translateY: contentSlideUp }] }
+      ]}>
         <Text style={styles.title} testID="title-text">Seismic Monitor</Text>
-        <Text style={styles.subtitle}>Global Ring of Fire • Real-time seismic insights</Text>
+        <Text style={[styles.subtitle, Platform.OS === 'web' ? stylesWeb.subtitle : null]}>Global Ring of Fire • Real-time seismic insights</Text>
         <TouchableOpacity
           onPress={handleContinue}
           style={styles.button}
@@ -287,5 +291,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.semibold,
+  },
+});
+
+const stylesWeb = StyleSheet.create({
+  content: {
+    width: '90%',
+  },
+  subtitle: {
+    fontSize: 20,
+    color: '#000000',
   },
 });
