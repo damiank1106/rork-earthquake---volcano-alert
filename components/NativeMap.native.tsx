@@ -136,23 +136,14 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
 
   return (
     <MapView ref={mapRef} style={styles.map} initialRegion={initialRegion} showsUserLocation={true} showsMyLocationButton={false} onMapReady={() => setMapReady(true)}>
-      {showPlateBoundaries && plateBoundaries.map((b) => {
-        const coords = Array.isArray(b.coordinates) ? b.coordinates : [] as any[];
-        const isLineString = Array.isArray(coords[0]) && typeof coords[0][0] === 'number';
-        const parts = isLineString ? [coords] : coords;
-        return (
-          <React.Fragment key={`pb-${b.id}`}>
-            {Array.isArray(parts) && parts.map((segment: any[], idx: number) => (
-              <Polyline
-                key={`pb-${b.id}-${idx}`}
-                coordinates={Array.isArray(segment) ? segment.map((c: any) => ({ latitude: c[1], longitude: c[0] })) : []}
-                strokeColor={plateBoundaryColor}
-                strokeWidth={2}
-              />
-            ))}
-          </React.Fragment>
-        );
-      })}
+      {showPlateBoundaries && plateBoundaries.map((b) => (
+        <Polyline
+          key={`pb-${b.id}`}
+          coordinates={Array.isArray(b.coordinates) ? b.coordinates.map((c: any) => ({ latitude: c[1], longitude: c[0] })) : []}
+          strokeColor={plateBoundaryColor}
+          strokeWidth={2}
+        />
+      ))}
 
       {showVolcanoes && volcanoes.map((v) => {
         const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;

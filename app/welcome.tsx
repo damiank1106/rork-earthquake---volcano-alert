@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     paddingBottom: height * 0.18,
   },
   title: {
-    fontSize: Platform.OS === 'web' ? 38 : 34,
+    fontSize: 34,
     fontWeight: FONT_WEIGHT.bold,
     color: '#000000',
     textAlign: 'center',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
   subtitle: {
-    fontSize: Platform.OS === 'web' ? FONT_SIZE.md + 2 : FONT_SIZE.md,
+    fontSize: FONT_SIZE.md,
     color: '#000000',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   buttonText: {
-    color: Platform.OS === 'web' ? '#000000' : '#0B1A2E',
-    fontSize: Platform.OS === 'web' ? FONT_SIZE.lg + 2 : FONT_SIZE.lg,
+    color: '#0B1A2E',
+    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     textShadowColor: 'transparent',
     textShadowOffset: { width: 0, height: 0 },
