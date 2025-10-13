@@ -62,8 +62,9 @@ export default function TsunamiScreen() {
 
   if (alertsQuery.isLoading && alerts.length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}> 
+      <View style={[styles.container, styles.loadingContainer, { paddingTop: insets.top }]}> 
         <ActivityIndicator size="large" color={COLORS.primary[600]} />
+        <Text style={styles.loadingText}>Loading. Please wait…</Text>
       </View>
     );
   }
@@ -195,4 +196,6 @@ const styles = StyleSheet.create({
   modalDescription: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: SPACING.sm, lineHeight: 20 },
   closeModal: { alignSelf: 'center', marginTop: SPACING.md, padding: SPACING.sm, backgroundColor: COLORS.primary[500], borderRadius: BORDER_RADIUS.md, paddingHorizontal: SPACING.lg },
   closeModalText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
+  loadingContainer: { justifyContent: 'center', alignItems: 'center', gap: SPACING.md },
+  loadingText: { fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light, marginTop: SPACING.sm },
 });
