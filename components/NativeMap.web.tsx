@@ -13,6 +13,7 @@ interface NativeMapProps {
   nuclearPlants?: NuclearPlant[];
   showPlateBoundaries?: boolean;
   showVolcanoes?: boolean;
+  showSuperVolcanoes?: boolean;
   showNuclearPlants?: boolean;
   heatmapEnabled?: boolean;
   clusteringEnabled?: boolean;
@@ -31,6 +32,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     nuclearPlants = [],
     showPlateBoundaries = false,
     showVolcanoes = false,
+    showSuperVolcanoes = false,
     showNuclearPlants = false,
     heatmapEnabled = false,
     clusteringEnabled = true,
@@ -172,10 +174,14 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       markersRef.current.push(marker);
     });
 
-    if (showVolcanoes && volcanoes.length > 0) {
+    if (volcanoes.length > 0) {
       volcanoes.forEach((v) => {
-        const isHighlighted = selectedVolcano?.id === v.id;
         const isSuperVolcano = v.category === 'super';
+        const shouldShow = isSuperVolcano ? showSuperVolcanoes : showVolcanoes;
+        
+        if (!shouldShow) return;
+        
+        const isHighlighted = selectedVolcano?.id === v.id;
         const volcanoColor = isSuperVolcano ? (isHighlighted ? '#000000' : '#1F2937') : (isHighlighted ? '#DC2626' : '#EF4444');
         const size = isHighlighted ? 32 : 24;
         const icon = L.divIcon({
@@ -208,7 +214,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
         markersRef.current.push(marker);
       });
     }
-  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries]);
+  }, [isMapReady, earthquakes, showVolcanoes, showSuperVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries]);
 
   useEffect(() => {
     if (!isMapReady || !mapInstanceRef.current || !selectedMarker) return;

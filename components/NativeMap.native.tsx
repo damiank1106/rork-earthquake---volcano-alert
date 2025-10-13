@@ -15,6 +15,7 @@ interface NativeMapProps {
   nuclearPlants?: NuclearPlant[];
   showPlateBoundaries?: boolean;
   showVolcanoes?: boolean;
+  showSuperVolcanoes?: boolean;
   showNuclearPlants?: boolean;
   heatmapEnabled?: boolean;
   clusteringEnabled?: boolean;
@@ -22,7 +23,7 @@ interface NativeMapProps {
   onVolcanoPress?: (volcano: Volcano) => void;
 }
 
-const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true, selectedVolcano = null, onVolcanoPress }, ref) {
+const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showSuperVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true, selectedVolcano = null, onVolcanoPress }, ref) {
   const mapRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState<boolean>(false);
   const params = useLocalSearchParams();
@@ -144,9 +145,13 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         />
       ))}
 
-      {showVolcanoes && volcanoes.map((v) => {
-        const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;
+      {volcanoes.map((v) => {
         const isSuperVolcano = v.category === 'super';
+        const shouldShow = isSuperVolcano ? showSuperVolcanoes : showVolcanoes;
+        
+        if (!shouldShow) return null;
+        
+        const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;
         const volcanoColor = isSuperVolcano ? (isHighlighted ? '#000000' : '#1F2937') : (isHighlighted ? '#DC2626' : '#EF4444');
         return (
           <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }} onPress={() => onVolcanoPress?.(v)}>

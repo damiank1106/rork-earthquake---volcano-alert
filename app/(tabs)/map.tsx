@@ -45,15 +45,6 @@ export default function MapScreen() {
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
 
-  const filteredVolcanoes = useMemo(() => {
-    if (!volcanoesQuery.data) return [];
-    return volcanoesQuery.data.filter(v => {
-      if (v.category === 'active') return showVolcanoes;
-      if (v.category === 'super') return showSuperVolcanoes;
-      return true;
-    });
-  }, [volcanoesQuery.data, showVolcanoes, showSuperVolcanoes]);
-
   const highlightedVolcano = useMemo(() => {
     if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
     return volcanoesQuery.data.find(v => v.id === highlightedVolcanoId) || null;
@@ -244,10 +235,11 @@ export default function MapScreen() {
             onMarkerPress={handleMarkerPress}
             userLocation={userLocation}
             plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-            volcanoes={filteredVolcanoes}
+            volcanoes={volcanoesQuery.data ?? []}
             nuclearPlants={[]}
             showPlateBoundaries={showPlates}
             showVolcanoes={showVolcanoes}
+            showSuperVolcanoes={showSuperVolcanoes}
             showNuclearPlants={false}
             heatmapEnabled={preferences.heatmapEnabled}
             clusteringEnabled={preferences.clusteringEnabled}
