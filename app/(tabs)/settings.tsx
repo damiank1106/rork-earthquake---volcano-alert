@@ -616,6 +616,68 @@ export default function SettingsScreen() {
         </GlassView>
 
         <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>Earthquake Notifications</Text>
+          <View style={styles.card}>
+            <SettingToggle
+              title="Enable Earthquake Notifications"
+              subtitle="Receive alerts for significant earthquakes"
+              value={preferences.notificationsEnabled}
+              onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
+            />
+            {preferences.notificationsEnabled && (
+              <>
+                <View style={styles.divider} />
+                <SettingRow
+                  title="Country"
+                  subtitle="Filter earthquake notifications by country"
+                  value={preferences.notificationCountry || 'All Countries'}
+                  onPress={() => {
+                    setTempCountry(preferences.notificationCountry || '');
+                    setCountryModalVisible(true);
+                  }}
+                />
+                <View style={styles.divider} />
+                <SettingRow
+                  title="Minimum Magnitude"
+                  subtitle="Only notify for earthquakes above this magnitude"
+                  value={`${preferences.notificationMinMagnitude || 5.0}+`}
+                  onPress={() => {
+                    setTempMagnitude(String(preferences.notificationMinMagnitude || 5.0));
+                    setMagnitudeModalVisible(true);
+                  }}
+                />
+              </>
+            )}
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>Volcano Notifications</Text>
+          <View style={styles.card}>
+            <SettingToggle
+              title="Enable Volcano Notifications"
+              subtitle="Receive alerts for volcano eruptions and warnings"
+              value={preferences.volcanoNotificationsEnabled ?? true}
+              onValueChange={(value) => updatePreferences({ volcanoNotificationsEnabled: value })}
+            />
+            {preferences.volcanoNotificationsEnabled && (
+              <>
+                <View style={styles.divider} />
+                <SettingRow
+                  title="Country"
+                  subtitle="Filter volcano notifications by country"
+                  value={preferences.volcanoNotificationCountry || 'All Countries'}
+                  onPress={() => {
+                    setTempVolcanoCountry(preferences.volcanoNotificationCountry || '');
+                    setVolcanoCountryModalVisible(true);
+                  }}
+                />
+              </>
+            )}
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>Legend</Text>
           <View style={styles.card}>
             <View style={styles.legendSection}>
@@ -705,68 +767,6 @@ export default function SettingsScreen() {
                 </View>
               </View>
             </View>
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Earthquake Notifications</Text>
-          <View style={styles.card}>
-            <SettingToggle
-              title="Enable Earthquake Notifications"
-              subtitle="Receive alerts for significant earthquakes"
-              value={preferences.notificationsEnabled}
-              onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
-            />
-            {preferences.notificationsEnabled && (
-              <>
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Country"
-                  subtitle="Filter earthquake notifications by country"
-                  value={preferences.notificationCountry || 'All Countries'}
-                  onPress={() => {
-                    setTempCountry(preferences.notificationCountry || '');
-                    setCountryModalVisible(true);
-                  }}
-                />
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Minimum Magnitude"
-                  subtitle="Only notify for earthquakes above this magnitude"
-                  value={`${preferences.notificationMinMagnitude || 5.0}+`}
-                  onPress={() => {
-                    setTempMagnitude(String(preferences.notificationMinMagnitude || 5.0));
-                    setMagnitudeModalVisible(true);
-                  }}
-                />
-              </>
-            )}
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Volcano Notifications</Text>
-          <View style={styles.card}>
-            <SettingToggle
-              title="Enable Volcano Notifications"
-              subtitle="Receive alerts for volcano eruptions and warnings"
-              value={preferences.volcanoNotificationsEnabled ?? true}
-              onValueChange={(value) => updatePreferences({ volcanoNotificationsEnabled: value })}
-            />
-            {preferences.volcanoNotificationsEnabled && (
-              <>
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Country"
-                  subtitle="Filter volcano notifications by country"
-                  value={preferences.volcanoNotificationCountry || 'All Countries'}
-                  onPress={() => {
-                    setTempVolcanoCountry(preferences.volcanoNotificationCountry || '');
-                    setVolcanoCountryModalVisible(true);
-                  }}
-                />
-              </>
-            )}
           </View>
         </GlassView>
 
