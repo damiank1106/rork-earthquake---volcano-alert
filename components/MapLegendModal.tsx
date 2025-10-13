@@ -29,9 +29,17 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
   ];
 
   return (
-    <Modal visible={visible} animationType="fade" transparent={true}>
-      <View style={styles.overlay}>
-        <View style={[styles.modalContainer, { paddingTop: insets.top + SPACING.md }]}>
+    <Modal visible={visible} animationType="fade" transparent={true} onRequestClose={onClose}>
+      <TouchableOpacity 
+        style={styles.overlay} 
+        activeOpacity={1} 
+        onPress={onClose}
+      >
+        <TouchableOpacity 
+          activeOpacity={1} 
+          onPress={(e) => e.stopPropagation()}
+          style={[styles.modalContainer, { paddingTop: insets.top + SPACING.md }]}
+        >
           <GlassView {...glassProps} style={styles.glassContainer}>
             <View style={styles.header}>
               <Text style={styles.title}>Map Legend</Text>
@@ -47,6 +55,7 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
               nestedScrollEnabled={true}
               showsVerticalScrollIndicator={true}
               bounces={true}
+              alwaysBounceVertical={true}
             >
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Earthquake Magnitude Icons</Text>
@@ -130,8 +139,8 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
               </TouchableOpacity>
             </View>
           </GlassView>
-        </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 }
@@ -139,7 +148,7 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.md,
