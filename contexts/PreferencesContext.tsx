@@ -24,22 +24,21 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    loadPreferences();
+    let mounted = true;
+    loadPreferences(mounted);
+    return () => { mounted = false; };
   }, []);
 
-  const loadPreferences = async () => {
+  const loadPreferences = async (mounted: boolean) => {
     try {
       const saved = await getUserPreferences();
-      if (saved) {
+      if (saved && mounted) {
         setPreferences(saved);
       }
     } catch (error) {
       console.error('Failed to load preferences:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -59,8 +58,7 @@ export const [PreferencesProvider, usePreferences] = createContextHook(() => {
     () => ({
       preferences,
       updatePreferences,
-      isLoading,
     }),
-    [preferences, updatePreferences, isLoading]
+    [preferences, updatePreferences]
   );
 });

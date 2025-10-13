@@ -42,13 +42,9 @@ export default function RootLayout() {
       console.error('Failed to initialize app:', err);
     } finally {
       setIsReady(true);
-      await SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(console.error);
     }
   };
-
-  if (!isReady) {
-    return null;
-  }
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
@@ -57,7 +53,7 @@ export default function RootLayout() {
           <LocationProvider>
             <EarthquakesProvider>
               <GestureHandlerRootView style={{ flex: 1 }}>
-                <RootLayoutNav />
+                {isReady ? <RootLayoutNav /> : null}
               </GestureHandlerRootView>
             </EarthquakesProvider>
           </LocationProvider>

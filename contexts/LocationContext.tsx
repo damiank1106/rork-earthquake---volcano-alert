@@ -12,7 +12,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   } | null>(null);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
-  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(true);
+  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
 
   const requestLocationPermission = useCallback(async () => {
     try {
@@ -37,8 +37,15 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   }, []);
 
   useEffect(() => {
-    requestLocationPermission();
-    loadSavedPlaces();
+    let mounted = true;
+    const init = async () => {
+      if (mounted) {
+        requestLocationPermission();
+        loadSavedPlaces();
+      }
+    };
+    init();
+    return () => { mounted = false; };
   }, [requestLocationPermission]);
 
   const loadSavedPlaces = async () => {

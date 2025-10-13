@@ -26,6 +26,8 @@ export const [EarthquakesProvider, useEarthquakes] = createContextHook(() => {
       }
     },
     refetchInterval: preferences.pollingFrequency,
+    staleTime: 60000,
+    gcTime: 300000,
   });
 
   const earthquakes = useMemo(() => {
