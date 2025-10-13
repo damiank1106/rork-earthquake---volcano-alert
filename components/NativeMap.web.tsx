@@ -18,6 +18,7 @@ interface NativeMapProps {
   clusteringEnabled?: boolean;
   selectedVolcano?: Volcano | null;
   onVolcanoPress?: (volcano: Volcano) => void;
+  plateBoundaryColor?: string;
 }
 
 const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
@@ -36,6 +37,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     clusteringEnabled = true,
     selectedVolcano = null,
     onVolcanoPress,
+    plateBoundaryColor = '#ef4444',
   },
   ref
 ) {
@@ -123,7 +125,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
         if (Array.isArray(boundary.coordinates) && boundary.coordinates.length > 0) {
           const coords = boundary.coordinates.map((c: any) => [c[1], c[0]]);
           const polyline = L.polyline(coords, {
-            color: '#DC2626',
+            color: plateBoundaryColor,
             weight: 2,
             opacity: 0.8,
           }).addTo(mapInstanceRef.current);
@@ -208,7 +210,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
         markersRef.current.push(marker);
       });
     }
-  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries]);
+  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries, plateBoundaryColor]);
 
   useEffect(() => {
     if (!isMapReady || !mapInstanceRef.current || !selectedMarker) return;

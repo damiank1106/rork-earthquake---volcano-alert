@@ -447,6 +447,9 @@ export default function SettingsScreen() {
   const [tempVolcanoCountry, setTempVolcanoCountry] = useState<string>(preferences.volcanoNotificationCountry || '');
   const [tempMagnitude, setTempMagnitude] = useState<string>(String(preferences.notificationMinMagnitude || 5.0));
   const [showSavedMessage, setShowSavedMessage] = useState<boolean>(false);
+  const [iconColorModalVisible, setIconColorModalVisible] = useState<boolean>(false);
+  const [glowColorModalVisible, setGlowColorModalVisible] = useState<boolean>(false);
+  const [plateBoundaryColorModalVisible, setPlateBoundaryColorModalVisible] = useState<boolean>(false);
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
@@ -538,6 +541,45 @@ export default function SettingsScreen() {
     { value: 8.0, label: '8.0+ (Great)', description: 'Can cause serious damage in several hundred km' },
   ];
 
+  const ICON_COLORS = [
+    { value: '#000000', label: 'Black' },
+    { value: '#FFFFFF', label: 'White' },
+    { value: '#ef4444', label: 'Red' },
+    { value: '#3b82f6', label: 'Blue' },
+    { value: '#10b981', label: 'Green' },
+    { value: '#f59e0b', label: 'Orange' },
+    { value: '#8b5cf6', label: 'Purple' },
+    { value: '#ec4899', label: 'Pink' },
+    { value: '#14b8a6', label: 'Teal' },
+    { value: '#f97316', label: 'Dark Orange' },
+  ];
+
+  const GLOW_COLORS = [
+    { value: '#60a5fa', label: 'Light Blue' },
+    { value: '#ef4444', label: 'Red' },
+    { value: '#10b981', label: 'Green' },
+    { value: '#f59e0b', label: 'Orange' },
+    { value: '#8b5cf6', label: 'Purple' },
+    { value: '#ec4899', label: 'Pink' },
+    { value: '#fbbf24', label: 'Yellow' },
+    { value: '#14b8a6', label: 'Teal' },
+    { value: '#a855f7', label: 'Violet' },
+    { value: '#06b6d4', label: 'Cyan' },
+  ];
+
+  const PLATE_BOUNDARY_COLORS = [
+    { value: '#ef4444', label: 'Red' },
+    { value: '#f97316', label: 'Orange' },
+    { value: '#fbbf24', label: 'Yellow' },
+    { value: '#10b981', label: 'Green' },
+    { value: '#3b82f6', label: 'Blue' },
+    { value: '#8b5cf6', label: 'Purple' },
+    { value: '#ec4899', label: 'Pink' },
+    { value: '#000000', label: 'Black' },
+    { value: '#FFFFFF', label: 'White' },
+    { value: '#14b8a6', label: 'Teal' },
+  ];
+
   const handleCountrySave = () => {
     updatePreferences({ notificationCountry: tempCountry || undefined });
     setCountryModalVisible(false);
@@ -590,6 +632,27 @@ export default function SettingsScreen() {
                   timeFormat: preferences.timeFormat === '12h' ? '24h' : '12h',
                 })
               }
+            />
+            <View style={styles.divider} />
+            <SettingRow
+              title="Icon Color"
+              subtitle="Color for menu icons"
+              value={ICON_COLORS.find(c => c.value === (preferences.customIconColor || '#000000'))?.label || 'Black'}
+              onPress={() => setIconColorModalVisible(true)}
+            />
+            <View style={styles.divider} />
+            <SettingRow
+              title="Glow Color"
+              subtitle="Color for active icon glow"
+              value={GLOW_COLORS.find(c => c.value === (preferences.customGlowColor || '#60a5fa'))?.label || 'Light Blue'}
+              onPress={() => setGlowColorModalVisible(true)}
+            />
+            <View style={styles.divider} />
+            <SettingRow
+              title="Plate Boundary Color"
+              subtitle="Color for tectonic plate lines"
+              value={PLATE_BOUNDARY_COLORS.find(c => c.value === (preferences.customPlateBoundaryColor || '#ef4444'))?.label || 'Red'}
+              onPress={() => setPlateBoundaryColorModalVisible(true)}
             />
           </View>
         </GlassView>
@@ -955,6 +1018,117 @@ export default function SettingsScreen() {
           </View>
         </View>
       </Modal>
+
+      <Modal visible={iconColorModalVisible} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Icon Color</Text>
+            <TouchableOpacity onPress={() => setIconColorModalVisible(false)}>
+              <X size={24} color={COLORS.text.primary.light} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
+            <Text style={styles.colorDescription}>
+              Choose the color for all menu icons in the app.
+            </Text>
+            {ICON_COLORS.map((color) => (
+              <TouchableOpacity
+                key={color.value}
+                style={[
+                  styles.colorOption,
+                  (preferences.customIconColor || '#000000') === color.value && styles.colorOptionSelected
+                ]}
+                onPress={() => {
+                  updatePreferences({ customIconColor: color.value });
+                  setIconColorModalVisible(false);
+                }}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: color.value, borderWidth: color.value === '#FFFFFF' ? 1 : 0, borderColor: '#E5E5E5' }]} />
+                <Text style={[
+                  styles.colorOptionText,
+                  (preferences.customIconColor || '#000000') === color.value && styles.colorOptionTextSelected
+                ]}>
+                  {color.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
+
+      <Modal visible={glowColorModalVisible} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Glow Color</Text>
+            <TouchableOpacity onPress={() => setGlowColorModalVisible(false)}>
+              <X size={24} color={COLORS.text.primary.light} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
+            <Text style={styles.colorDescription}>
+              Choose the glow color for active icons in the app.
+            </Text>
+            {GLOW_COLORS.map((color) => (
+              <TouchableOpacity
+                key={color.value}
+                style={[
+                  styles.colorOption,
+                  (preferences.customGlowColor || '#60a5fa') === color.value && styles.colorOptionSelected
+                ]}
+                onPress={() => {
+                  updatePreferences({ customGlowColor: color.value });
+                  setGlowColorModalVisible(false);
+                }}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: color.value }]} />
+                <Text style={[
+                  styles.colorOptionText,
+                  (preferences.customGlowColor || '#60a5fa') === color.value && styles.colorOptionTextSelected
+                ]}>
+                  {color.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
+
+      <Modal visible={plateBoundaryColorModalVisible} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Plate Boundary Color</Text>
+            <TouchableOpacity onPress={() => setPlateBoundaryColorModalVisible(false)}>
+              <X size={24} color={COLORS.text.primary.light} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
+            <Text style={styles.colorDescription}>
+              Choose the color for tectonic plate boundary lines on the map.
+            </Text>
+            {PLATE_BOUNDARY_COLORS.map((color) => (
+              <TouchableOpacity
+                key={color.value}
+                style={[
+                  styles.colorOption,
+                  (preferences.customPlateBoundaryColor || '#ef4444') === color.value && styles.colorOptionSelected
+                ]}
+                onPress={() => {
+                  updatePreferences({ customPlateBoundaryColor: color.value });
+                  setPlateBoundaryColorModalVisible(false);
+                }}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: color.value, borderWidth: color.value === '#FFFFFF' ? 1 : 0, borderColor: '#E5E5E5' }]} />
+                <Text style={[
+                  styles.colorOptionText,
+                  (preferences.customPlateBoundaryColor || '#ef4444') === color.value && styles.colorOptionTextSelected
+                ]}>
+                  {color.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -998,6 +1172,12 @@ const styles = StyleSheet.create({
   magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
   savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
+  colorDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
+  colorOption: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, borderWidth: 2, borderColor: COLORS.border.light, marginBottom: SPACING.sm },
+  colorOptionSelected: { borderColor: COLORS.primary[600], backgroundColor: COLORS.primary[50] },
+  colorSwatch: { width: 32, height: 32, borderRadius: 16, marginRight: SPACING.md },
+  colorOptionText: { fontSize: FONT_SIZE.md, color: COLORS.text.primary.light },
+  colorOptionTextSelected: { fontWeight: FONT_WEIGHT.semibold, color: COLORS.primary[600] },
   legendSection: { padding: SPACING.md },
   legendTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.md },
   legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md, gap: SPACING.md },

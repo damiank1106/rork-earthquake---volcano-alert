@@ -17,6 +17,9 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   notificationMinMagnitude: 5.0,
   volcanoNotificationsEnabled: false,
   volcanoNotificationCountry: undefined,
+  customIconColor: '#000000',
+  customGlowColor: '#60a5fa',
+  customPlateBoundaryColor: '#ef4444',
 };
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {

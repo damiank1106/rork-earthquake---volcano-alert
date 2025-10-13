@@ -20,9 +20,10 @@ interface NativeMapProps {
   clusteringEnabled?: boolean;
   selectedVolcano?: Volcano | null;
   onVolcanoPress?: (volcano: Volcano) => void;
+  plateBoundaryColor?: string;
 }
 
-const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true, selectedVolcano = null, onVolcanoPress }, ref) {
+const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquakes, selectedMarker, onMarkerPress, userLocation, plateBoundaries = [], volcanoes = [], nuclearPlants = [], showPlateBoundaries = false, showVolcanoes = false, showNuclearPlants = false, heatmapEnabled = false, clusteringEnabled = true, selectedVolcano = null, onVolcanoPress, plateBoundaryColor = '#ef4444' }, ref) {
   const mapRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState<boolean>(false);
   const params = useLocalSearchParams();
@@ -139,7 +140,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         <Polyline
           key={`pb-${b.id}`}
           coordinates={Array.isArray(b.coordinates) ? b.coordinates.map((c: any) => ({ latitude: c[1], longitude: c[0] })) : []}
-          strokeColor="#DC2626"
+          strokeColor={plateBoundaryColor}
           strokeWidth={2}
         />
       ))}
