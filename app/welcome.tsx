@@ -201,12 +201,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.6,
     marginBottom: 8,
+    textShadowColor: '#FFFFFF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 3,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
     color: '#000000',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
+    textShadowColor: '#FFFFFF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 2,
   },
   button: {
     backgroundColor: '#E8F0F7',
