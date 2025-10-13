@@ -253,7 +253,7 @@ export default function MapScreen() {
             clusteringEnabled={preferences.clusteringEnabled}
             selectedVolcano={selectedVolcanoMarker}
             onVolcanoPress={handleVolcanoPress}
-            plateBoundaryColor={preferences.customPlateBoundaryColor || '#ef4444'}
+            plateBoundaryColor={'#ef4444'}
           />
         </TouchableOpacity>
       )}
@@ -275,7 +275,7 @@ export default function MapScreen() {
         </View>
       )}
 
-      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
+      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]} >
         <View style={styles.headerContent}>
           <Text style={styles.title}>Seismic Monitor</Text>
           <Text style={styles.subtitle}>
@@ -283,19 +283,19 @@ export default function MapScreen() {
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity testID="btn-filters" style={[styles.refreshButton, panelOpen && { shadowColor: preferences.customGlowColor || '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]} onPress={togglePanel}>
-            <SlidersHorizontal size={20} color={preferences.customIconColor || '#000000'} />
+          <TouchableOpacity testID="btn-filters" style={[styles.refreshButton, panelOpen && { shadowColor: '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]} onPress={togglePanel}>
+            <SlidersHorizontal size={20} color={'#000000'} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.refreshButton, isRefreshing && { shadowColor: preferences.customGlowColor || '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]}
+            style={[styles.refreshButton, isRefreshing && { shadowColor: '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]}
             onPress={handleRefresh}
             disabled={isRefreshing}
             testID="btn-refresh"
           >
             {isRefreshing ? (
-              <ActivityIndicator size="small" color={preferences.customIconColor || '#000000'} />
+              <ActivityIndicator size="small" color={'#000000'} />
             ) : (
-              <RefreshCw size={20} color={preferences.customIconColor || '#000000'} />
+              <RefreshCw size={20} color={'#000000'} />
             )}
           </TouchableOpacity>
         </View>
@@ -463,7 +463,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
-  header: { position: 'absolute', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 600, left: '50%', transform: [{ translateX: -300 }] } : { left: SPACING.md, right: SPACING.md }) },
+  header: { position: 'absolute', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 800, left: '50%', transform: [{ translateX: -400 }] } : { left: SPACING.md, right: SPACING.md }) },
   headerContent: { flex: 1 },
   title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },

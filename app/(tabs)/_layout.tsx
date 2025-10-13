@@ -3,12 +3,11 @@ import { Map, List, BookOpen, Settings, Waves, Flame } from 'lucide-react-native
 import React from 'react';
 import { COLORS } from '@/constants/theme';
 import { View } from 'react-native';
-import { usePreferences } from '@/contexts/PreferencesContext';
+
 
 export default function TabLayout() {
-  const { preferences } = usePreferences();
-  const iconColor = preferences.customIconColor || '#000000';
-  const glowColor = preferences.customGlowColor || '#60a5fa';
+  const iconColor = '#000000';
+  const glowColor = '#60a5fa';
 
   return (
     <Tabs
