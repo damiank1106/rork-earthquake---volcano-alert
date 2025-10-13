@@ -753,7 +753,7 @@ export default function SettingsScreen() {
               value={preferences.volcanoNotificationsEnabled ?? true}
               onValueChange={(value) => updatePreferences({ volcanoNotificationsEnabled: value })}
             />
-            {(preferences.volcanoNotificationsEnabled ?? true) && (
+            {preferences.volcanoNotificationsEnabled && (
               <>
                 <View style={styles.divider} />
                 <SettingRow

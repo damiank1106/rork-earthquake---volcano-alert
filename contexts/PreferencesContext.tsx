@@ -12,10 +12,10 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   heatmapEnabled: false,
   clusteringEnabled: true,
   theme: 'light',
-  notificationsEnabled: true,
+  notificationsEnabled: false,
   notificationCountry: undefined,
   notificationMinMagnitude: 5.0,
-  volcanoNotificationsEnabled: true,
+  volcanoNotificationsEnabled: false,
   volcanoNotificationCountry: undefined,
 };
 

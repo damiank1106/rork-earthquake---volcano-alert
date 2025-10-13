@@ -90,7 +90,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   activeIcon: {
-    shadowColor: '#DC2626',
+    shadowColor: '#60a5fa',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 6,
