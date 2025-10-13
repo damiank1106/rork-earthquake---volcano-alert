@@ -60,6 +60,7 @@ export const getAlertThresholds = async (): Promise<AlertThreshold[]> => {
 
 export const saveUserPreferences = async (prefs: UserPreferences): Promise<void> => {
   memory.user_preferences = { ...prefs };
+  console.log('[web-db] saved user preferences');
 };
 
 export const getUserPreferences = async (): Promise<UserPreferences | null> => {

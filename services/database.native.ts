@@ -110,6 +110,8 @@ export const initDatabase = async (): Promise<void> => {
         notificationsEnabled INTEGER NOT NULL,
         notificationCountry TEXT,
         notificationMinMagnitude REAL,
+        volcanoNotificationsEnabled INTEGER,
+        volcanoNotificationCountry TEXT,
         lastUpdated INTEGER
       );
       
@@ -135,6 +137,14 @@ export const initDatabase = async (): Promise<void> => {
         console.log('Migrated user_preferences table to new schema');
       }
       
+      if (!columnNames.includes('volcanoNotificationsEnabled')) {
+        await db.execAsync(`
+          ALTER TABLE user_preferences ADD COLUMN volcanoNotificationsEnabled INTEGER;
+          ALTER TABLE user_preferences ADD COLUMN volcanoNotificationCountry TEXT;
+        `);
+        console.log('Migrated user_preferences table to add volcano notification columns');
+      }
+      
       const hasOldColumns = columnNames.includes('quietHoursEnabled');
       if (hasOldColumns) {
         await db.execAsync(`
@@ -151,6 +161,8 @@ export const initDatabase = async (): Promise<void> => {
             notificationsEnabled INTEGER NOT NULL,
             notificationCountry TEXT,
             notificationMinMagnitude REAL,
+            volcanoNotificationsEnabled INTEGER,
+            volcanoNotificationCountry TEXT,
             lastUpdated INTEGER
           );
           
@@ -450,8 +462,9 @@ export const saveUserPreferences = async (prefs: UserPreferences): Promise<void>
       `INSERT OR REPLACE INTO user_preferences (
         id, units, timeFormat, pollingFrequency, earthquakesEnabled, volcanoesEnabled,
         heatmapEnabled, clusteringEnabled, theme, notificationsEnabled,
-        notificationCountry, notificationMinMagnitude, lastUpdated
-      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        notificationCountry, notificationMinMagnitude, volcanoNotificationsEnabled,
+        volcanoNotificationCountry, lastUpdated
+      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         prefs.units,
         prefs.timeFormat,
@@ -464,6 +477,8 @@ export const saveUserPreferences = async (prefs: UserPreferences): Promise<void>
         prefs.notificationsEnabled ? 1 : 0,
         prefs.notificationCountry ?? null,
         prefs.notificationMinMagnitude ?? null,
+        prefs.volcanoNotificationsEnabled ? 1 : 0,
+        prefs.volcanoNotificationCountry ?? null,
         prefs.lastUpdated ?? null,
       ]
     );
@@ -490,6 +505,8 @@ export const getUserPreferences = async (): Promise<UserPreferences | null> => {
       notificationsEnabled: number;
       notificationCountry: string | null;
       notificationMinMagnitude: number | null;
+      volcanoNotificationsEnabled: number | null;
+      volcanoNotificationCountry: string | null;
       lastUpdated: number | null;
     }>('SELECT * FROM user_preferences WHERE id = 1');
 
@@ -507,6 +524,8 @@ export const getUserPreferences = async (): Promise<UserPreferences | null> => {
       notificationsEnabled: row.notificationsEnabled === 1,
       notificationCountry: row.notificationCountry ?? undefined,
       notificationMinMagnitude: row.notificationMinMagnitude ?? undefined,
+      volcanoNotificationsEnabled: row.volcanoNotificationsEnabled === 1,
+      volcanoNotificationCountry: row.volcanoNotificationCountry ?? undefined,
       lastUpdated: row.lastUpdated ?? undefined,
     };
   } catch (error) {
