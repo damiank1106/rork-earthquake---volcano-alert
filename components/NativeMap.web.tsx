@@ -117,6 +117,14 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     const L = (window as any).L;
     if (!L) return;
 
+    const currentZoom = mapInstanceRef.current.getZoom();
+    const currentCenter = mapInstanceRef.current.getCenter();
+    
+    mapInstanceRef.current.setView(currentCenter, currentZoom, {
+      animate: true,
+      duration: 0.3,
+    });
+
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 

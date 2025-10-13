@@ -51,7 +51,9 @@ export default function VolcanoesScreen() {
   const handleShowOnMap = (volcano: Volcano) => {
     updatePreferences({ volcanoesEnabled: true });
     setSelectedVolcano(null);
-    router.push(`/map?volcanoId=${volcano.id}`);
+    setTimeout(() => {
+      router.push(`/map?volcanoId=${volcano.id}`);
+    }, 100);
   };
 
   const sections = useMemo(() => {
