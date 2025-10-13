@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView, BlurTint } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
@@ -451,7 +451,7 @@ export default function SettingsScreen() {
   const [glowColorModalVisible, setGlowColorModalVisible] = useState<boolean>(false);
   const [plateBoundaryColorModalVisible, setPlateBoundaryColorModalVisible] = useState<boolean>(false);
 
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as const };
 
   const SettingRow = ({
     title,
