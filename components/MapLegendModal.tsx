@@ -31,21 +31,23 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
   return (
     <Modal visible={visible} animationType="fade" transparent={true}>
       <View style={styles.overlay}>
-        <GlassView {...glassProps} style={[styles.modalContainer, { paddingTop: insets.top + SPACING.md }]}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Map Legend</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color="#000000" />
-            </TouchableOpacity>
-          </View>
+        <View style={[styles.modalContainer, { paddingTop: insets.top + SPACING.md }]}>
+          <GlassView {...glassProps} style={styles.glassContainer}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Map Legend</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color="#000000" />
+              </TouchableOpacity>
+            </View>
 
-          <ScrollView 
-            style={styles.scrollView} 
-            contentContainerStyle={styles.scrollContent}
-            scrollEnabled={true}
-            nestedScrollEnabled={true}
-            showsVerticalScrollIndicator={true}
-          >
+            <ScrollView 
+              style={styles.scrollView} 
+              contentContainerStyle={styles.scrollContent}
+              scrollEnabled={true}
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={true}
+              bounces={true}
+            >
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Earthquake Magnitude Icons</Text>
               <Text style={styles.sectionDescription}>
@@ -122,12 +124,13 @@ export default function MapLegendModal({ visible, onClose }: MapLegendModalProps
             </View>
           </ScrollView>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.gotItButton} onPress={onClose}>
-              <Text style={styles.gotItButtonText}>Got It!</Text>
-            </TouchableOpacity>
-          </View>
-        </GlassView>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.gotItButton} onPress={onClose}>
+                <Text style={styles.gotItButtonText}>Got It!</Text>
+              </TouchableOpacity>
+            </View>
+          </GlassView>
+        </View>
       </View>
     </Modal>
   );
@@ -144,9 +147,13 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '100%',
     maxWidth: 500,
-    maxHeight: '90%',
+    maxHeight: '85%',
     borderRadius: BORDER_RADIUS.xl,
     overflow: 'hidden',
+  },
+  glassContainer: {
+    flex: 1,
+    borderRadius: BORDER_RADIUS.xl,
   },
   header: {
     flexDirection: 'row',
@@ -166,7 +173,8 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   scrollView: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   scrollContent: {
     padding: SPACING.lg,
