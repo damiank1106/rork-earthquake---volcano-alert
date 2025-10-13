@@ -299,7 +299,7 @@ const stylesWeb = StyleSheet.create({
     width: '90%',
   },
   subtitle: {
-    fontSize: Platform.select({ web: 26, default: 18 }) as number,
+    fontSize: 20,
     color: '#000000',
     textShadowColor: '#FFFFFF',
     textShadowOffset: { width: 0, height: 0 },
