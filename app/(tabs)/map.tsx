@@ -462,7 +462,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
-  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 600, alignSelf: 'center', width: '100%' } : {}) },
+  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 600, alignSelf: 'center', width: '100%', right: '10%' } : {}) },
   headerContent: { flex: 1 },
   title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },

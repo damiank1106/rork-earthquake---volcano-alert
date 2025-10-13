@@ -119,7 +119,7 @@ export default function WelcomeScreen() {
         Platform.OS === 'web' ? stylesWeb.content : null,
         { opacity: contentFadeIn, transform: [{ translateY: contentSlideUp }] }
       ]}>
-        <Text style={styles.title} testID="title-text">Seismic Monitor</Text>
+        <Text style={[styles.title, Platform.OS === 'web' ? stylesWeb.title : null]} testID="title-text">Seismic Monitor</Text>
         <Text style={[styles.subtitle, Platform.OS === 'web' ? stylesWeb.subtitle : null]}>Global Ring of Fire • Real-time seismic insights</Text>
         <TouchableOpacity
           onPress={handleContinue}
@@ -299,7 +299,15 @@ const stylesWeb = StyleSheet.create({
     width: '90%',
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: 26,
     color: '#000000',
+    textShadowColor: '#FFFFFF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+  },
+  title: {
+    textShadowColor: '#FFFFFF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
   },
 });
