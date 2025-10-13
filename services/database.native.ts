@@ -351,9 +351,8 @@ export const savePlaceToDb = async (place: SavedPlace): Promise<void> => {
 };
 
 export const getSavedPlaces = async (): Promise<SavedPlace[]> => {
-  const database = getDatabase();
-
   try {
+    const database = getDatabase();
     const rows = await database.getAllAsync<{
       id: string;
       name: string;
@@ -370,7 +369,6 @@ export const getSavedPlaces = async (): Promise<SavedPlace[]> => {
       alertsEnabled: row.alertsEnabled === 1,
     }));
   } catch (error) {
-    console.error('Failed to get saved places:', error);
     return [];
   }
 };
@@ -475,9 +473,8 @@ export const saveUserPreferences = async (prefs: UserPreferences): Promise<void>
 };
 
 export const getUserPreferences = async (): Promise<UserPreferences | null> => {
-  const database = getDatabase();
-
   try {
+    const database = getDatabase();
     const row = await database.getFirstAsync<{
       units: string;
       timeFormat: string;
@@ -510,7 +507,6 @@ export const getUserPreferences = async (): Promise<UserPreferences | null> => {
       lastUpdated: row.lastUpdated ?? undefined,
     };
   } catch (error) {
-    console.error('Failed to get user preferences:', error);
     return null;
   }
 };

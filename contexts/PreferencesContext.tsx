@@ -40,7 +40,6 @@ export const [PreferencesProvider, usePreferences] = createContextHook(() => {
         setPreferences(DEFAULT_PREFERENCES);
       }
     } catch (error) {
-      console.error('Failed to load preferences:', error);
       if (mounted) {
         setPreferences(DEFAULT_PREFERENCES);
       }

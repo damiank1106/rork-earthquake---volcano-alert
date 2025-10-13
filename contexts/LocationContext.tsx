@@ -53,7 +53,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
       const places = await getSavedPlaces();
       setSavedPlaces(places);
     } catch (error) {
-      console.error('Failed to load saved places:', error);
+      setSavedPlaces([]);
     }
   };
 
