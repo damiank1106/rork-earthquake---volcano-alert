@@ -282,19 +282,19 @@ export default function MapScreen() {
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity testID="btn-filters" style={styles.refreshButton} onPress={togglePanel}>
-            <SlidersHorizontal size={20} color={COLORS.primary[600]} />
+          <TouchableOpacity testID="btn-filters" style={[styles.refreshButton, panelOpen && styles.activeButton]} onPress={togglePanel}>
+            <SlidersHorizontal size={20} color="#000000" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.refreshButton}
+            style={[styles.refreshButton, isRefreshing && styles.activeButton]}
             onPress={handleRefresh}
             disabled={isRefreshing}
             testID="btn-refresh"
           >
             {isRefreshing ? (
-              <ActivityIndicator size="small" color={COLORS.primary[600]} />
+              <ActivityIndicator size="small" color="#000000" />
             ) : (
-              <RefreshCw size={20} color={COLORS.primary[600]} />
+              <RefreshCw size={20} color="#000000" />
             )}
           </TouchableOpacity>
         </View>
@@ -467,6 +467,7 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },
   refreshButton: { padding: SPACING.sm },
+  activeButton: { shadowColor: '#DC2626', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 },
   panel: { position: 'absolute', right: 0, width: 260, backgroundColor: COLORS.surface.light, padding: SPACING.md, borderTopLeftRadius: 16, borderBottomLeftRadius: 16, ...{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4 }, zIndex: 12 },
   panelTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
   panelLabel: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: 6 },
