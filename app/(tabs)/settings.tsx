@@ -323,7 +323,6 @@ HOW TO USE THE APP
   - Filter by country (100+ countries)
   - Separate control from earthquake notifications
 • Toggle map features:
-  - Clustering (group nearby events)
   - Heatmap (intensity visualization)
 • Legend section:
   - Magnitude color scale (green to red)
@@ -599,13 +598,6 @@ export default function SettingsScreen() {
         <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>Map</Text>
           <View style={styles.card}>
-            <SettingToggle
-              title="Clustering"
-              subtitle="Group nearby events on map"
-              value={preferences.clusteringEnabled}
-              onValueChange={(value) => updatePreferences({ clusteringEnabled: value })}
-            />
-            <View style={styles.divider} />
             <SettingToggle
               title="Heatmap"
               subtitle="Show intensity heatmap"

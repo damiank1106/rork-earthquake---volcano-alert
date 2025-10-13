@@ -83,14 +83,6 @@ export default function EventsScreen() {
       </View>
       <View style={styles.tabs}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'all' && styles.activeTab]}
-          onPress={() => setActiveTab('all')}
-        >
-          <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
-            All ({earthquakes.length})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.tab, activeTab === 'significant' && styles.activeTab]}
           onPress={() => setActiveTab('significant')}
         >
@@ -104,6 +96,14 @@ export default function EventsScreen() {
         >
           <Text style={[styles.tabText, activeTab === 'recent' && styles.activeTabText]}>
             Recent ({recentEarthquakes.length})
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+          onPress={() => setActiveTab('all')}
+        >
+          <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
+            All ({earthquakes.length})
           </Text>
         </TouchableOpacity>
       </View>
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
   },
   controls: {
     flexDirection: 'row',
+    justifyContent: 'center',
     gap: SPACING.sm,
   },
   controlButton: {
