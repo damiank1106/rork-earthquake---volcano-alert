@@ -44,7 +44,9 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const selectedCircleRef = useRef<any | null>(null);
   const [isMapReady, setIsMapReady] = useState<boolean>(false);
+  const cssInjectedRef = useRef<boolean>(false);
 
   useImperativeHandle(
     ref,
@@ -99,6 +101,31 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
 
       mapInstanceRef.current = map;
       setIsMapReady(true);
+
+      if (!cssInjectedRef.current) {
+        const style = document.createElement('style');
+        style.innerHTML = `
+          @keyframes eqPulseScale {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.6); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.8; }
+          }
+          .eq-pulse-ring {
+            position: absolute;
+            inset: -40%;
+            border-radius: 9999px;
+            background: currentColor;
+            opacity: 0.4;
+            animation: eqPulseScale 2s ease-in-out infinite;
+            filter: blur(0.5px);
+          }
+          .custom-earthquake-marker {
+            position: relative;
+          }
+        `;
+        document.head.appendChild(style);
+        cssInjectedRef.current = true;
+      }
     };
 
     initMap();
@@ -120,6 +147,11 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
+    if (selectedCircleRef.current) {
+      selectedCircleRef.current.remove();
+      selectedCircleRef.current = null;
+    }
+
     if (showPlateBoundaries && plateBoundaries.length > 0) {
       plateBoundaries.forEach((boundary) => {
         if (Array.isArray(boundary.coordinates) && boundary.coordinates.length > 0) {
@@ -136,27 +168,36 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
 
     earthquakes.forEach((eq) => {
       const color = getMagnitudeColor(eq.magnitude);
-      const size = Math.max(10, Math.min(eq.magnitude * 4, 30));
+      const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
+      const isSelected = selectedMarker?.id === eq.id;
 
       const icon = L.divIcon({
         className: 'custom-earthquake-marker',
         html: `
           <div style="
+            position: relative;
             width: ${size}px;
             height: ${size}px;
-            background-color: ${color};
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: ${size / 3}px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            cursor: pointer;
+            color: ${color};
           ">
-            ${eq.magnitude.toFixed(1)}
+            ${isSelected ? '<div class="eq-pulse-ring" style="color:'+color+';"></div>' : ''}
+            <div style="
+              width: 100%;
+              height: 100%;
+              background-color: ${color};
+              border: 2px solid white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: ${Math.round(size / 3)}px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+              cursor: pointer;
+            ">
+              ${eq.magnitude.toFixed(1)}
+            </div>
           </div>
         `,
         iconSize: [size, size],
@@ -168,6 +209,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       );
 
       marker.on('click', () => {
+        console.log('[NativeMap.web] Marker clicked', eq.id);
         onMarkerPress(eq);
       });
 
@@ -223,6 +265,37 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       8,
       { animate: true }
     );
+
+    if (selectedCircleRef.current) {
+      selectedCircleRef.current.remove();
+      selectedCircleRef.current = null;
+    }
+
+    let feltRadiusKm: number;
+    const m = selectedMarker.magnitude;
+    if (m < 3) {
+      feltRadiusKm = 10;
+    } else if (m < 4) {
+      feltRadiusKm = 30;
+    } else if (m < 5) {
+      feltRadiusKm = 100;
+    } else if (m < 6) {
+      feltRadiusKm = 200;
+    } else if (m < 7) {
+      feltRadiusKm = 400;
+    } else if (m < 8) {
+      feltRadiusKm = 800;
+    } else {
+      feltRadiusKm = 1000;
+    }
+    const color = getMagnitudeColor(m);
+    selectedCircleRef.current = L.circle([selectedMarker.latitude, selectedMarker.longitude], {
+      radius: feltRadiusKm * 1000,
+      color: color,
+      weight: 2,
+      fillColor: color,
+      fillOpacity: 0.15,
+    }).addTo(mapInstanceRef.current);
   }, [isMapReady, selectedMarker]);
 
   return (
