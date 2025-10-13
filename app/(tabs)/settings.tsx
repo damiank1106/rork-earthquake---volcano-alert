@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView, BlurTint } from 'expo-blur';
 import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
 import { router } from 'expo-router';
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
@@ -1140,7 +1140,16 @@ const styles = StyleSheet.create({
   title: { fontSize: FONT_SIZE.xxxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.lg },
   section: { marginBottom: SPACING.xl, borderRadius: 12, overflow: 'hidden' },
   sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.secondary.light, marginBottom: SPACING.sm, textTransform: 'uppercase', letterSpacing: 0.5, padding: SPACING.md, paddingBottom: 0 },
-  card: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', ...SHADOW.md },
+  card: { 
+    backgroundColor: COLORS.surface.light, 
+    borderRadius: BORDER_RADIUS.lg, 
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   settingRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, minHeight: 60 },
   settingContent: { flex: 1 },
   settingTitle: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.medium, color: COLORS.text.primary.light, marginBottom: 2 },
@@ -1170,7 +1179,21 @@ const styles = StyleSheet.create({
   magnitudeOptionLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   magnitudeOptionLabelSelected: { color: COLORS.primary[600] },
   magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
-  savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
+  savedMessage: { 
+    position: 'absolute', 
+    bottom: SPACING.xl, 
+    left: SPACING.md, 
+    right: SPACING.md, 
+    backgroundColor: COLORS.primary[600], 
+    borderRadius: BORDER_RADIUS.lg, 
+    padding: SPACING.md, 
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
   savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   colorDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
   colorOption: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, borderWidth: 2, borderColor: COLORS.border.light, marginBottom: SPACING.sm },
