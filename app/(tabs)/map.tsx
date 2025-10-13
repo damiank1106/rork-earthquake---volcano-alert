@@ -31,6 +31,7 @@ export default function MapScreen() {
   const [showPlates, setShowPlates] = useState<boolean>(false);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(false);
+  const [forceMapUpdate, setForceMapUpdate] = useState<number>(0);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -229,6 +230,7 @@ export default function MapScreen() {
           }}
         >
           <NativeMap
+            key={`map-${forceMapUpdate}`}
             ref={mapRef}
             earthquakes={filteredEarthquakes}
             selectedMarker={selectedMarker}
@@ -334,19 +336,28 @@ export default function MapScreen() {
         </View>
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Plate boundaries</Text>
-          <TouchableOpacity testID="toggle-plates" style={[styles.toggle, showPlates && styles.toggleOn]} onPress={() => setShowPlates((v) => !v)}>
+          <TouchableOpacity testID="toggle-plates" style={[styles.toggle, showPlates && styles.toggleOn]} onPress={() => {
+            setShowPlates((v) => !v);
+            setForceMapUpdate(prev => prev + 1);
+          }}>
             <Text style={[styles.toggleText, showPlates && styles.toggleTextOn]}>{showPlates ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Active Volcanoes</Text>
-          <TouchableOpacity testID="toggle-volcanoes" style={[styles.toggle, showVolcanoes && styles.toggleOn]} onPress={() => setShowVolcanoes((v) => !v)}>
+          <TouchableOpacity testID="toggle-volcanoes" style={[styles.toggle, showVolcanoes && styles.toggleOn]} onPress={() => {
+            setShowVolcanoes((v) => !v);
+            setForceMapUpdate(prev => prev + 1);
+          }}>
             <Text style={[styles.toggleText, showVolcanoes && styles.toggleTextOn]}>{showVolcanoes ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Super Volcanoes</Text>
-          <TouchableOpacity testID="toggle-super-volcanoes" style={[styles.toggle, showSuperVolcanoes && styles.toggleOn]} onPress={() => setShowSuperVolcanoes((v) => !v)}>
+          <TouchableOpacity testID="toggle-super-volcanoes" style={[styles.toggle, showSuperVolcanoes && styles.toggleOn]} onPress={() => {
+            setShowSuperVolcanoes((v) => !v);
+            setForceMapUpdate(prev => prev + 1);
+          }}>
             <Text style={[styles.toggleText, showSuperVolcanoes && styles.toggleTextOn]}>{showSuperVolcanoes ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
