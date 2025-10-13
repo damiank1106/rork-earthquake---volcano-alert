@@ -678,6 +678,48 @@ export default function SettingsScreen() {
         </GlassView>
 
         <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>App</Text>
+          <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => openModal('About This App', APP_INFO)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>About & How to Use</Text>
+                <Text style={styles.settingSubtitle}>Learn about features and updates</Text>
+              </View>
+              <Info size={20} color={COLORS.text.secondary.light} />
+            </TouchableOpacity>
+            <View style={styles.divider} />
+            <TouchableOpacity
+              style={styles.settingRow}
+              onPress={() => router.push('/welcome')}
+              activeOpacity={0.7}
+            >
+              <View style={styles.settingContent}>
+                <Text style={styles.settingTitle}>Reload Welcome Page</Text>
+                <Text style={styles.settingSubtitle}>View the welcome screen again</Text>
+              </View>
+              <RotateCw size={20} color={COLORS.text.secondary.light} />
+            </TouchableOpacity>
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>About</Text>
+          <View style={styles.card}>
+            <SettingRow title="Data Sources" subtitle="Automatically updated from USGS, NOAA/NWS, PHIVOLCS, Smithsonian GVP, PB2002, and other trusted sources" showChevron={false} />
+            <View style={styles.divider} />
+            <SettingRow title="Version" subtitle="1.0.0" showChevron={false} />
+            <View style={styles.divider} />
+            <SettingRow title="Privacy Policy" subtitle="We collect no personal data. Location permission is used only to center the map. See full policy." onPress={() => openModal('Privacy Policy', PRIVACY_POLICY)} />
+            <View style={styles.divider} />
+            <SettingRow title="Terms of Use" subtitle="Information only. No warranty. Always follow official guidance. Data provided by listed sources." onPress={() => openModal('Terms of Use', TERMS_OF_USE)} />
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
           <Text style={styles.sectionTitle}>Legend</Text>
           <View style={styles.card}>
             <View style={styles.legendSection}>
@@ -767,48 +809,6 @@ export default function SettingsScreen() {
                 </View>
               </View>
             </View>
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>App</Text>
-          <View style={styles.card}>
-            <TouchableOpacity
-              style={styles.settingRow}
-              onPress={() => openModal('About This App', APP_INFO)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>About & How to Use</Text>
-                <Text style={styles.settingSubtitle}>Learn about features and updates</Text>
-              </View>
-              <Info size={20} color={COLORS.text.secondary.light} />
-            </TouchableOpacity>
-            <View style={styles.divider} />
-            <TouchableOpacity
-              style={styles.settingRow}
-              onPress={() => router.push('/welcome')}
-              activeOpacity={0.7}
-            >
-              <View style={styles.settingContent}>
-                <Text style={styles.settingTitle}>Reload Welcome Page</Text>
-                <Text style={styles.settingSubtitle}>View the welcome screen again</Text>
-              </View>
-              <RotateCw size={20} color={COLORS.text.secondary.light} />
-            </TouchableOpacity>
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.card}>
-            <SettingRow title="Data Sources" subtitle="Automatically updated from USGS, NOAA/NWS, PHIVOLCS, Smithsonian GVP, PB2002, and other trusted sources" showChevron={false} />
-            <View style={styles.divider} />
-            <SettingRow title="Version" subtitle="1.0.0" showChevron={false} />
-            <View style={styles.divider} />
-            <SettingRow title="Privacy Policy" subtitle="We collect no personal data. Location permission is used only to center the map. See full policy." onPress={() => openModal('Privacy Policy', PRIVACY_POLICY)} />
-            <View style={styles.divider} />
-            <SettingRow title="Terms of Use" subtitle="Information only. No warranty. Always follow official guidance. Data provided by listed sources." onPress={() => openModal('Terms of Use', TERMS_OF_USE)} />
           </View>
         </GlassView>
 

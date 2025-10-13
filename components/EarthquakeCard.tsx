@@ -34,7 +34,8 @@ export const EarthquakeCard: React.FC<EarthquakeCardProps> = ({ earthquake, onPr
 
   const hasAftershockRisk = earthquake.magnitude > 5.5;
 
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+  const isIOSWeb = Platform.OS === 'web' && typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)', borderWidth: isIOSWeb ? 1 : 0, borderColor: isIOSWeb ? 'rgba(0, 0, 0, 0.1)' : 'transparent' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const handleShowOnMap = () => {
     const magCategory = Math.floor(earthquake.magnitude);

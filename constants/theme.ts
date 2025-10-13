@@ -1,3 +1,8 @@
+import { Platform } from 'react-native';
+
+const isIOSWeb = Platform.OS === 'web' && typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+const scaleFactor = isIOSWeb ? 0.85 : 1;
+
 export const COLORS = {
   primary: {
     50: '#FFFFFF',
@@ -59,12 +64,12 @@ export const COLORS = {
 };
 
 export const SPACING = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
+  xs: Math.round(4 * scaleFactor),
+  sm: Math.round(8 * scaleFactor),
+  md: Math.round(16 * scaleFactor),
+  lg: Math.round(24 * scaleFactor),
+  xl: Math.round(32 * scaleFactor),
+  xxl: Math.round(48 * scaleFactor),
 };
 
 export const BORDER_RADIUS = {
@@ -76,13 +81,13 @@ export const BORDER_RADIUS = {
 };
 
 export const FONT_SIZE = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
+  xs: Math.round(12 * scaleFactor),
+  sm: Math.round(14 * scaleFactor),
+  md: Math.round(16 * scaleFactor),
+  lg: Math.round(18 * scaleFactor),
+  xl: Math.round(20 * scaleFactor),
+  xxl: Math.round(24 * scaleFactor),
+  xxxl: Math.round(32 * scaleFactor),
 };
 
 export const FONT_WEIGHT = {
