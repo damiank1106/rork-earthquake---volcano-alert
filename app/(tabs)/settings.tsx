@@ -1138,7 +1138,7 @@ const styles = StyleSheet.create({
   content: { padding: SPACING.md, paddingBottom: SPACING.xxl },
   title: { fontSize: FONT_SIZE.xxxl, fontWeight: '700', color: COLORS.text.primary.light, marginBottom: SPACING.lg },
   section: { marginBottom: SPACING.xl, borderRadius: 12, overflow: 'hidden' },
-  sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.secondary.light, marginBottom: SPACING.sm, textTransform: 'uppercase' as const, letterSpacing: 0.5, padding: SPACING.md, paddingBottom: 0 },
+  sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.secondary.light, marginBottom: SPACING.sm, textTransform: 'uppercase', letterSpacing: 0.5, padding: SPACING.md, paddingBottom: 0 },
   card: { 
     backgroundColor: COLORS.surface.light, 
     borderRadius: BORDER_RADIUS.lg, 
