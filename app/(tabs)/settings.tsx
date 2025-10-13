@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal } f
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
 import { router } from 'expo-router';
 
 const GlassView = View;
@@ -1143,7 +1143,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface.light, 
     borderRadius: BORDER_RADIUS.lg, 
     overflow: 'hidden',
-    ...SHADOW.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   settingRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, minHeight: 60 },
   settingContent: { flex: 1 },
@@ -1183,7 +1187,11 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg, 
     padding: SPACING.md, 
     alignItems: 'center',
-    ...SHADOW.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
   },
   savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   colorDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
