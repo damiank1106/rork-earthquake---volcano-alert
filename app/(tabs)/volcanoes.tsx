@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, ScrollView, Animated, Easing } from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
@@ -67,35 +67,10 @@ export default function VolcanoesScreen() {
     }));
   }, [currentVolcanoes]);
 
-  const spinValue = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (volcanoesQuery.isLoading && volcanoes.length === 0) {
-      const spinAnimation = Animated.loop(
-        Animated.timing(spinValue, {
-          toValue: 1,
-          duration: 1500,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
-      );
-      spinAnimation.start();
-      return () => spinAnimation.stop();
-    }
-  }, [volcanoesQuery.isLoading, volcanoes.length, spinValue]);
-
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
   if (volcanoesQuery.isLoading && volcanoes.length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.loadingContainer}>
-          <Animated.View style={[styles.loadingIcon, { transform: [{ rotate: spin }] }]} />
-          <Text style={styles.loadingText}>Loading Data</Text>
-        </View>
+      <View style={[styles.container, { paddingTop: insets.top }]}> 
+        <Text>Loading...</Text>
       </View>
     );
   }
@@ -404,7 +379,4 @@ const styles = StyleSheet.create({
   modalButtonText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
   closeModal: { alignSelf: 'center', marginTop: SPACING.sm, padding: SPACING.sm },
   closeModalText: { color: COLORS.primary[600], fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
-  loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACING.lg },
-  loadingIcon: { width: 60, height: 60, borderRadius: 30, borderWidth: 4, borderColor: COLORS.primary[600], borderTopColor: 'transparent' },
-  loadingText: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light, marginTop: SPACING.sm },
 });

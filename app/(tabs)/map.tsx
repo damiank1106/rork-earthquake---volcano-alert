@@ -28,9 +28,9 @@ export default function MapScreen() {
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [magCategory, setMagCategory] = useState<number | null | 'all'>('all');
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
-  const [showPlates, setShowPlates] = useState<boolean>(false);
-  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
-  const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(false);
+  const [showPlates, setShowPlates] = useState<boolean>(true);
+  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(true);
+  const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(true);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -222,36 +222,58 @@ export default function MapScreen() {
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(128, 128, 128, 0.7)' } } : { intensity: 80, tint: "light" as BlurTint };
 
+  const isDataLoading = isLoading && earthquakes.length === 0;
+  const shouldShowMap = earthquakes.length > 0 || !isLoading;
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <TouchableOpacity 
-        style={{ flex: 1 }} 
-        activeOpacity={1} 
-        onPress={() => {
-          if (panelOpen) {
-            togglePanel();
-          }
-        }}
-      >
-        <NativeMap
-          ref={mapRef}
-          earthquakes={filteredEarthquakes}
-          selectedMarker={selectedMarker}
-          onMarkerPress={handleMarkerPress}
-          userLocation={userLocation}
-          plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-          volcanoes={filteredVolcanoes}
-          nuclearPlants={[]}
-          showPlateBoundaries={showPlates}
-          showVolcanoes={showVolcanoes}
-          showNuclearPlants={false}
-          heatmapEnabled={preferences.heatmapEnabled}
-          clusteringEnabled={preferences.clusteringEnabled}
-          selectedVolcano={selectedVolcanoMarker}
-          onVolcanoPress={handleVolcanoPress}
-        />
-      </TouchableOpacity>
+      {shouldShowMap && (
+        <TouchableOpacity 
+          style={{ flex: 1 }} 
+          activeOpacity={1} 
+          onPress={() => {
+            if (panelOpen) {
+              togglePanel();
+            }
+          }}
+        >
+          <NativeMap
+            ref={mapRef}
+            earthquakes={filteredEarthquakes}
+            selectedMarker={selectedMarker}
+            onMarkerPress={handleMarkerPress}
+            userLocation={userLocation}
+            plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
+            volcanoes={filteredVolcanoes}
+            nuclearPlants={[]}
+            showPlateBoundaries={showPlates}
+            showVolcanoes={showVolcanoes}
+            showNuclearPlants={false}
+            heatmapEnabled={preferences.heatmapEnabled}
+            clusteringEnabled={preferences.clusteringEnabled}
+            selectedVolcano={selectedVolcanoMarker}
+            onVolcanoPress={handleVolcanoPress}
+          />
+        </TouchableOpacity>
+      )}
       
+      {isDataLoading && (
+        <View style={styles.emptyMapContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.emptyMapText}>Loading map data...</Text>
+        </View>
+      )}
+      
+      {!isDataLoading && earthquakes.length === 0 && (
+        <View style={styles.emptyMapContainer}>
+          <Text style={styles.emptyMapText}>No earthquake data available</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+            <RefreshCw size={20} color="#FFFFFF" />
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
         <View style={styles.headerContent}>
           <Text style={styles.title}>Seismic Monitor</Text>
@@ -406,6 +428,14 @@ export default function MapScreen() {
           </GlassView>
         );
       })()}
+
+      {isDataLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={COLORS.primary[600]} />
+          <Text style={styles.loadingText}>Loading earthquakes...</Text>
+          <Text style={styles.loadingPercentage}>{Math.round((earthquakes.length / 100) * 100)}%</Text>
+        </View>
+      )}
 
       {showCenterRefresh && !isRefreshing && (
         <TouchableOpacity

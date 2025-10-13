@@ -139,26 +139,22 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       const icon = L.divIcon({
         className: 'custom-earthquake-marker',
         html: `
-          <div style="position: relative; width: ${size}px; height: ${size}px;">
-            <div style="
-              position: relative;
-              width: ${size}px;
-              height: ${size}px;
-              background-color: ${color};
-              border: 2px solid white;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: white;
-              font-weight: bold;
-              font-size: ${size / 3}px;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-              cursor: pointer;
-              z-index: 1;
-            ">
-              ${eq.magnitude.toFixed(1)}
-            </div>
+          <div style="
+            width: ${size}px;
+            height: ${size}px;
+            background-color: ${color};
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: ${size / 3}px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+          ">
+            ${eq.magnitude.toFixed(1)}
           </div>
         `,
         iconSize: [size, size],
