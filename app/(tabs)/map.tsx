@@ -42,7 +42,7 @@ export default function MapScreen() {
   const mapRef = useRef<any>(null);
   const prevEarthquakeIdRef = useRef<string | undefined>(undefined);
 
-  const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
+  const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates, staleTime: 0, refetchOnMount: 'always', refetchOnReconnect: true, refetchOnWindowFocus: 'always' });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
 
   const filteredVolcanoes = useMemo(() => {
