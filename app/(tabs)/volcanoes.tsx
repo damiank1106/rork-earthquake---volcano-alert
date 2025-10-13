@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, SectionList, TouchableOpacity, Modal, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
@@ -69,8 +69,9 @@ export default function VolcanoesScreen() {
 
   if (volcanoesQuery.isLoading && volcanoes.length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}> 
-        <Text>Loading...</Text>
+      <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}> 
+        <ActivityIndicator size="large" color={COLORS.primary[600]} />
+        <Text style={styles.loadingText}>Loading. Please wait…</Text>
       </View>
     );
   }
@@ -379,4 +380,5 @@ const styles = StyleSheet.create({
   modalButtonText: { color: '#fff', fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
   closeModal: { alignSelf: 'center', marginTop: SPACING.sm, padding: SPACING.sm },
   closeModalText: { color: COLORS.primary[600], fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold },
+  loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium },
 });
