@@ -94,7 +94,7 @@ export default function WelcomeScreen() {
     }
   };
 
-  const source: ImageURISource = RING_OF_FIRE_URI && RING_OF_FIRE_URI.trim() !== '' ? { uri: RING_OF_FIRE_URI } : require('@/assets/images/icon.png');
+  const source: ImageURISource = { uri: RING_OF_FIRE_URI };
 
   return (
     <Animated.View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom, opacity: screenFadeIn }]} testID="welcome-screen">
@@ -201,18 +201,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.6,
     marginBottom: 8,
-    textShadowColor: '#FFFFFF',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 3,
   },
   subtitle: {
     fontSize: FONT_SIZE.md,
     color: '#000000',
     textAlign: 'center',
     marginBottom: SPACING.xxl,
-    textShadowColor: '#FFFFFF',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 2,
   },
   button: {
     backgroundColor: '#E8F0F7',

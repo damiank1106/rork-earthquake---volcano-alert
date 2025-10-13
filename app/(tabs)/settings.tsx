@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView, BlurTint } from 'expo-blur';
 import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
-import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '@/constants/theme';
+import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 import { router } from 'expo-router';
 
-const GlassView = View;
+const GlassView = Platform.OS === 'web' ? View : BlurView;
 
 const PRIVACY_POLICY = `
 Privacy Policy for Seismic Monitor
@@ -447,8 +448,7 @@ export default function SettingsScreen() {
   const [tempMagnitude, setTempMagnitude] = useState<string>(String(preferences.notificationMinMagnitude || 5.0));
   const [showSavedMessage, setShowSavedMessage] = useState<boolean>(false);
 
-
-  const glassProps = { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } };
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const SettingRow = ({
     title,
@@ -538,8 +538,6 @@ export default function SettingsScreen() {
     { value: 8.0, label: '8.0+ (Great)', description: 'Can cause serious damage in several hundred km' },
   ];
 
-
-
   const handleCountrySave = () => {
     updatePreferences({ notificationCountry: tempCountry || undefined });
     setCountryModalVisible(false);
@@ -593,7 +591,6 @@ export default function SettingsScreen() {
                 })
               }
             />
-
           </View>
         </GlassView>
 
@@ -958,8 +955,6 @@ export default function SettingsScreen() {
           </View>
         </View>
       </Modal>
-
-
     </View>
   );
 }
@@ -968,22 +963,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
   scroll: { flex: 1 },
   content: { padding: SPACING.md, paddingBottom: SPACING.xxl },
-  title: { fontSize: FONT_SIZE.xxxl, fontWeight: '700', color: COLORS.text.primary.light, marginBottom: SPACING.lg },
+  title: { fontSize: FONT_SIZE.xxxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.lg },
   section: { marginBottom: SPACING.xl, borderRadius: 12, overflow: 'hidden' },
-  sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.secondary.light, textTransform: 'uppercase', letterSpacing: 0.5, alignSelf: 'flex-start', backgroundColor: COLORS.surface.dark, paddingHorizontal: SPACING.md, paddingVertical: 6, borderRadius: 999, marginBottom: SPACING.sm },
-  card: { 
-    backgroundColor: COLORS.surface.light, 
-    borderRadius: BORDER_RADIUS.lg, 
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+  sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.secondary.light, marginBottom: SPACING.sm, textTransform: 'uppercase', letterSpacing: 0.5, padding: SPACING.md, paddingBottom: 0 },
+  card: { backgroundColor: COLORS.surface.light, borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', ...SHADOW.md },
   settingRow: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, minHeight: 60 },
   settingContent: { flex: 1 },
-  settingTitle: { fontSize: FONT_SIZE.md, fontWeight: '500', color: COLORS.text.primary.light, marginBottom: 2 },
+  settingTitle: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.medium, color: COLORS.text.primary.light, marginBottom: 2 },
   settingSubtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   settingValue: { fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light, marginRight: SPACING.sm },
   divider: { height: 1, backgroundColor: COLORS.border.light, marginLeft: SPACING.md },
@@ -991,54 +977,34 @@ const styles = StyleSheet.create({
   disclaimerText: { flex: 1, fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, lineHeight: 20 },
   modalContainer: { flex: 1, backgroundColor: COLORS.background.light },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border.light },
-  modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text.primary.light },
+  modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light },
   closeText: { fontSize: FONT_SIZE.md, color: COLORS.primary[600] },
   modalScroll: { flex: 1 },
   modalScrollContent: { padding: SPACING.md, paddingBottom: SPACING.xxl },
   modalText: { fontSize: FONT_SIZE.sm, color: COLORS.text.primary.light, lineHeight: 22 },
   modalFooter: { padding: SPACING.md, borderTopWidth: 1, borderTopColor: COLORS.border.light },
   saveButton: { backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center' },
-  saveButtonText: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.primary.light },
+  saveButtonText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   countryOption: { padding: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border.light },
   countryOptionSelected: { backgroundColor: COLORS.primary[100] },
   countryOptionText: { fontSize: FONT_SIZE.md, color: COLORS.text.primary.light },
-  countryOptionTextSelected: { fontWeight: '600', color: COLORS.primary[600] },
+  countryOptionTextSelected: { fontWeight: FONT_WEIGHT.semibold, color: COLORS.primary[600] },
   magnitudeDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
   magnitudeOption: { padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, borderWidth: 2, borderColor: COLORS.border.light, marginBottom: SPACING.sm },
   magnitudeOptionSelected: { borderColor: COLORS.primary[600], backgroundColor: COLORS.primary[50] },
   magnitudeOptionContent: { gap: 4 },
-  magnitudeOptionLabel: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.primary.light },
+  magnitudeOptionLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   magnitudeOptionLabelSelected: { color: COLORS.primary[600] },
   magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
-  savedMessage: { 
-    position: 'absolute', 
-    bottom: SPACING.xl, 
-    left: SPACING.md, 
-    right: SPACING.md, 
-    backgroundColor: COLORS.primary[600], 
-    borderRadius: BORDER_RADIUS.lg, 
-    padding: SPACING.md, 
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.primary.light },
-  colorDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
-  colorOption: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, borderWidth: 2, borderColor: COLORS.border.light, marginBottom: SPACING.sm },
-  colorOptionSelected: { borderColor: COLORS.primary[600], backgroundColor: COLORS.primary[50] },
-  colorSwatch: { width: 32, height: 32, borderRadius: 16, marginRight: SPACING.md },
-  colorOptionText: { fontSize: FONT_SIZE.md, color: COLORS.text.primary.light },
-  colorOptionTextSelected: { fontWeight: '600', color: COLORS.primary[600] },
+  savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
+  savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   legendSection: { padding: SPACING.md },
-  legendTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text.primary.light, marginBottom: SPACING.md },
+  legendTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.md },
   legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md, gap: SPACING.md },
   legendIcon: { width: 24, height: 24, borderRadius: 12 },
   legendLine: { width: 40, height: 3, borderRadius: 2 },
   legendTextContainer: { flex: 1 },
-  legendLabel: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text.primary.light },
+  legendLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
   legendDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
   legendDivider: { height: 1, backgroundColor: COLORS.border.light, marginVertical: SPACING.sm },
 });

@@ -92,9 +92,6 @@ export interface UserPreferences {
   volcanoNotificationsEnabled?: boolean;
   volcanoNotificationCountry?: string;
   lastUpdated?: number;
-  customIconColor?: string;
-  customGlowColor?: string;
-  customPlateBoundaryColor?: string;
 }
 
 export interface EarthquakeFilter {

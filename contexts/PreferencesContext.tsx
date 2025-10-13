@@ -17,32 +17,26 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   notificationMinMagnitude: 5.0,
   volcanoNotificationsEnabled: false,
   volcanoNotificationCountry: undefined,
-  customIconColor: '#000000',
-  customGlowColor: '#60a5fa',
-  customPlateBoundaryColor: '#ef4444',
 };
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    let mounted = true;
-    loadPreferences(mounted);
-    return () => { mounted = false; };
+    loadPreferences();
   }, []);
 
-  const loadPreferences = async (mounted: boolean) => {
+  const loadPreferences = async () => {
     try {
       const saved = await getUserPreferences();
-      if (saved && mounted) {
+      if (saved) {
         setPreferences(saved);
-      } else if (mounted) {
-        setPreferences(DEFAULT_PREFERENCES);
       }
     } catch (error) {
-      if (mounted) {
-        setPreferences(DEFAULT_PREFERENCES);
-      }
+      console.error('Failed to load preferences:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +56,8 @@ export const [PreferencesProvider, usePreferences] = createContextHook(() => {
     () => ({
       preferences,
       updatePreferences,
+      isLoading,
     }),
-    [preferences, updatePreferences]
+    [preferences, updatePreferences, isLoading]
   );
 });

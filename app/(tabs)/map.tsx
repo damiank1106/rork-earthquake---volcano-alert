@@ -253,7 +253,6 @@ export default function MapScreen() {
             clusteringEnabled={preferences.clusteringEnabled}
             selectedVolcano={selectedVolcanoMarker}
             onVolcanoPress={handleVolcanoPress}
-            plateBoundaryColor={'#ef4444'}
           />
         </TouchableOpacity>
       )}
@@ -275,7 +274,7 @@ export default function MapScreen() {
         </View>
       )}
 
-      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]} >
+      <GlassView {...glassProps} style={[styles.header, { top: insets.top + 10 }]}>
         <View style={styles.headerContent}>
           <Text style={styles.title}>Seismic Monitor</Text>
           <Text style={styles.subtitle}>
@@ -283,19 +282,19 @@ export default function MapScreen() {
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity testID="btn-filters" style={[styles.refreshButton, panelOpen && { shadowColor: '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]} onPress={togglePanel}>
-            <SlidersHorizontal size={20} color={'#000000'} />
+          <TouchableOpacity testID="btn-filters" style={[styles.refreshButton, panelOpen && styles.activeButton]} onPress={togglePanel}>
+            <SlidersHorizontal size={20} color="#000000" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.refreshButton, isRefreshing && { shadowColor: '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }]}
+            style={[styles.refreshButton, isRefreshing && styles.activeButton]}
             onPress={handleRefresh}
             disabled={isRefreshing}
             testID="btn-refresh"
           >
             {isRefreshing ? (
-              <ActivityIndicator size="small" color={'#000000'} />
+              <ActivityIndicator size="small" color="#000000" />
             ) : (
-              <RefreshCw size={20} color={'#000000'} />
+              <RefreshCw size={20} color="#000000" />
             )}
           </TouchableOpacity>
         </View>
@@ -463,11 +462,12 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
-  header: { position: 'absolute', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 1100, left: SPACING.md, right: SPACING.md, alignSelf: 'center' } : { left: SPACING.md, right: SPACING.md }) },
+  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 600, alignSelf: 'center', width: '100%' } : {}) },
   headerContent: { flex: 1 },
   title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },
   refreshButton: { padding: SPACING.sm },
+  activeButton: { shadowColor: '#60a5fa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 },
   panel: { position: 'absolute', right: 0, width: 260, backgroundColor: COLORS.surface.light, padding: SPACING.md, borderTopLeftRadius: 16, borderBottomLeftRadius: 16, ...{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4 }, zIndex: 12 },
   panelTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
   panelLabel: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: 6 },

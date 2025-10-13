@@ -2,18 +2,14 @@ import { Tabs } from 'expo-router';
 import { Map, List, BookOpen, Settings, Waves, Flame } from 'lucide-react-native';
 import React from 'react';
 import { COLORS } from '@/constants/theme';
-import { View } from 'react-native';
-
+import { View, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
-  const iconColor = '#000000';
-  const glowColor = '#60a5fa';
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: iconColor,
-        tabBarInactiveTintColor: iconColor,
+        tabBarActiveTintColor: '#000000',
+        tabBarInactiveTintColor: '#000000',
         headerShown: false,
         animation: 'fade',
         tabBarStyle: {
@@ -27,8 +23,8 @@ export default function TabLayout() {
         options={{
           title: 'Map',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <Map color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <Map color="#000000" size={size} />
             </View>
           ),
         }}
@@ -38,8 +34,8 @@ export default function TabLayout() {
         options={{
           title: 'Events',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <List color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <List color="#000000" size={size} />
             </View>
           ),
         }}
@@ -49,8 +45,8 @@ export default function TabLayout() {
         options={{
           title: 'Tsunami',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <Waves color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <Waves color="#000000" size={size} />
             </View>
           ),
         }}
@@ -60,8 +56,8 @@ export default function TabLayout() {
         options={{
           title: 'Volcanoes',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <Flame color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <Flame color="#000000" size={size} />
             </View>
           ),
         }}
@@ -71,8 +67,8 @@ export default function TabLayout() {
         options={{
           title: 'Learn',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <BookOpen color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <BookOpen color="#000000" size={size} />
             </View>
           ),
         }}
@@ -82,8 +78,8 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={focused && { shadowColor: glowColor, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 6, elevation: 8 }}>
-              <Settings color={iconColor} size={size} />
+            <View style={focused && styles.activeIcon}>
+              <Settings color="#000000" size={size} />
             </View>
           ),
         }}
@@ -92,3 +88,12 @@ export default function TabLayout() {
   );
 }
 
+const styles = StyleSheet.create({
+  activeIcon: {
+    shadowColor: '#60a5fa',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+});

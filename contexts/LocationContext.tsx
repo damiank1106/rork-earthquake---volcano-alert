@@ -12,7 +12,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   } | null>(null);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
-  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(true);
 
   const requestLocationPermission = useCallback(async () => {
     try {
@@ -37,15 +37,8 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      if (mounted) {
-        requestLocationPermission();
-        loadSavedPlaces();
-      }
-    };
-    init();
-    return () => { mounted = false; };
+    requestLocationPermission();
+    loadSavedPlaces();
   }, [requestLocationPermission]);
 
   const loadSavedPlaces = async () => {
@@ -53,7 +46,7 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
       const places = await getSavedPlaces();
       setSavedPlaces(places);
     } catch (error) {
-      setSavedPlaces([]);
+      console.error('Failed to load saved places:', error);
     }
   };
 
