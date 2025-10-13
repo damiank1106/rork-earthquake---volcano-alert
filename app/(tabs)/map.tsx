@@ -220,7 +220,7 @@ export default function MapScreen() {
     return earthquake.magnitude > 5.5;
   };
 
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
+  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(128, 128, 128, 0.7)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
   const shouldShowMap = earthquakes.length > 0 || !isLoading;
@@ -462,10 +462,10 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
-  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10 },
+  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)' } : {}) },
   headerContent: { flex: 1 },
-  title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: '#000000' },
-  subtitle: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 2 },
+  title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
+  subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },
   refreshButton: { padding: SPACING.sm },
   panel: { position: 'absolute', right: 0, width: 260, backgroundColor: COLORS.surface.light, padding: SPACING.md, borderTopLeftRadius: 16, borderBottomLeftRadius: 16, ...{ shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4 }, zIndex: 12 },
   panelTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.sm },
@@ -481,24 +481,24 @@ const styles = StyleSheet.create({
   toggleOn: { backgroundColor: COLORS.primary[500] },
   toggleText: { color: COLORS.text.secondary.light, fontSize: FONT_SIZE.sm },
   toggleTextOn: { color: '#fff' },
-  infoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 10 },
+  infoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)' } : {}) },
   infoHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: SPACING.sm },
   infoBadge: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   infoBadgeText: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#FFFFFF' },
   infoContent: { flex: 1 },
-  infoPlace: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: '#000000' },
-  infoTime: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 2 },
+  infoPlace: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
+  infoTime: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },
   closeButton: { padding: SPACING.xs },
-  closeButtonText: { fontSize: FONT_SIZE.xl, color: '#000000' },
+  closeButtonText: { fontSize: FONT_SIZE.xl, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   infoDetails: { marginTop: SPACING.sm, gap: SPACING.xs },
-  infoDetailText: { fontSize: FONT_SIZE.sm, color: '#000000' },
+  infoDetailText: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   tsunamiText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.red },
   warningRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
   aftershockText: { fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.alert.orange },
-  volcanoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 11 },
+  volcanoCard: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, borderRadius: 16, overflow: 'hidden', padding: SPACING.md, zIndex: 11, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)' } : {}) },
   volcanoHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.xs },
-  volcanoTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: '#000000' },
-  volcanoDetail: { fontSize: FONT_SIZE.sm, color: '#000000', marginTop: 4 },
+  volcanoTitle: { flex: 1, fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
+  volcanoDetail: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 4 },
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', alignItems: 'center', justifyContent: 'center', zIndex: 20 },
   loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.md, color: COLORS.text.secondary.light },
   loadingPercentage: { marginTop: SPACING.sm, fontSize: FONT_SIZE.xxl, fontWeight: FONT_WEIGHT.bold, color: COLORS.primary[600] },

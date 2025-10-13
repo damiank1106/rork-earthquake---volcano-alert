@@ -118,6 +118,20 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
+    if (showPlateBoundaries && plateBoundaries.length > 0) {
+      plateBoundaries.forEach((boundary) => {
+        if (Array.isArray(boundary.coordinates) && boundary.coordinates.length > 0) {
+          const coords = boundary.coordinates.map((c: any) => [c[1], c[0]]);
+          const polyline = L.polyline(coords, {
+            color: '#DC2626',
+            weight: 2,
+            opacity: 0.8,
+          }).addTo(mapInstanceRef.current);
+          markersRef.current.push(polyline);
+        }
+      });
+    }
+
     earthquakes.forEach((eq) => {
       const color = getMagnitudeColor(eq.magnitude);
       const size = Math.max(10, Math.min(eq.magnitude * 4, 30));
@@ -194,7 +208,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
         markersRef.current.push(marker);
       });
     }
-  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress]);
+  }, [isMapReady, earthquakes, showVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries]);
 
   useEffect(() => {
     if (!isMapReady || !mapInstanceRef.current || !selectedMarker) return;

@@ -51,6 +51,28 @@ export default function EducationScreen() {
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Volcano Safety Guidelines</Text>
+        <Text style={styles.sectionDescription}>
+          How to prepare for and respond to volcanic eruptions and ashfall
+        </Text>
+        {SAFETY_GUIDES.filter((guide) => guide.eventType === 'volcano').map((guide) => (
+          <View key={guide.id} style={styles.guideCard}>
+            <Text style={styles.guideTitle}>{guide.title}</Text>
+            <Text style={styles.guideCategory}>
+              {guide.category === 'before' ? '📋 Before' : guide.category === 'during' ? '⚠️ During' : '✅ After'}
+            </Text>
+            {guide.steps.map((step, index) => (
+              <View key={index} style={styles.stepContainer}>
+                <Text style={styles.stepNumber}>{index + 1}.</Text>
+                <Text style={styles.stepText}>{step}</Text>
+              </View>
+            ))}
+            <Text style={styles.sources}>Sources: {guide.sources.join(', ')}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Tsunami Safety Guidelines</Text>
         <Text style={styles.sectionDescription}>
           How to recognize tsunami warning signs and what actions to take
