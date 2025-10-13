@@ -12,7 +12,7 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, router } from 'expo-router';
 import NativeMap from '@/components/NativeMap';
-import MapLegendModal from '@/components/MapLegendModal';
+
 
 const GlassView = Platform.OS === 'web' ? View : BlurView;
 
@@ -32,8 +32,7 @@ export default function MapScreen() {
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(true);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
-  const [showLegendModal, setShowLegendModal] = useState<boolean>(false);
-  const [hasShownLegend, setHasShownLegend] = useState<boolean>(false);
+
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
@@ -73,15 +72,7 @@ export default function MapScreen() {
     }
   }, [earthquakeId]);
 
-  useEffect(() => {
-    if (!hasShownLegend && earthquakes.length > 0 && preferences.showMapLegend !== false) {
-      const timer = setTimeout(() => {
-        setShowLegendModal(true);
-        setHasShownLegend(true);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [hasShownLegend, earthquakes.length, preferences.showMapLegend]);
+
 
   useEffect(() => {
     if (earthquakeId) {
@@ -444,10 +435,7 @@ export default function MapScreen() {
         </View>
       )}
 
-      <MapLegendModal
-        visible={showLegendModal}
-        onClose={() => setShowLegendModal(false)}
-      />
+
     </View>
   );
 }

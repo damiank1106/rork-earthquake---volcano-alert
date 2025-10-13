@@ -91,7 +91,6 @@ export interface UserPreferences {
   notificationMinMagnitude?: number;
   volcanoNotificationsEnabled?: boolean;
   volcanoNotificationCountry?: string;
-  showMapLegend?: boolean;
   lastUpdated?: number;
 }
 

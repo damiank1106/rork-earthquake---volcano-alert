@@ -17,7 +17,6 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   notificationMinMagnitude: 5.0,
   volcanoNotificationsEnabled: true,
   volcanoNotificationCountry: undefined,
-  showMapLegend: true,
 };
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {

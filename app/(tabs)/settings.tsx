@@ -508,13 +508,6 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Map</Text>
           <View style={styles.card}>
             <SettingToggle
-              title="Show Legend on Start"
-              subtitle="Display map legend popup when opening Home Page"
-              value={preferences.showMapLegend !== false}
-              onValueChange={(value) => updatePreferences({ showMapLegend: value })}
-            />
-            <View style={styles.divider} />
-            <SettingToggle
               title="Clustering"
               subtitle="Group nearby events on map"
               value={preferences.clusteringEnabled}
@@ -527,6 +520,99 @@ export default function SettingsScreen() {
               value={preferences.heatmapEnabled}
               onValueChange={(value) => updatePreferences({ heatmapEnabled: value })}
             />
+          </View>
+        </GlassView>
+
+        <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>Legend</Text>
+          <View style={styles.card}>
+            <View style={styles.legendSection}>
+              <Text style={styles.legendTitle}>Map Icons & Features</Text>
+              
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#22c55e' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 0-3</Text>
+                  <Text style={styles.legendDescription}>Minor earthquakes, rarely felt</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#84cc16' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 3-4</Text>
+                  <Text style={styles.legendDescription}>Often felt, minimal damage</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#eab308' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 4-5</Text>
+                  <Text style={styles.legendDescription}>Noticeable shaking, light damage</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#f97316' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 5-6</Text>
+                  <Text style={styles.legendDescription}>Moderate damage to buildings</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#ef4444' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 6-7</Text>
+                  <Text style={styles.legendDescription}>Strong, destructive in populated areas</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#dc2626' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Magnitude 7+</Text>
+                  <Text style={styles.legendDescription}>Major to great, serious damage</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendDivider} />
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#ef4444' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Red Icons</Text>
+                  <Text style={styles.legendDescription}>Active volcanoes (currently erupting)</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#000000' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Black Icons</Text>
+                  <Text style={styles.legendDescription}>Super volcanoes (major calderas)</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendIcon, { backgroundColor: '#3b82f6' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Blue Icon</Text>
+                  <Text style={styles.legendDescription}>Your current location</Text>
+                </View>
+              </View>
+
+              <View style={styles.legendDivider} />
+
+              <View style={styles.legendItem}>
+                <View style={[styles.legendLine, { backgroundColor: '#ef4444' }]} />
+                <View style={styles.legendTextContainer}>
+                  <Text style={styles.legendLabel}>Red Lines</Text>
+                  <Text style={styles.legendDescription}>Tectonic plate boundaries</Text>
+                </View>
+              </View>
+            </View>
           </View>
         </GlassView>
 
@@ -758,4 +844,13 @@ const styles = StyleSheet.create({
   magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
   savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
   savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
+  legendSection: { padding: SPACING.md },
+  legendTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.md },
+  legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md, gap: SPACING.md },
+  legendIcon: { width: 24, height: 24, borderRadius: 12 },
+  legendLine: { width: 40, height: 3, borderRadius: 2 },
+  legendTextContainer: { flex: 1 },
+  legendLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
+  legendDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginTop: 2 },
+  legendDivider: { height: 1, backgroundColor: COLORS.border.light, marginVertical: SPACING.sm },
 });
