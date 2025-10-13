@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
 import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '@/constants/theme';
 import { router } from 'expo-router';
 
-const GlassView = Platform.OS === 'web' ? View : BlurView;
+const GlassView = View;
 
 const PRIVACY_POLICY = `
 Privacy Policy for Seismic Monitor
@@ -451,7 +450,7 @@ export default function SettingsScreen() {
   const [glowColorModalVisible, setGlowColorModalVisible] = useState<boolean>(false);
   const [plateBoundaryColorModalVisible, setPlateBoundaryColorModalVisible] = useState<boolean>(false);
 
-  const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as const };
+  const glassProps = { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } };
 
   const SettingRow = ({
     title,
