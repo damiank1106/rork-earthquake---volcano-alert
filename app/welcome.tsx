@@ -94,7 +94,7 @@ export default function WelcomeScreen() {
     }
   };
 
-  const source: ImageURISource = { uri: RING_OF_FIRE_URI };
+  const source: ImageURISource = RING_OF_FIRE_URI && RING_OF_FIRE_URI.trim() !== '' ? { uri: RING_OF_FIRE_URI } : require('@/assets/images/icon.png');
 
   return (
     <Animated.View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom, opacity: screenFadeIn }]} testID="welcome-screen">
