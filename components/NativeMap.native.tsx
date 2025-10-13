@@ -28,7 +28,6 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
   const [pulsingMarkerId, setPulsingMarkerId] = React.useState<string | null>(null);
-  const pulseAnimsRef = useRef<Map<string, Animated.Value>>(new Map());
 
   useImperativeHandle(ref, () => ({
     animateToRegion: (region: any, duration?: number) => {
@@ -62,31 +61,6 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
       return () => animation.stop();
     }
   }, [pulsingMarkerId, pulseAnim]);
-
-  useEffect(() => {
-    const animations: Animated.CompositeAnimation[] = [];
-    
-    earthquakes.forEach((eq) => {
-      if (!pulseAnimsRef.current.has(eq.id)) {
-        pulseAnimsRef.current.set(eq.id, new Animated.Value(1));
-      }
-      const anim = pulseAnimsRef.current.get(eq.id)!;
-      anim.setValue(1);
-      
-      const animation = Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, { toValue: 1.5, duration: 1000, useNativeDriver: true }),
-          Animated.timing(anim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-        ])
-      );
-      animations.push(animation);
-      animation.start();
-    });
-
-    return () => {
-      animations.forEach(anim => anim.stop());
-    };
-  }, [earthquakes]);
 
   const pulseAnimationRef = useRef<any>(null);
 
@@ -225,12 +199,11 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
         const color = getMagnitudeColor(eq.magnitude);
         const size = Math.max(20, Math.min(eq.magnitude * 8, 60));
         const isPulsing = pulsingMarkerId === eq.id;
-        const markerPulseAnim = pulseAnimsRef.current.get(eq.id) || new Animated.Value(1);
         
         return (
           <Marker key={eq.id} coordinate={{ latitude: eq.latitude, longitude: eq.longitude }} onPress={() => onMarkerPress(eq)} tracksViewChanges={false}>
             <View style={styles.markerContainer}>
-              <Animated.View style={[styles.pulse, { width: size * 2, height: size * 2, borderRadius: size, backgroundColor: color + '30', transform: [{ scale: isPulsing ? pulseAnim : markerPulseAnim }] }]} />
+              <Animated.View style={[styles.pulse, { width: size * 2, height: size * 2, borderRadius: size, backgroundColor: color + '30', transform: [{ scale: isPulsing ? pulseAnim : 1 }] }]} />
               <View style={[styles.marker, { width: size, height: size, borderRadius: size / 2, backgroundColor: color }]}>
                 <Text style={[styles.markerText, { fontSize: size / 3 }]}>{eq.magnitude.toFixed(1)}</Text>
               </View>

@@ -62,9 +62,8 @@ export default function TsunamiScreen() {
 
   if (alertsQuery.isLoading && alerts.length === 0) {
     return (
-      <View style={[styles.container, styles.loadingContainer, { paddingTop: insets.top }]}> 
+      <View style={[styles.container, { paddingTop: insets.top }]}> 
         <ActivityIndicator size="large" color={COLORS.primary[600]} />
-        <Text style={styles.loadingText}>Loading. Please wait</Text>
       </View>
     );
   }
@@ -188,8 +187,6 @@ const styles = StyleSheet.create({
   cardSubtitle: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   rowText: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
-  loadingContainer: { justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: SPACING.md, fontSize: FONT_SIZE.lg, color: COLORS.text.secondary.light, fontWeight: FONT_WEIGHT.medium },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { margin: SPACING.md, padding: SPACING.lg, borderRadius: BORDER_RADIUS.lg, maxWidth: 500, width: '90%', ...SHADOW.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: FONT_WEIGHT.bold, color: '#000000', marginBottom: SPACING.md },

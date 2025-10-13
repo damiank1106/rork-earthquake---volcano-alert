@@ -28,9 +28,9 @@ export default function MapScreen() {
   const [panelOpen, setPanelOpen] = useState<boolean>(false);
   const [magCategory, setMagCategory] = useState<number | null | 'all'>('all');
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
-  const [showPlates, setShowPlates] = useState<boolean>(false);
-  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
-  const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(false);
+  const [showPlates, setShowPlates] = useState<boolean>(true);
+  const [showVolcanoes, setShowVolcanoes] = useState<boolean>(true);
+  const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(true);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
