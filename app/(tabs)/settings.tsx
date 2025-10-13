@@ -147,24 +147,30 @@ WHAT THIS APP OFFERS
 🌍 Real-Time Earthquake Monitoring
 • Live earthquake data from USGS
 • Interactive map with customizable filters
-• Magnitude-based color coding
+• Magnitude-based color coding (0-10 scale)
 • Distance calculations from your location
 • Detailed event information and impact radius
 • Click on earthquake markers to see details in glass containers
 • Zoom and pulse animations for selected events
+• Filter by magnitude categories (All, 0-10)
+• Toggle earthquake display on/off
 
 🌋 Active Volcano Tracking
 • Global volcano database from Smithsonian GVP
 • 44+ currently erupting volcanoes worldwide
-• Real-time volcano locations on map
+• Real-time volcano locations on map with red markers
 • Eruption history and activity status
-• Toggle volcano markers on/off
+• Toggle active volcano markers on/off independently
 • Click on volcano markers to zoom, pulse, and view details
 • Separate tabs for Active Volcanoes and Super Volcanoes
 • Filter volcanoes by category in map view
+• Live volcano eruption warnings with auto-refresh
+• "Show on Map" feature for each volcano
 
 🌋 Super Volcanoes
 • Comprehensive database of 11 major supervolcanoes
+• Black markers distinguish from active volcanoes (red)
+• Independent toggle control in map filters
 • Detailed information about each supervolcano:
   - Yellowstone (USA)
   - Taupō (New Zealand)
@@ -179,8 +185,19 @@ WHAT THIS APP OFFERS
   - Apolaki Caldera (Philippine Sea)
 • Caldera size, last major eruption dates
 • Educational descriptions and fun facts
-• Black markers distinguish from active volcanoes
 • Interactive map integration with zoom and pulse effects
+• Scrollable detailed view for each supervolcano
+
+⚠️ Volcano Warnings System
+• Live volcano eruption warnings from multiple sources
+• Alert levels: Warning, Watch, Advisory, Normal
+• Color-coded by severity (Red, Orange, Blue)
+• Auto-refresh every 5 minutes
+• Timer display showing next update
+• Activity type and detailed descriptions
+• Source attribution and last update time
+• "Show on Map" button for each warning
+• Sorted by alert priority (warnings first)
 
 🌊 Tsunami Alerts & Safety
 • Live tsunami warnings from NOAA/NWS and PHIVOLCS
@@ -192,6 +209,7 @@ WHAT THIS APP OFFERS
   - What to do before, during, and after
   - Evacuation procedures
   - Emergency preparedness tips
+• Timer showing when data updates
 
 📚 Educational Resources
 • Comprehensive magnitude scale guide
@@ -200,29 +218,39 @@ WHAT THIS APP OFFERS
 • Emergency contact information
 • Tsunami recognition and response guidelines
 • Volcano and supervolcano educational content
+• Interactive learning materials
 
 🔔 Smart Notifications
-• Customizable earthquake alerts
-• Filter by country and magnitude
+• Separate notification controls for Earthquakes and Volcanoes
+• Customizable earthquake alerts by country and magnitude
+• Customizable volcano alerts by country
+• Filter by country (100+ countries supported)
+• Magnitude thresholds (3.0+ to 8.0+)
 • Stay informed about significant events
 • Works on iOS and Android devices
 • Background notification support
+• Push notifications for critical events
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 HOW TO USE THE APP
 
-📍 Map Tab
+📍 Map Tab (Home)
 • View earthquakes and volcanoes on interactive map
 • Tap earthquake markers to see detailed information in glass containers
 • Tap volcano markers to zoom in, pulse, and view details
-• Use Menu button to filter by magnitude
-• Toggle earthquakes/volcanoes/heatmap
-• Filter volcanoes by Active or Super categories
+• Use Filters button (slider icon) to access filter panel
+• Filter by magnitude: Off, All, or specific ranges (0-10)
+• Toggle Plate Boundaries (red lines) on/off
+• Toggle Active Volcanoes (red markers) on/off independently
+• Toggle Super Volcanoes (black markers) on/off independently
+• All filters default to ON when app starts
 • Pinch to zoom, drag to explore
 • Click "Show on Map" from Events/Volcanoes to locate specific items
 • Selected items pulse and zoom for easy identification
 • Blue marker shows your current location
+• Tap map to close filter panel
+• Glass container UI with crisp black text
 
 📋 Events Tab
 • Browse recent earthquakes in list format
@@ -238,21 +266,33 @@ HOW TO USE THE APP
   - Explore active volcanoes worldwide
   - View eruption history and status
   - See last eruption dates and activity summaries
-  - Red markers on map
+  - Red markers on map (independent toggle in filters)
   - Click "Show on Map" to locate with zoom and pulse
+  - Automatically enables Active Volcanoes filter on map
+  - Grouped by country for easy navigation
+  - Red left border on cards
 • Super Volcanoes (11 major calderas):
   - Learn about Earth's largest volcanic systems
   - Read detailed descriptions and fun facts
   - View caldera sizes and eruption history
-  - Black markers on map
+  - Black markers on map (independent toggle in filters)
   - Scrollable list with full descriptions
+  - Click "Show on Map" to locate with zoom and pulse
+  - Automatically enables Super Volcanoes filter on map
+  - Black left border on cards
+  - Comprehensive educational content
 • Warnings Tab:
-  - Live volcano eruption warnings
-  - Sorted by alert level (warning, watch, advisory)
-  - Auto-refresh every 5 minutes
-  - Click "Show on Map" to locate volcano
-• Toggle volcano markers on map
+  - Live volcano eruption warnings from global sources
+  - Sorted by alert level (warning, watch, advisory, normal)
+  - Color-coded badges (Red=Warning, Orange=Watch, Blue=Advisory)
+  - Auto-refresh every 5 minutes with countdown timer
+  - Activity type and detailed descriptions
+  - Source attribution and last update timestamp
+  - Click "Show on Map" to locate volcano with coordinates
+  - Border color matches alert severity
+• Toggle volcano markers on map independently
 • Pulsing animation shows selected volcano
+• Modal view with scrollable details
 
 🌊 Tsunami Tab
 • Check active tsunami warnings
@@ -274,10 +314,27 @@ HOW TO USE THE APP
 ⚙️ Settings Tab
 • Customize display units (metric/imperial)
 • Set time format (12h/24h)
-• Configure notifications by country and magnitude
-• Toggle map features (clustering, heatmap)
+• Configure earthquake notifications:
+  - Enable/disable earthquake alerts
+  - Filter by country (100+ countries)
+  - Set minimum magnitude (3.0+ to 8.0+)
+• Configure volcano notifications:
+  - Enable/disable volcano alerts
+  - Filter by country (100+ countries)
+  - Separate control from earthquake notifications
+• Toggle map features:
+  - Clustering (group nearby events)
+  - Heatmap (intensity visualization)
+• Legend section:
+  - Magnitude color scale (green to red)
+  - Active volcano markers (red)
+  - Super volcano markers (black)
+  - Your location marker (blue)
+  - Plate boundaries (red lines)
 • View privacy policy and terms
 • Access this comprehensive guide
+• Reload welcome page
+• Data source information
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -285,22 +342,36 @@ RECENT UPDATES
 
 Version 1.0.0 (October 2025)
 ✨ Initial release
-• Real-time earthquake monitoring
-• Interactive map with filters
-• Volcano tracking system (Active + Super)
-• 44+ currently erupting volcanoes
-• 11 supervolcanoes with detailed information
-• Tsunami alert integration
+• Real-time earthquake monitoring with USGS data
+• Interactive map with advanced filters:
+  - Magnitude categories (Off, All, 0-10)
+  - Plate boundaries toggle
+  - Active volcanoes toggle (independent)
+  - Super volcanoes toggle (independent)
+  - All filters default to ON
+• Volcano tracking system (Active + Super + Warnings)
+• 44+ currently erupting volcanoes with red markers
+• 11 supervolcanoes with black markers and detailed info
+• Live volcano eruption warnings with auto-refresh
+• Alert levels: Warning, Watch, Advisory, Normal
+• Color-coded severity indicators
+• Tsunami alert integration with timer
 • Comprehensive tsunami safety guidelines
-• Educational resources
-• Customizable notifications (iOS & Android)
+• Educational resources for all event types
+• Separate notification controls:
+  - Earthquake notifications (country + magnitude)
+  - Volcano notifications (country-based)
+  - Independent enable/disable for each
 • Location-based distance calculations
 • Impact radius visualization
 • Zoom and pulse animations for selected items
+• "Show on Map" feature auto-enables relevant filters
 • Glass container UI with crisp black text
-• Multi-platform support (iOS, Android, Web)
+• Multi-platform support (iOS, Android, Web, iOS-Web)
 • Smooth transitions and loading animations
 • Welcome page with Earth imagery
+• Comprehensive legend in Settings
+• Timer displays for auto-updating data
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -311,24 +382,36 @@ TIPS & TRICKS
 • Tap markers for quick info with zoom and pulse
 • Swipe between tabs for faster navigation
 • Pull down on lists to refresh data
-• Switch between Active and Super volcano tabs
+• Switch between Active, Super, and Warnings volcano tabs
+• Use Filters button to access map controls
+• Tap map to close filter panel
+• Click "Show on Map" to auto-enable filters and locate items
 
 🎯 Best Practices
 • Enable location for accurate distance calculations
-• Set up notifications for your region
+• Set up separate notifications for earthquakes and volcanoes
+• Configure country filters for relevant alerts
+• Set appropriate magnitude thresholds for earthquakes
+• Check volcano warnings tab for latest eruption alerts
 • Check tsunami alerts regularly if near coast
 • Review safety guides before emergencies
 • Keep app updated for latest features
-• Explore both Active and Super volcano categories
+• Explore all three volcano tabs: Active, Super, and Warnings
+• Use independent toggles for Active and Super volcanoes on map
 • Read tsunami warning signs in Education tab
+• Monitor auto-refresh timers for latest data
 
 ⚠️ Important Reminders
 • This is NOT an official early warning system
 • Always follow local emergency authorities
 • Data may have delays or revisions
 • Use for informational purposes only
-• Supervolcano eruptions are extremely rare
+• Supervolcano eruptions are extremely rare (millions of years)
 • Tsunami warnings require immediate action
+• Volcano warnings are informational, not official alerts
+• Check multiple sources for critical events
+• Map filters default to ON for comprehensive view
+• Notifications work on iOS and Android (not web)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -358,8 +441,10 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', content: '' });
   const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const [volcanoCountryModalVisible, setVolcanoCountryModalVisible] = useState(false);
   const [magnitudeModalVisible, setMagnitudeModalVisible] = useState(false);
   const [tempCountry, setTempCountry] = useState<string>(preferences.notificationCountry || '');
+  const [tempVolcanoCountry, setTempVolcanoCountry] = useState<string>(preferences.volcanoNotificationCountry || '');
   const [tempMagnitude, setTempMagnitude] = useState<string>(String(preferences.notificationMinMagnitude || 5.0));
   const [showSavedMessage, setShowSavedMessage] = useState<boolean>(false);
 
@@ -456,6 +541,13 @@ export default function SettingsScreen() {
   const handleCountrySave = () => {
     updatePreferences({ notificationCountry: tempCountry || undefined });
     setCountryModalVisible(false);
+    setShowSavedMessage(true);
+    setTimeout(() => setShowSavedMessage(false), 3000);
+  };
+
+  const handleVolcanoCountrySave = () => {
+    updatePreferences({ volcanoNotificationCountry: tempVolcanoCountry || undefined });
+    setVolcanoCountryModalVisible(false);
     setShowSavedMessage(true);
     setTimeout(() => setShowSavedMessage(false), 3000);
   };
@@ -617,11 +709,11 @@ export default function SettingsScreen() {
         </GlassView>
 
         <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text style={styles.sectionTitle}>Earthquake Notifications</Text>
           <View style={styles.card}>
             <SettingToggle
-              title="Enable Notifications"
-              subtitle="Receive alerts for significant events"
+              title="Enable Earthquake Notifications"
+              subtitle="Receive alerts for significant earthquakes"
               value={preferences.notificationsEnabled}
               onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
             />
@@ -630,7 +722,7 @@ export default function SettingsScreen() {
                 <View style={styles.divider} />
                 <SettingRow
                   title="Country"
-                  subtitle="Filter notifications by country"
+                  subtitle="Filter earthquake notifications by country"
                   value={preferences.notificationCountry || 'All Countries'}
                   onPress={() => {
                     setTempCountry(preferences.notificationCountry || '');
@@ -649,7 +741,32 @@ export default function SettingsScreen() {
                 />
               </>
             )}
+          </View>
+        </GlassView>
 
+        <GlassView {...glassProps} style={styles.section}>
+          <Text style={styles.sectionTitle}>Volcano Notifications</Text>
+          <View style={styles.card}>
+            <SettingToggle
+              title="Enable Volcano Notifications"
+              subtitle="Receive alerts for volcano eruptions and warnings"
+              value={preferences.volcanoNotificationsEnabled ?? true}
+              onValueChange={(value) => updatePreferences({ volcanoNotificationsEnabled: value })}
+            />
+            {(preferences.volcanoNotificationsEnabled ?? true) && (
+              <>
+                <View style={styles.divider} />
+                <SettingRow
+                  title="Country"
+                  subtitle="Filter volcano notifications by country"
+                  value={preferences.volcanoNotificationCountry || 'All Countries'}
+                  onPress={() => {
+                    setTempVolcanoCountry(preferences.volcanoNotificationCountry || '');
+                    setVolcanoCountryModalVisible(true);
+                  }}
+                />
+              </>
+            )}
           </View>
         </GlassView>
 
@@ -796,6 +913,43 @@ export default function SettingsScreen() {
           </ScrollView>
           <View style={styles.modalFooter}>
             <TouchableOpacity style={styles.saveButton} onPress={handleMagnitudeSave}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={volcanoCountryModalVisible} animationType="slide" presentationStyle="pageSheet">
+        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Country for Volcano Alerts</Text>
+            <TouchableOpacity onPress={() => setVolcanoCountryModalVisible(false)}>
+              <X size={24} color={COLORS.text.primary.light} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
+            <TouchableOpacity
+              style={[styles.countryOption, tempVolcanoCountry === '' && styles.countryOptionSelected]}
+              onPress={() => setTempVolcanoCountry('')}
+            >
+              <Text style={[styles.countryOptionText, tempVolcanoCountry === '' && styles.countryOptionTextSelected]}>
+                All Countries
+              </Text>
+            </TouchableOpacity>
+            {COUNTRIES.map((country) => (
+              <TouchableOpacity
+                key={country}
+                style={[styles.countryOption, tempVolcanoCountry === country && styles.countryOptionSelected]}
+                onPress={() => setTempVolcanoCountry(country)}
+              >
+                <Text style={[styles.countryOptionText, tempVolcanoCountry === country && styles.countryOptionTextSelected]}>
+                  {country}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <View style={styles.modalFooter}>
+            <TouchableOpacity style={styles.saveButton} onPress={handleVolcanoCountrySave}>
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
           </View>

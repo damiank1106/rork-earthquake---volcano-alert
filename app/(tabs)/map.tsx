@@ -30,6 +30,7 @@ export default function MapScreen() {
   const [magFilterOff, setMagFilterOff] = useState<boolean>(false);
   const [showPlates, setShowPlates] = useState<boolean>(true);
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(true);
+  const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(true);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -44,6 +45,15 @@ export default function MapScreen() {
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
 
+  const filteredVolcanoes = useMemo(() => {
+    if (!volcanoesQuery.data) return [];
+    return volcanoesQuery.data.filter(v => {
+      if (v.category === 'active') return showVolcanoes;
+      if (v.category === 'super') return showSuperVolcanoes;
+      return true;
+    });
+  }, [volcanoesQuery.data, showVolcanoes, showSuperVolcanoes]);
+
   const highlightedVolcano = useMemo(() => {
     if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
     return volcanoesQuery.data.find(v => v.id === highlightedVolcanoId) || null;
@@ -51,7 +61,11 @@ export default function MapScreen() {
 
   useEffect(() => {
     if (highlightedVolcano) {
-      setShowVolcanoes(true);
+      if (highlightedVolcano.category === 'active') {
+        setShowVolcanoes(true);
+      } else if (highlightedVolcano.category === 'super') {
+        setShowSuperVolcanoes(true);
+      }
       if (mapRef.current) {
         setTimeout(() => {
           mapRef.current?.animateToRegion({
@@ -230,7 +244,7 @@ export default function MapScreen() {
             onMarkerPress={handleMarkerPress}
             userLocation={userLocation}
             plateBoundaries={(platesQuery.data as PlateBoundary[] | undefined) ?? []}
-            volcanoes={(volcanoesQuery.data as Volcano[] | undefined) ?? []}
+            volcanoes={filteredVolcanoes}
             nuclearPlants={[]}
             showPlateBoundaries={showPlates}
             showVolcanoes={showVolcanoes}
@@ -333,9 +347,15 @@ export default function MapScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.toggleRow}>
-          <Text style={styles.toggleLabel}>Volcanoes</Text>
+          <Text style={styles.toggleLabel}>Active Volcanoes</Text>
           <TouchableOpacity testID="toggle-volcanoes" style={[styles.toggle, showVolcanoes && styles.toggleOn]} onPress={() => setShowVolcanoes((v) => !v)}>
             <Text style={[styles.toggleText, showVolcanoes && styles.toggleTextOn]}>{showVolcanoes ? 'On' : 'Off'}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>Super Volcanoes</Text>
+          <TouchableOpacity testID="toggle-super-volcanoes" style={[styles.toggle, showSuperVolcanoes && styles.toggleOn]} onPress={() => setShowSuperVolcanoes((v) => !v)}>
+            <Text style={[styles.toggleText, showSuperVolcanoes && styles.toggleTextOn]}>{showSuperVolcanoes ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
