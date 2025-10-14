@@ -47,6 +47,13 @@ export default function MapScreen() {
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
 
+  useEffect(() => {
+    if (highlightedVolcanoId) {
+      setShowVolcanoes(true);
+      setShowSuperVolcanoes(true);
+    }
+  }, [highlightedVolcanoId]);
+
   const highlightedVolcano = useMemo(() => {
     if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
     return volcanoesQuery.data.find(v => v.id === highlightedVolcanoId) || null;
@@ -235,7 +242,7 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(128, 128, 128, 0.7)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
-  const shouldShowMap = earthquakes.length > 0 || !isLoading;
+  const shouldShowMap = earthquakes.length > 0 || !isLoading || !!highlightedVolcanoId;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -273,14 +280,14 @@ export default function MapScreen() {
         </TouchableOpacity>
       )}
       
-      {isDataLoading && (
+      {isDataLoading && !highlightedVolcanoId && (
         <View style={styles.emptyMapContainer}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
           <Text style={styles.emptyMapText}>Loading map data...</Text>
         </View>
       )}
       
-      {!isDataLoading && earthquakes.length === 0 && (
+      {!isDataLoading && earthquakes.length === 0 && !highlightedVolcanoId && (
         <View style={styles.emptyMapContainer}>
           <Text style={styles.emptyMapText}>No earthquake data available</Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
@@ -487,7 +494,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background.light },
-  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 800, left: '50%', right: 'auto', transform: [{ translateX: '-50%' }] } : {}) },
+  header: { position: 'absolute', left: SPACING.md, right: SPACING.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: 16, overflow: 'hidden', zIndex: 10, ...(Platform.OS === 'web' ? { backgroundColor: 'rgba(128, 128, 128, 0.7)', maxWidth: 800, left: 0, right: 0, alignSelf: 'center', marginHorizontal: 'auto' as unknown as number } : {}) },
   headerContent: { flex: 1 },
   title: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000' },
   subtitle: { fontSize: FONT_SIZE.sm, color: Platform.OS === 'web' ? '#FFFFFF' : '#000000', marginTop: 2 },

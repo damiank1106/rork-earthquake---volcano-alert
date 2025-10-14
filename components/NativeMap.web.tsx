@@ -55,6 +55,11 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
             animate: true,
             duration: (duration || 1000) / 1000,
           });
+          setTimeout(() => {
+            try {
+              mapInstanceRef.current?.invalidateSize?.();
+            } catch (e) {}
+          }, 0);
         }
       },
     }),
@@ -99,11 +104,24 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
 
       mapInstanceRef.current = map;
       setIsMapReady(true);
+      setTimeout(() => {
+        try {
+          mapInstanceRef.current?.invalidateSize?.();
+        } catch (e) {}
+      }, 0);
     };
 
     initMap();
 
+    const handleResize = () => {
+      try {
+        mapInstanceRef.current?.invalidateSize?.();
+      } catch (e) {}
+    };
+    window.addEventListener('resize', handleResize);
+
     return () => {
+      window.removeEventListener('resize', handleResize);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
@@ -222,6 +240,12 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
         markersRef.current.push(marker);
       });
     }
+
+    setTimeout(() => {
+      try {
+        mapInstanceRef.current?.invalidateSize?.();
+      } catch (e) {}
+    }, 0);
   }, [isMapReady, earthquakes, showVolcanoes, showSuperVolcanoes, volcanoes, onMarkerPress, selectedVolcano, onVolcanoPress, showPlateBoundaries, plateBoundaries]);
 
   useEffect(() => {
@@ -235,6 +259,11 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap(
       8,
       { animate: true }
     );
+    setTimeout(() => {
+      try {
+        mapInstanceRef.current?.invalidateSize?.();
+      } catch (e) {}
+    }, 0);
   }, [isMapReady, selectedMarker]);
 
   return (
