@@ -121,15 +121,20 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   useEffect(() => {
     const v = volcanoes.find((x) => x.id === (highlightedVolcanoId ?? selectedVolcano?.id));
     if (v && mapRef.current && mapReady) {
-      mapRef.current.animateCamera(
-        {
-          center: { latitude: v.latitude, longitude: v.longitude },
-          pitch: 0,
-          heading: 0,
-          zoom: 6,
-        },
-        { duration: 800 },
-      );
+      console.log('[NativeMap] Animating camera to volcano:', v.name, v.latitude, v.longitude);
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.animateCamera(
+            {
+              center: { latitude: v.latitude, longitude: v.longitude },
+              pitch: 0,
+              heading: 0,
+              zoom: 6,
+            },
+            { duration: 1000 },
+          );
+        }
+      }, 300);
     }
   }, [highlightedVolcanoId, selectedVolcano?.id, mapReady, volcanoes]);
 
@@ -179,12 +184,17 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
           : (showVolcanoes || isHighlighted);
         if (!shouldShow) return null;
         const volcanoColor = isSuperVolcano ? (isHighlighted ? '#000000' : '#1F2937') : (isHighlighted ? '#DC2626' : '#EF4444');
+        
+        if (isHighlighted) {
+          console.log('[NativeMap] Rendering highlighted volcano:', v.name, v.id, 'Category:', v.category, 'Color:', volcanoColor);
+        }
+        
         return (
           <Marker
             key={`vol-${v.id}`}
             coordinate={{ latitude: v.latitude, longitude: v.longitude }}
             onPress={() => onVolcanoPress?.(v)}
-            tracksViewChanges={false}
+            tracksViewChanges={isHighlighted}
             testID={`marker-volcano-${v.id}`}
           >
             <View style={styles.volcanoContainer}>

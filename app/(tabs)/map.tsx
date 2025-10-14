@@ -39,20 +39,38 @@ export default function MapScreen() {
 
   const params = useLocalSearchParams();
   const highlightedVolcanoId = params.volcanoId as string | undefined;
+  const volcanoCategory = params.category as string | undefined;
   const earthquakeId = params.earthquakeId as string | undefined;
   const paramMagCategory = params.magCategory as string | undefined;
   const mapRef = useRef<any>(null);
   const prevEarthquakeIdRef = useRef<string | undefined>(undefined);
+  const prevVolcanoIdRef = useRef<string | undefined>(undefined);
+  const [hasInitializedVolcano, setHasInitializedVolcano] = useState<boolean>(false);
 
   const platesQuery = useQuery({ queryKey: ['plates'], queryFn: fetchPlateBoundaries, enabled: showPlates });
   const volcanoesQuery = useQuery({ queryKey: ['volcanoes-map'], queryFn: fetchVolcanoes, enabled: true });
 
   useEffect(() => {
-    if (highlightedVolcanoId) {
-      setShowVolcanoes(true);
-      setShowSuperVolcanoes(true);
+    if (highlightedVolcanoId !== prevVolcanoIdRef.current) {
+      console.log('[Map] Volcano ID changed:', highlightedVolcanoId, 'Category:', volcanoCategory);
+      setHasInitializedVolcano(false);
+      prevVolcanoIdRef.current = highlightedVolcanoId;
+      
+      if (highlightedVolcanoId) {
+        if (volcanoCategory === 'super') {
+          console.log('[Map] Enabling super volcanoes');
+          setShowSuperVolcanoes(true);
+        } else if (volcanoCategory === 'active') {
+          console.log('[Map] Enabling active volcanoes');
+          setShowVolcanoes(true);
+        } else {
+          console.log('[Map] Enabling both volcano types');
+          setShowVolcanoes(true);
+          setShowSuperVolcanoes(true);
+        }
+      }
     }
-  }, [highlightedVolcanoId]);
+  }, [highlightedVolcanoId, volcanoCategory]);
 
   const highlightedVolcano = useMemo(() => {
     if (!highlightedVolcanoId || !volcanoesQuery.data) return null;
@@ -60,25 +78,36 @@ export default function MapScreen() {
   }, [highlightedVolcanoId, volcanoesQuery.data]);
 
   useEffect(() => {
-    if (highlightedVolcano) {
+    if (highlightedVolcano && !hasInitializedVolcano && volcanoesQuery.data) {
+      console.log('[Map] Initializing highlighted volcano:', highlightedVolcano.name, highlightedVolcano.category);
+      
       if (highlightedVolcano.category === 'active') {
         setShowVolcanoes(true);
       } else if (highlightedVolcano.category === 'super') {
         setShowSuperVolcanoes(true);
       }
-      triggerMapTransition();
-      if (mapRef.current) {
-        setTimeout(() => {
+      
+      setHasInitializedVolcano(true);
+      setMapKey(prev => prev + 1);
+      
+      setTimeout(() => {
+        console.log('[Map] Triggering map transition for volcano');
+        triggerMapTransition();
+      }, 100);
+      
+      setTimeout(() => {
+        if (mapRef.current) {
+          console.log('[Map] Animating to volcano location:', highlightedVolcano.latitude, highlightedVolcano.longitude);
           mapRef.current?.animateToRegion({
             latitude: highlightedVolcano.latitude,
             longitude: highlightedVolcano.longitude,
             latitudeDelta: 0.5,
             longitudeDelta: 0.5,
           }, 1000);
-        }, 400);
-      }
+        }
+      }, 600);
     }
-  }, [highlightedVolcano]);
+  }, [highlightedVolcano, hasInitializedVolcano, volcanoesQuery.data]);
 
   useEffect(() => {
     if (earthquakeId !== prevEarthquakeIdRef.current) {

@@ -49,11 +49,13 @@ export default function VolcanoesScreen() {
   }, [activeTab, warningsQuery.refetch]);
 
   const handleShowOnMap = (volcano: Volcano) => {
+    console.log('[Volcanoes] Show on map clicked for:', volcano.name, volcano.id, volcano.category);
     updatePreferences({ volcanoesEnabled: true });
     setSelectedVolcano(null);
     setTimeout(() => {
-      router.push(`/map?volcanoId=${volcano.id}`);
-    }, 100);
+      console.log('[Volcanoes] Navigating to map with volcanoId:', volcano.id);
+      router.push(`/map?volcanoId=${volcano.id}&category=${volcano.category}&t=${Date.now()}`);
+    }, 150);
   };
 
   const sections = useMemo(() => {
