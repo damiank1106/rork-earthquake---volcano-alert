@@ -192,14 +192,14 @@ export default function MapScreen() {
   const triggerMapTransition = () => {
     Animated.sequence([
       Animated.timing(mapTransitionAnim, {
-        toValue: 0.95,
-        duration: 150,
+        toValue: 0.3,
+        duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
       Animated.timing(mapTransitionAnim, {
         toValue: 1,
-        duration: 150,
+        duration: 200,
         easing: Easing.in(Easing.ease),
         useNativeDriver: true,
       }),
@@ -247,7 +247,7 @@ export default function MapScreen() {
             }
           }}
         >
-          <Animated.View style={{ flex: 1, transform: [{ scale: mapTransitionAnim }] }}>
+          <Animated.View style={{ flex: 1, opacity: mapTransitionAnim }}>
             <NativeMap
               ref={mapRef}
               earthquakes={filteredEarthquakes}
