@@ -104,16 +104,34 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
     if (selectedMarker && mapRef.current && mapReady) {
       setTimeout(() => {
         if (mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude: selectedMarker.latitude,
-            longitude: selectedMarker.longitude,
-            latitudeDelta: 5,
-            longitudeDelta: 5,
-          }, 1000);
+          mapRef.current.animateToRegion(
+            {
+              latitude: selectedMarker.latitude,
+              longitude: selectedMarker.longitude,
+              latitudeDelta: 5,
+              longitudeDelta: 5,
+            },
+            800,
+          );
         }
       }, 100);
     }
   }, [selectedMarker, mapReady]);
+
+  useEffect(() => {
+    const v = volcanoes.find((x) => x.id === (highlightedVolcanoId ?? selectedVolcano?.id));
+    if (v && mapRef.current && mapReady) {
+      mapRef.current.animateCamera(
+        {
+          center: { latitude: v.latitude, longitude: v.longitude },
+          pitch: 0,
+          heading: 0,
+          zoom: 6,
+        },
+        { duration: 800 },
+      );
+    }
+  }, [highlightedVolcanoId, selectedVolcano?.id, mapReady, volcanoes]);
 
   const initialRegion = userLocation
     ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: 50, longitudeDelta: 50 }
@@ -135,7 +153,15 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
   }, [earthquakes]);
 
   return (
-    <MapView ref={mapRef} style={styles.map} initialRegion={initialRegion} showsUserLocation={true} showsMyLocationButton={false} onMapReady={() => setMapReady(true)}>
+    <MapView
+      ref={mapRef}
+      style={styles.map}
+      initialRegion={initialRegion}
+      showsUserLocation={true}
+      showsMyLocationButton={false}
+      onMapReady={() => setMapReady(true)}
+      testID="native-map"
+    >
       {showPlateBoundaries && plateBoundaries.map((b) => (
         <Polyline
           key={`pb-${b.id}`}
@@ -147,14 +173,20 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
 
       {volcanoes.map((v) => {
         const isSuperVolcano = v.category === 'super';
-        const shouldShow = isSuperVolcano ? showSuperVolcanoes : showVolcanoes;
-        
-        if (!shouldShow) return null;
-        
         const isHighlighted = highlightedVolcanoId === v.id || selectedVolcano?.id === v.id;
+        const shouldShow = isSuperVolcano
+          ? (showSuperVolcanoes || isHighlighted)
+          : (showVolcanoes || isHighlighted);
+        if (!shouldShow) return null;
         const volcanoColor = isSuperVolcano ? (isHighlighted ? '#000000' : '#1F2937') : (isHighlighted ? '#DC2626' : '#EF4444');
         return (
-          <Marker key={`vol-${v.id}`} coordinate={{ latitude: v.latitude, longitude: v.longitude }} onPress={() => onVolcanoPress?.(v)}>
+          <Marker
+            key={`vol-${v.id}`}
+            coordinate={{ latitude: v.latitude, longitude: v.longitude }}
+            onPress={() => onVolcanoPress?.(v)}
+            tracksViewChanges={false}
+            testID={`marker-volcano-${v.id}`}
+          >
             <View style={styles.volcanoContainer}>
               {isHighlighted && (
                 <Animated.View
@@ -168,7 +200,17 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
                   ]}
                 />
               )}
-              <View style={[styles.volcanoDot, { backgroundColor: volcanoColor, width: isHighlighted ? 32 : 24, height: isHighlighted ? 32 : 24, borderRadius: isHighlighted ? 16 : 12 }]} />
+              <View
+                style={[
+                  styles.volcanoDot,
+                  {
+                    backgroundColor: volcanoColor,
+                    width: isHighlighted ? 32 : 24,
+                    height: isHighlighted ? 32 : 24,
+                    borderRadius: isHighlighted ? 16 : 12,
+                  },
+                ]}
+              />
             </View>
           </Marker>
         );
