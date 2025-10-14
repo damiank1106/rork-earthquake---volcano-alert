@@ -129,12 +129,12 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
               center: { latitude: v.latitude, longitude: v.longitude },
               pitch: 0,
               heading: 0,
-              zoom: 6,
+              zoom: 8,
             },
-            { duration: 1000 },
+            { duration: 800 },
           );
         }
-      }, 300);
+      }, 200);
     }
   }, [highlightedVolcanoId, selectedVolcano?.id, mapReady, volcanoes]);
 
@@ -194,7 +194,7 @@ const NativeMap = forwardRef<any, NativeMapProps>(function NativeMap({ earthquak
             key={`vol-${v.id}`}
             coordinate={{ latitude: v.latitude, longitude: v.longitude }}
             onPress={() => onVolcanoPress?.(v)}
-            tracksViewChanges={isHighlighted}
+            tracksViewChanges={false}
             testID={`marker-volcano-${v.id}`}
           >
             <View style={styles.volcanoContainer}>
