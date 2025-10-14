@@ -32,6 +32,7 @@ export default function MapScreen() {
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(false);
   const mapTransitionAnim = useRef(new Animated.Value(1)).current;
+  const [mapKey, setMapKey] = useState<number>(0);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -190,6 +191,7 @@ export default function MapScreen() {
   };
 
   const triggerMapTransition = () => {
+    setMapKey(prev => prev + 1);
     Animated.sequence([
       Animated.timing(mapTransitionAnim, {
         toValue: 0.3,
@@ -249,6 +251,7 @@ export default function MapScreen() {
         >
           <Animated.View style={{ flex: 1, opacity: mapTransitionAnim }}>
             <NativeMap
+              key={mapKey}
               ref={mapRef}
               earthquakes={filteredEarthquakes}
               selectedMarker={selectedMarker}
