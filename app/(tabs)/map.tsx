@@ -32,6 +32,7 @@ export default function MapScreen() {
   const [showVolcanoes, setShowVolcanoes] = useState<boolean>(false);
   const [showSuperVolcanoes, setShowSuperVolcanoes] = useState<boolean>(false);
   const mapTransitionAnim = useRef(new Animated.Value(1)).current;
+  const [mapKey, setMapKey] = useState<number>(0);
   const [hasInitializedEarthquake, setHasInitializedEarthquake] = useState<boolean>(false);
   const [showCenterRefresh, setShowCenterRefresh] = useState<boolean>(false);
 
@@ -87,6 +88,12 @@ export default function MapScreen() {
       }
       
       setHasInitializedVolcano(true);
+      setMapKey(prev => prev + 1);
+      
+      setTimeout(() => {
+        console.log('[Map] Triggering map transition for volcano');
+        triggerMapTransition();
+      }, 100);
       
       setTimeout(() => {
         if (mapRef.current) {
@@ -98,7 +105,7 @@ export default function MapScreen() {
             longitudeDelta: 0.5,
           }, 1000);
         }
-      }, 400);
+      }, 600);
     }
   }, [highlightedVolcano, hasInitializedVolcano, volcanoesQuery.data]);
 
@@ -219,7 +226,23 @@ export default function MapScreen() {
     setSelectedVolcanoMarker(null);
   };
 
-
+  const triggerMapTransition = () => {
+    setMapKey(prev => prev + 1);
+    Animated.sequence([
+      Animated.timing(mapTransitionAnim, {
+        toValue: 0.3,
+        duration: 200,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(mapTransitionAnim, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const getFeltDistance = (magnitude: number): string => {
     let distanceKm: number;
@@ -248,8 +271,7 @@ export default function MapScreen() {
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(128, 128, 128, 0.7)' } } : { intensity: 80, tint: "light" as BlurTint };
 
   const isDataLoading = isLoading && earthquakes.length === 0;
-  const volcanoDataReady = !highlightedVolcanoId || (volcanoesQuery.data && volcanoesQuery.data.length > 0);
-  const shouldShowMap = (earthquakes.length > 0 || !isLoading || !!highlightedVolcanoId) && volcanoDataReady;
+  const shouldShowMap = earthquakes.length > 0 || !isLoading || !!highlightedVolcanoId;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -265,6 +287,7 @@ export default function MapScreen() {
         >
           <Animated.View style={{ flex: 1, opacity: mapTransitionAnim }}>
             <NativeMap
+              key={mapKey}
               ref={mapRef}
               earthquakes={filteredEarthquakes}
               selectedMarker={selectedMarker}
@@ -286,12 +309,10 @@ export default function MapScreen() {
         </TouchableOpacity>
       )}
       
-      {(isDataLoading || (highlightedVolcanoId && !volcanoDataReady)) && (
+      {isDataLoading && !highlightedVolcanoId && (
         <View style={styles.emptyMapContainer}>
           <ActivityIndicator size="large" color={COLORS.primary[600]} />
-          <Text style={styles.emptyMapText}>
-            {highlightedVolcanoId ? 'Loading volcano data...' : 'Loading map data...'}
-          </Text>
+          <Text style={styles.emptyMapText}>Loading map data...</Text>
         </View>
       )}
       
@@ -375,6 +396,7 @@ export default function MapScreen() {
           <Text style={styles.toggleLabel}>Plate boundaries</Text>
           <TouchableOpacity testID="toggle-plates" style={[styles.toggle, showPlates && styles.toggleOn]} onPress={() => {
             setShowPlates((v) => !v);
+            triggerMapTransition();
           }}>
             <Text style={[styles.toggleText, showPlates && styles.toggleTextOn]}>{showPlates ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
@@ -383,6 +405,7 @@ export default function MapScreen() {
           <Text style={styles.toggleLabel}>Active Volcanoes</Text>
           <TouchableOpacity testID="toggle-volcanoes" style={[styles.toggle, showVolcanoes && styles.toggleOn]} onPress={() => {
             setShowVolcanoes((v) => !v);
+            triggerMapTransition();
           }}>
             <Text style={[styles.toggleText, showVolcanoes && styles.toggleTextOn]}>{showVolcanoes ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
@@ -391,6 +414,7 @@ export default function MapScreen() {
           <Text style={styles.toggleLabel}>Super Volcanoes</Text>
           <TouchableOpacity testID="toggle-super-volcanoes" style={[styles.toggle, showSuperVolcanoes && styles.toggleOn]} onPress={() => {
             setShowSuperVolcanoes((v) => !v);
+            triggerMapTransition();
           }}>
             <Text style={[styles.toggleText, showSuperVolcanoes && styles.toggleTextOn]}>{showSuperVolcanoes ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
