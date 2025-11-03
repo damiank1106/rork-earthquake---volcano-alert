@@ -114,7 +114,7 @@ export interface MapLayer {
   id: string;
   name: string;
   enabled: boolean;
-  type: 'earthquakes' | 'volcanoes' | 'heatmap' | 'plates';
+  type: 'earthquakes' | 'volcanoes' | 'heatmap' | 'plates' | 'nuclear';
 }
 
 export interface NotificationPayload {

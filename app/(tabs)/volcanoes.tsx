@@ -140,7 +140,9 @@ export default function VolcanoesScreen() {
           nestedScrollEnabled={true}
         >
           {superVolcanoes.map((volcano) => (
-            <SuperVolcanoItem key={volcano.id} v={volcano} onPress={() => setSelectedVolcano(volcano)} />
+            <View key={volcano.id}>
+              <SuperVolcanoItem v={volcano} onPress={() => setSelectedVolcano(volcano)} />
+            </View>
           ))}
         </ScrollView>
       ) : (
@@ -163,7 +165,9 @@ export default function VolcanoesScreen() {
               <Text style={{ textAlign: 'center', color: COLORS.text.secondary.light }}>No active warnings</Text>
             ) : (
               warnings.map((warning) => (
-                <WarningItem key={warning.id} warning={warning} />
+                <View key={warning.id}>
+                  <WarningItem warning={warning} />
+                </View>
               ))
             )}
           </ScrollView>
