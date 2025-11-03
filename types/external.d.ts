@@ -1,3 +1,4 @@
+import React from "react";
 declare module 'react' {
   export type ReactNode = any;
   export type ReactElement = any;
@@ -5,6 +6,13 @@ declare module 'react' {
   export type PropsWithChildren<P = {}> = P & { children?: ReactNode };
   export type DependencyList = readonly unknown[];
   export type MutableRefObject<T> = { current: T };
+  export class Component<P = {}, S = {}> {
+    constructor(props: P);
+    props: Readonly<P> & { children?: ReactNode };
+    state: Readonly<S>;
+    setState: (state: Partial<S>) => void;
+    forceUpdate: () => void;
+  }
   export function useState<S>(initialState: S | (() => S)): [S, (value: S | ((prev: S) => S)) => void];
   export function useEffect(effect: () => void | (() => void), deps?: DependencyList): void;
   export function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
@@ -37,7 +45,7 @@ declare module 'react' {
 }
 
 declare namespace JSX {
-  interface Element {}
+  type Element = React.ReactElement<any, any>;
   interface IntrinsicElements {
     [elemName: string]: any;
   }
@@ -49,6 +57,13 @@ declare namespace React {
   export type FC<P = {}> = (props: P & { children?: ReactNode }) => ReactElement | null;
   export type DependencyList = readonly unknown[];
   export type MutableRefObject<T> = { current: T };
+  export class Component<P = {}, S = {}> {
+    constructor(props: P);
+    props: Readonly<P> & { children?: ReactNode };
+    state: Readonly<S>;
+    setState: (state: Partial<S>) => void;
+    forceUpdate: () => void;
+  }
   export function useState<S>(initialState: S | (() => S)): [S, (value: S | ((prev: S) => S)) => void];
   export function useEffect(effect: () => void | (() => void), deps?: DependencyList): void;
   export function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
@@ -72,6 +87,7 @@ declare module 'react/jsx-runtime' {
 declare module 'react-native' {
   export const View: any;
   export const Text: any;
+  export const TextInput: any;
   export const StyleSheet: { create<T extends Record<string, any>>(styles: T): T; absoluteFillObject: any };
   export const TouchableOpacity: any;
   export const ScrollView: any;
@@ -80,6 +96,8 @@ declare module 'react-native' {
   export const ActivityIndicator: any;
   export const Modal: any;
   export const Platform: { OS: string; select: <T>(options: Record<string, T>) => T | undefined };
+  export const LogBox: any;
+  export const NativeModules: any;
   export namespace Animated {
     class Value {
       constructor(value: number);
