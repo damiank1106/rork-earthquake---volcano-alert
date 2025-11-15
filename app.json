@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.rork.seismic-monitor",
+      "bundleIdentifier": "app.rork.seismic.monitor",
       "entitlements": {
         "com": {
           "apple": {
