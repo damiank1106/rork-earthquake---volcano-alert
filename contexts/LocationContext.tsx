@@ -30,7 +30,13 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
         });
       }
     } catch (error) {
-      console.error('Failed to get location permission:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === 'object'
+            ? JSON.stringify(error)
+            : String(error);
+      console.error('Failed to get location permission:', errorMessage);
     } finally {
       setIsLoadingLocation(false);
     }
