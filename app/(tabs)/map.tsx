@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform, Animated, Easing, Pressable } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Platform, Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RefreshCw, AlertTriangle, SlidersHorizontal } from 'lucide-react-native';
 import { BlurView, BlurTint } from 'expo-blur';
@@ -276,7 +276,15 @@ export default function MapScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {shouldShowMap && (
-        <View style={{ flex: 1 }}>
+        <TouchableOpacity 
+          style={{ flex: 1 }} 
+          activeOpacity={1} 
+          onPress={() => {
+            if (panelOpen) {
+              togglePanel();
+            }
+          }}
+        >
           <Animated.View style={{ flex: 1, opacity: mapTransitionAnim }}>
             <NativeMap
               key={mapKey}
@@ -298,14 +306,7 @@ export default function MapScreen() {
               onVolcanoPress={handleVolcanoPress}
             />
           </Animated.View>
-          {panelOpen && (
-            <Pressable
-              testID="overlay-close-panel"
-              onPress={togglePanel}
-              style={StyleSheet.absoluteFillObject as unknown as any}
-            />
-          )}
-        </View>
+        </TouchableOpacity>
       )}
       
       {isDataLoading && !highlightedVolcanoId && (

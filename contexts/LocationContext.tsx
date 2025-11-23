@@ -14,34 +14,6 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState<boolean>(true);
 
-  const formatLocationError = useCallback((error: unknown) => {
-    if (error instanceof Error) {
-      return error.message;
-    }
-
-    if (error && typeof error === 'object') {
-      const errorWithDetails = error as { message?: unknown; code?: unknown };
-
-      if (typeof errorWithDetails.message === 'string') {
-        return errorWithDetails.code
-          ? `${errorWithDetails.message} (code: ${errorWithDetails.code})`
-          : errorWithDetails.message;
-      }
-
-      const serialized = JSON.stringify(
-        Object.fromEntries(
-          Object.getOwnPropertyNames(error).map((key) => [key, (error as Record<string, unknown>)[key]])
-        )
-      );
-
-      if (serialized !== '{}') {
-        return serialized;
-      }
-    }
-
-    return String(error);
-  }, []);
-
   const requestLocationPermission = useCallback(async () => {
     try {
       setIsLoadingLocation(true);
@@ -58,12 +30,11 @@ export const [LocationProvider, useLocation] = createContextHook(() => {
         });
       }
     } catch (error) {
-      console.error('Failed to get location permission:', formatLocationError(error));
-      setLocationPermission(false);
+      console.error('Failed to get location permission:', error);
     } finally {
       setIsLoadingLocation(false);
     }
-  }, [formatLocationError]);
+  }, []);
 
   useEffect(() => {
     requestLocationPermission();
