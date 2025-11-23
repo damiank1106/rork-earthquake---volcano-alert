@@ -14,7 +14,10 @@ const BACKGROUND_COLOR = '#f0efe8';
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
-  const { locationPermission, isLoadingLocation, refreshLocation } = useLocation();
+  const locationContext = useLocation();
+  const locationPermission = locationContext?.locationPermission ?? false;
+  const isLoadingLocation = locationContext?.isLoadingLocation ?? false;
+  const refreshLocation = locationContext?.refreshLocation ?? (async () => {});
   const [isRequestingPermission, setIsRequestingPermission] = useState<boolean>(false);
   const [showLocationModal, setShowLocationModal] = useState<boolean>(false);
 
