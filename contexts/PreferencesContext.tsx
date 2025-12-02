@@ -12,11 +12,6 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   heatmapEnabled: false,
   clusteringEnabled: true,
   theme: 'light',
-  notificationsEnabled: false,
-  notificationCountry: undefined,
-  notificationMinMagnitude: 5.0,
-  volcanoNotificationsEnabled: false,
-  volcanoNotificationCountry: undefined,
 };
 
 export const [PreferencesProvider, usePreferences] = createContextHook(() => {

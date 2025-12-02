@@ -86,11 +86,6 @@ export interface UserPreferences {
   heatmapEnabled: boolean;
   clusteringEnabled: boolean;
   theme: 'light' | 'dark' | 'auto';
-  notificationsEnabled: boolean;
-  notificationCountry?: string;
-  notificationMinMagnitude?: number;
-  volcanoNotificationsEnabled?: boolean;
-  volcanoNotificationCountry?: string;
   lastUpdated?: number;
 }
 

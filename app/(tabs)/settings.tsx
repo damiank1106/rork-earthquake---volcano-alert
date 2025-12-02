@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView, BlurTint } from 'expo-blur';
-import { ChevronRight, Info, RotateCw, X } from 'lucide-react-native';
+import { ChevronRight, Info, RotateCw } from 'lucide-react-native';
 import { usePreferences } from '@/contexts/PreferencesContext';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '@/constants/theme';
 import { router } from 'expo-router';
@@ -439,13 +439,7 @@ export default function SettingsScreen() {
   const { preferences, updatePreferences } = usePreferences();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', content: '' });
-  const [countryModalVisible, setCountryModalVisible] = useState(false);
-  const [volcanoCountryModalVisible, setVolcanoCountryModalVisible] = useState(false);
-  const [magnitudeModalVisible, setMagnitudeModalVisible] = useState(false);
-  const [tempCountry, setTempCountry] = useState<string>(preferences.notificationCountry || '');
-  const [tempVolcanoCountry, setTempVolcanoCountry] = useState<string>(preferences.volcanoNotificationCountry || '');
-  const [tempMagnitude, setTempMagnitude] = useState<string>(String(preferences.notificationMinMagnitude || 5.0));
-  const [showSavedMessage, setShowSavedMessage] = useState<boolean>(false);
+
 
   const glassProps = Platform.OS === 'web' ? { style: { backgroundColor: 'rgba(255, 255, 255, 0.8)' } } : { intensity: 80, tint: "light" as BlurTint };
 
@@ -507,59 +501,7 @@ export default function SettingsScreen() {
     setModalVisible(true);
   };
 
-  const COUNTRIES = [
-    'United States', 'Japan', 'Indonesia', 'China', 'Philippines', 'Mexico', 'Chile', 'Peru',
-    'Turkey', 'Iran', 'Italy', 'Greece', 'New Zealand', 'Papua New Guinea', 'India', 'Pakistan',
-    'Afghanistan', 'Ecuador', 'Guatemala', 'Nicaragua', 'Costa Rica', 'El Salvador', 'Taiwan',
-    'Russia', 'Canada', 'Iceland', 'Colombia', 'Venezuela', 'Bolivia', 'Argentina', 'Nepal',
-    'Myanmar', 'Thailand', 'Vanuatu', 'Fiji', 'Tonga', 'Solomon Islands', 'Algeria', 'Morocco',
-    'Portugal', 'Spain', 'Albania', 'Romania', 'Armenia', 'Georgia', 'Azerbaijan', 'Tajikistan',
-    'Kyrgyzstan', 'Kazakhstan', 'Uzbekistan', 'Turkmenistan', 'Saudi Arabia', 'Yemen', 'Oman',
-    'United Arab Emirates', 'Iraq', 'Syria', 'Jordan', 'Israel', 'Lebanon', 'Egypt', 'Ethiopia',
-    'Kenya', 'Tanzania', 'Malawi', 'Mozambique', 'South Africa', 'Australia', 'Malaysia',
-    'Vietnam', 'Cambodia', 'Laos', 'Bangladesh', 'Sri Lanka', 'Maldives', 'Samoa', 'Haiti',
-    'Dominican Republic', 'Jamaica', 'Cuba', 'Puerto Rico', 'Honduras', 'Panama', 'Belize',
-    'Trinidad and Tobago', 'Barbados', 'Saint Lucia', 'Dominica', 'Grenada', 'Saint Vincent',
-    'Antigua and Barbuda', 'Saint Kitts and Nevis', 'Montserrat', 'Guadeloupe', 'Martinique',
-    'Guyana', 'Suriname', 'French Guiana', 'Brazil', 'Uruguay', 'Paraguay', 'Norway', 'Sweden',
-    'Finland', 'Denmark', 'United Kingdom', 'Ireland', 'France', 'Germany', 'Switzerland',
-    'Austria', 'Czech Republic', 'Slovakia', 'Hungary', 'Poland', 'Croatia', 'Serbia',
-    'Bosnia and Herzegovina', 'Montenegro', 'North Macedonia', 'Bulgaria', 'Ukraine', 'Belarus',
-    'Lithuania', 'Latvia', 'Estonia', 'South Korea', 'North Korea', 'Mongolia'
-  ].sort();
 
-  const MAGNITUDE_OPTIONS = [
-    { value: 3.0, label: '3.0+ (Minor)', description: 'Often felt, rarely causes damage' },
-    { value: 4.0, label: '4.0+ (Light)', description: 'Noticeable shaking, minimal damage' },
-    { value: 5.0, label: '5.0+ (Moderate)', description: 'Can cause damage to buildings' },
-    { value: 6.0, label: '6.0+ (Strong)', description: 'Can be destructive in populated areas' },
-    { value: 7.0, label: '7.0+ (Major)', description: 'Serious damage over large areas' },
-    { value: 8.0, label: '8.0+ (Great)', description: 'Can cause serious damage in several hundred km' },
-  ];
-
-  const handleCountrySave = () => {
-    updatePreferences({ notificationCountry: tempCountry || undefined });
-    setCountryModalVisible(false);
-    setShowSavedMessage(true);
-    setTimeout(() => setShowSavedMessage(false), 3000);
-  };
-
-  const handleVolcanoCountrySave = () => {
-    updatePreferences({ volcanoNotificationCountry: tempVolcanoCountry || undefined });
-    setVolcanoCountryModalVisible(false);
-    setShowSavedMessage(true);
-    setTimeout(() => setShowSavedMessage(false), 3000);
-  };
-
-  const handleMagnitudeSave = () => {
-    const mag = parseFloat(tempMagnitude);
-    if (!isNaN(mag) && mag >= 1.0 && mag <= 10.0) {
-      updatePreferences({ notificationMinMagnitude: mag });
-      setMagnitudeModalVisible(false);
-      setShowSavedMessage(true);
-      setTimeout(() => setShowSavedMessage(false), 3000);
-    }
-  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -604,68 +546,6 @@ export default function SettingsScreen() {
               value={preferences.heatmapEnabled}
               onValueChange={(value) => updatePreferences({ heatmapEnabled: value })}
             />
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Earthquake Notifications</Text>
-          <View style={styles.card}>
-            <SettingToggle
-              title="Enable Earthquake Notifications"
-              subtitle="Receive alerts for significant earthquakes"
-              value={preferences.notificationsEnabled}
-              onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
-            />
-            {preferences.notificationsEnabled && (
-              <>
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Country"
-                  subtitle="Filter earthquake notifications by country"
-                  value={preferences.notificationCountry || 'All Countries'}
-                  onPress={() => {
-                    setTempCountry(preferences.notificationCountry || '');
-                    setCountryModalVisible(true);
-                  }}
-                />
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Minimum Magnitude"
-                  subtitle="Only notify for earthquakes above this magnitude"
-                  value={`${preferences.notificationMinMagnitude || 5.0}+`}
-                  onPress={() => {
-                    setTempMagnitude(String(preferences.notificationMinMagnitude || 5.0));
-                    setMagnitudeModalVisible(true);
-                  }}
-                />
-              </>
-            )}
-          </View>
-        </GlassView>
-
-        <GlassView {...glassProps} style={styles.section}>
-          <Text style={styles.sectionTitle}>Volcano Notifications</Text>
-          <View style={styles.card}>
-            <SettingToggle
-              title="Enable Volcano Notifications"
-              subtitle="Receive alerts for volcano eruptions and warnings"
-              value={preferences.volcanoNotificationsEnabled ?? true}
-              onValueChange={(value) => updatePreferences({ volcanoNotificationsEnabled: value })}
-            />
-            {preferences.volcanoNotificationsEnabled && (
-              <>
-                <View style={styles.divider} />
-                <SettingRow
-                  title="Country"
-                  subtitle="Filter volcano notifications by country"
-                  value={preferences.volcanoNotificationCountry || 'All Countries'}
-                  onPress={() => {
-                    setTempVolcanoCountry(preferences.volcanoNotificationCountry || '');
-                    setVolcanoCountryModalVisible(true);
-                  }}
-                />
-              </>
-            )}
           </View>
         </GlassView>
 
@@ -812,11 +692,6 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        {showSavedMessage && (
-          <View style={styles.savedMessage}>
-            <Text style={styles.savedMessageText}>Notification has been saved</Text>
-          </View>
-        )}
       </ScrollView>
 
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
@@ -833,120 +708,7 @@ export default function SettingsScreen() {
         </View>
       </Modal>
 
-      <Modal visible={countryModalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select Country</Text>
-            <TouchableOpacity onPress={() => setCountryModalVisible(false)}>
-              <X size={24} color={COLORS.text.primary.light} />
-            </TouchableOpacity>
-          </View>
-          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
-            <TouchableOpacity
-              style={[styles.countryOption, tempCountry === '' && styles.countryOptionSelected]}
-              onPress={() => setTempCountry('')}
-            >
-              <Text style={[styles.countryOptionText, tempCountry === '' && styles.countryOptionTextSelected]}>
-                All Countries
-              </Text>
-            </TouchableOpacity>
-            {COUNTRIES.map((country) => (
-              <TouchableOpacity
-                key={country}
-                style={[styles.countryOption, tempCountry === country && styles.countryOptionSelected]}
-                onPress={() => setTempCountry(country)}
-              >
-                <Text style={[styles.countryOptionText, tempCountry === country && styles.countryOptionTextSelected]}>
-                  {country}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View style={styles.modalFooter}>
-            <TouchableOpacity style={styles.saveButton} onPress={handleCountrySave}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
-      <Modal visible={magnitudeModalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Minimum Magnitude</Text>
-            <TouchableOpacity onPress={() => setMagnitudeModalVisible(false)}>
-              <X size={24} color={COLORS.text.primary.light} />
-            </TouchableOpacity>
-          </View>
-          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
-            <Text style={styles.magnitudeDescription}>
-              Choose the minimum earthquake magnitude for notifications. Higher magnitudes mean fewer but more significant alerts.
-            </Text>
-            {MAGNITUDE_OPTIONS.map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                style={[
-                  styles.magnitudeOption,
-                  parseFloat(tempMagnitude) === option.value && styles.magnitudeOptionSelected
-                ]}
-                onPress={() => setTempMagnitude(String(option.value))}
-              >
-                <View style={styles.magnitudeOptionContent}>
-                  <Text style={[
-                    styles.magnitudeOptionLabel,
-                    parseFloat(tempMagnitude) === option.value && styles.magnitudeOptionLabelSelected
-                  ]}>
-                    {option.label}
-                  </Text>
-                  <Text style={styles.magnitudeOptionDescription}>{option.description}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View style={styles.modalFooter}>
-            <TouchableOpacity style={styles.saveButton} onPress={handleMagnitudeSave}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={volcanoCountryModalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View style={[styles.modalContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select Country for Volcano Alerts</Text>
-            <TouchableOpacity onPress={() => setVolcanoCountryModalVisible(false)}>
-              <X size={24} color={COLORS.text.primary.light} />
-            </TouchableOpacity>
-          </View>
-          <ScrollView style={styles.modalScroll} contentContainerStyle={styles.modalScrollContent}>
-            <TouchableOpacity
-              style={[styles.countryOption, tempVolcanoCountry === '' && styles.countryOptionSelected]}
-              onPress={() => setTempVolcanoCountry('')}
-            >
-              <Text style={[styles.countryOptionText, tempVolcanoCountry === '' && styles.countryOptionTextSelected]}>
-                All Countries
-              </Text>
-            </TouchableOpacity>
-            {COUNTRIES.map((country) => (
-              <TouchableOpacity
-                key={country}
-                style={[styles.countryOption, tempVolcanoCountry === country && styles.countryOptionSelected]}
-                onPress={() => setTempVolcanoCountry(country)}
-              >
-                <Text style={[styles.countryOptionText, tempVolcanoCountry === country && styles.countryOptionTextSelected]}>
-                  {country}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View style={styles.modalFooter}>
-            <TouchableOpacity style={styles.saveButton} onPress={handleVolcanoCountrySave}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -974,22 +736,7 @@ const styles = StyleSheet.create({
   modalScroll: { flex: 1 },
   modalScrollContent: { padding: SPACING.md, paddingBottom: SPACING.xxl },
   modalText: { fontSize: FONT_SIZE.sm, color: COLORS.text.primary.light, lineHeight: 22 },
-  modalFooter: { padding: SPACING.md, borderTopWidth: 1, borderTopColor: COLORS.border.light },
-  saveButton: { backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center' },
-  saveButtonText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
-  countryOption: { padding: SPACING.md, borderBottomWidth: 1, borderBottomColor: COLORS.border.light },
-  countryOptionSelected: { backgroundColor: COLORS.primary[100] },
-  countryOptionText: { fontSize: FONT_SIZE.md, color: COLORS.text.primary.light },
-  countryOptionTextSelected: { fontWeight: FONT_WEIGHT.semibold, color: COLORS.primary[600] },
-  magnitudeDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light, marginBottom: SPACING.lg, lineHeight: 20 },
-  magnitudeOption: { padding: SPACING.md, borderRadius: BORDER_RADIUS.lg, borderWidth: 2, borderColor: COLORS.border.light, marginBottom: SPACING.sm },
-  magnitudeOptionSelected: { borderColor: COLORS.primary[600], backgroundColor: COLORS.primary[50] },
-  magnitudeOptionContent: { gap: 4 },
-  magnitudeOptionLabel: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
-  magnitudeOptionLabelSelected: { color: COLORS.primary[600] },
-  magnitudeOptionDescription: { fontSize: FONT_SIZE.sm, color: COLORS.text.secondary.light },
-  savedMessage: { position: 'absolute', bottom: SPACING.xl, left: SPACING.md, right: SPACING.md, backgroundColor: COLORS.primary[600], borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', ...SHADOW.lg },
-  savedMessageText: { fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.semibold, color: COLORS.text.primary.light },
+
   legendSection: { padding: SPACING.md },
   legendTitle: { fontSize: FONT_SIZE.lg, fontWeight: FONT_WEIGHT.bold, color: COLORS.text.primary.light, marginBottom: SPACING.md },
   legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md, gap: SPACING.md },
